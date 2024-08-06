@@ -143,7 +143,7 @@ const App = () => {
 
   const initializeAndShowOffers = () => {
     Tyrads.init(TYR_SDK_API_KEY, TYR_SDK_API_SECRET);
-    Tyrads.loginUser('demo_user');
+    Tyrads.loginUser('1234'); //user_id
     Tyrads.showOffers();
   };
 
