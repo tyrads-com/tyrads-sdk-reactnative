@@ -1,6 +1,6 @@
 {
   "name": "@tyrads/tyrads-sdk",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tyrads SDK for React Native ",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -54,7 +54,7 @@
     "url": "git+https://github.com/tyrads-com/tyrads-sdk-reactnative.git"
   },
   "author": "dev@acmo.in <dev@acmo.in> (https://tyrads.com)",
-  "license": "MIT",
+  "license": " BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/tyrads-com/tyrads-sdk-reactnative/issues"
   },
