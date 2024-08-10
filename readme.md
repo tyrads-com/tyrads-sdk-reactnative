@@ -1,7 +1,33 @@
-### Quick setup for example app (for testing only):
+# tyrads-sdk
 
-- run `npm link`
-- `cd example`
-- run `npm install`
-- run `npm link tyrads-sdk-reactnative`
-- run `npm start`
+Tyrads SDK for React Native 
+
+## Installation
+
+```sh
+npm install tyrads-sdk
+```
+
+## Usage
+
+
+```js
+import { multiply } from 'tyrads-sdk';
+
+// ...
+
+const result = await multiply(3, 7);
+```
+
+
+## Contributing
+
+See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
+
+## License
+
+MIT
+
+---
+
+Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
