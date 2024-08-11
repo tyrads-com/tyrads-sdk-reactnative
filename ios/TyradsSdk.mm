@@ -2,13 +2,8 @@
 
 @interface RCT_EXTERN_MODULE(TyradsSdk, NSObject)
 
-RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
-
-+ (BOOL)requiresMainQueueSetup
-{
-  return NO;
-}
+RCT_EXTERN_METHOD(init:(NSString *)apiKey secretKey:(NSString *)secretKey)
+RCT_EXTERN_METHOD(loginUser:(NSString *)userId)
+RCT_EXTERN_METHOD(showOffers)
 
 @end
