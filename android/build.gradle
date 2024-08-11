@@ -95,7 +95,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation ("com.github.tyrads-com:tyrads-sdk-android:rnp-SNAPSHOT")
+  implementation ("com.github.tyrads-com:tyrads-sdk-android:rnp-1.1.0")
 
 }
 
