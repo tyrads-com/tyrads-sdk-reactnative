@@ -1,5 +1,5 @@
 import { Button, StyleSheet, View } from 'react-native';
-import Tyrads from '@tyrads/tyrads-sdk';
+import Tyrads from '@tyrads.com/tyrads-sdk';
 export default function App() {
   const handleButtonClick = () => {
     console.log('Button Clicked');

@@ -5,14 +5,14 @@ Tyrads SDK for React Native
 ## Installation
 
 ```sh
-npm install @tyrads/tyrads-sdk
+npm install @tyrads.com/tyrads-sdk
 ```
 
 ## Usage
 
 
 ```js
-import Tyrads from '@tyrads/tyrads-sdk';
+import Tyrads from '@tyrads.com/tyrads-sdk';
 
 // ...
 
