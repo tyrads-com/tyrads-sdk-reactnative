@@ -48,5 +48,8 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We use device identification to personalize your rewards experience, track your progress, and provide tailored offers. This helps us improve our services and ensure you get the most value from our rewards program.</string>
+
 </dict>
 </plist>

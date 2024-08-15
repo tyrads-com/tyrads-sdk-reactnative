@@ -8,19 +8,19 @@ class TyradsSdk: NSObject {
   @objc
   func `init`(_ apiKey: String, secretKey: String) {
     NSLog("TyradsModule: init called with apiKey: \(apiKey) and secretKey: \(secretKey)")
+    Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey)
   }
 
   @objc
   func loginUser(_ userId: String) {
     NSLog("TyradsModule: loginUser called with userId: \(userId)")
+    Tyrads.instance.loginUser(userId)
     // Implement your login logic here
   }
 
   @objc
   func showOffers() {
     NSLog("TyradsModule: showOffers called")
-    if let url = URL(string: "https://example.com") {
-      UIApplication.shared.open(url, options: [:], completionHandler: { _ in })
-    }
+    Tyrads.instance.showOffers()
   }
 }
