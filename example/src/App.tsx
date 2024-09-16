@@ -9,7 +9,7 @@ export default function App() {
   };
   return (
     <View style={styles.container}>
-      <Button title="Calculate" onPress={handleButtonClick} />
+      <Button title="Show Offers" onPress={handleButtonClick} />
     </View>
   );
 }

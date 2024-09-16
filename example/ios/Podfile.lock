@@ -1165,7 +1165,7 @@ PODS:
     - React-perflogger (= 0.74.5)
     - React-utils (= 0.74.5)
   - SocketRocket (0.7.0)
-  - tyrads-sdk (1.1.2):
+  - tyrads-sdk (1.1.6-beta.2):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1419,7 +1419,7 @@ SPEC CHECKSUMS:
   React-utils: f242eb7e7889419d979ca0e1c02ccc0ea6e43b29
   ReactCommon: f7da14a8827b72704169a48c929bcde802698361
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  tyrads-sdk: b9438df3d0b8f65f36bfb0f324676c39b504717a
+  tyrads-sdk: aa0f34ba717eb1f6087607771b2499c90960a138
   Yoga: 2246eea72aaf1b816a68a35e6e4b74563653ae09
 
 PODFILE CHECKSUM: f4c13f771eca445521be6b9d3da798499b15787a
