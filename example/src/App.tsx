@@ -5,7 +5,7 @@ export default function App() {
     console.log('Button Clicked');
     Tyrads.init('', '');
     Tyrads.loginUser('');
-    Tyrads.showOffers();
+    Tyrads.showOffers({ launchMode: 3 });
   };
   return (
     <View style={styles.container}>

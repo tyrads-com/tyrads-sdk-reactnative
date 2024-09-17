@@ -43,7 +43,7 @@ const Tyrads = {
       return TyradsModule.loginUser(userId);
     }
   },
-  showOffers: (launchMode?: number) => {
+  showOffers: ({ launchMode }: { launchMode?: number } = {}) => {
     if (Platform.OS === 'ios') {
       if (typeof launchMode === 'undefined') {
         return TyradsSdk.showOffers(3);
@@ -51,11 +51,7 @@ const Tyrads = {
         return TyradsSdk.showOffers(launchMode);
       }
     } else {
-      if (typeof launchMode === 'undefined') {
-        return TyradsModule.showOffers();
-      } else {
-        return TyradsModule.showOffers();
-      }
+      return TyradsModule.showOffers();
     }
   },
 };
