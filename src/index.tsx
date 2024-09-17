@@ -6,7 +6,7 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const Tyrads = NativeModules.TyradsSdk
+const TyradsSdk = NativeModules.TyradsSdk
   ? NativeModules.TyradsSdk
   : new Proxy(
       {},
@@ -16,4 +16,48 @@ const Tyrads = NativeModules.TyradsSdk
         },
       }
     );
+
+const TyradsModule = NativeModules.TyradsModule
+  ? NativeModules.TyradsModule
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
+
+const Tyrads = {
+  init: (apiKey: string, apiSecret: string) => {
+    if (Platform.OS === 'ios') {
+      return TyradsSdk.init(apiKey, apiSecret);
+    } else {
+      return TyradsModule.init(apiKey, apiSecret);
+    }
+  },
+  loginUser: (userId: string) => {
+    if (Platform.OS === 'ios') {
+      return TyradsSdk.loginUser(userId);
+    } else {
+      return TyradsModule.loginUser(userId);
+    }
+  },
+  showOffers: (launchMode?: number) => {
+    if (Platform.OS === 'ios') {
+      if (typeof launchMode === 'undefined') {
+        return TyradsSdk.showOffers(3);
+      } else {
+        return TyradsSdk.showOffers(launchMode);
+      }
+    } else {
+      if (typeof launchMode === 'undefined') {
+        return TyradsModule.showOffers();
+      } else {
+        return TyradsModule.showOffers();
+      }
+    }
+  },
+};
+
 export default Tyrads;

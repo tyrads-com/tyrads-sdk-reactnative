@@ -18,9 +18,11 @@ class TyradsSdk: NSObject {
     // Implement your login logic here
   }
 
+
   @objc
-  func showOffers() {
+  func showOffers(_ launchMode: Int = 3) {
     NSLog("TyradsModule: showOffers called")
-    Tyrads.instance.showOffers()
+    Tyrads.instance.showOffers(launchMode)
   }
+
 }
