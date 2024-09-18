@@ -17,41 +17,22 @@ const TyradsSdk = NativeModules.TyradsSdk
       }
     );
 
-const TyradsModule = NativeModules.TyradsModule
-  ? NativeModules.TyradsModule
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
 const Tyrads = {
   init: (apiKey: string, apiSecret: string) => {
-    if (Platform.OS === 'ios') {
-      return TyradsSdk.init(apiKey, apiSecret);
-    } else {
-      return TyradsModule.init(apiKey, apiSecret);
-    }
+    return TyradsSdk.init(apiKey, apiSecret);
   },
   loginUser: (userId: string) => {
-    if (Platform.OS === 'ios') {
-      return TyradsSdk.loginUser(userId);
-    } else {
-      return TyradsModule.loginUser(userId);
-    }
+    return TyradsSdk.loginUser(userId);
   },
-  showOffers: ({ launchMode }: { launchMode?: number } = {}) => {
+  showOffers: ({
+    launchMode = 3,
+    route,
+    campaignID = 0,
+  }: { launchMode?: number; route?: string; campaignID?: number } = {}) => {
     if (Platform.OS === 'ios') {
-      if (typeof launchMode === 'undefined') {
-        return TyradsSdk.showOffers(3);
-      } else {
-        return TyradsSdk.showOffers(launchMode);
-      }
+      return TyradsSdk.showOffers(launchMode, route, campaignID);
     } else {
-      return TyradsModule.showOffers();
+      return TyradsSdk.showOffers();
     }
   },
 };

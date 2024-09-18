@@ -141,9 +141,11 @@ public class Tyrads {
 
 
 
-    @objc public func showOffers(_ launchMode: Int = 3) {
+     public func showOffers(_ launchMode: Int = 3, route: String? = nil, campaignID: Int? = nil) {
         self.initializationWait.wait()
-        let urlString = "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)"
+        var urlString =
+        "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignID ?? "")"
+
 
         if let url = URL(string: urlString) {
             switch launchMode {
@@ -171,5 +173,4 @@ public class Tyrads {
             }
         }
     }
-
 }

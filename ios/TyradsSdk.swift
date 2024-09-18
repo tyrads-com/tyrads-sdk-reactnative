@@ -19,10 +19,9 @@ class TyradsSdk: NSObject {
   }
 
 
-  @objc
-  func showOffers(_ launchMode: Int = 3) {
+@objc func showOffers(_ launchMode: Int = 3, route: String? = nil, campaignID: Int = 0) {
     NSLog("TyradsModule: showOffers called")
-    Tyrads.instance.showOffers(launchMode)
-  }
+    Tyrads.instance.showOffers(launchMode, route: route, campaignID:  campaignID == 0 ? nil : campaignID )
+}
 
 }
