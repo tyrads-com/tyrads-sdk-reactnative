@@ -22,7 +22,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
             promise.reject("INIT_ERROR", e.message)
         }
     }
-    
+
     @ReactMethod
     fun loginUser(userId: String, promise: Promise) {
         try {
@@ -32,10 +32,9 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
             promise.reject("LOGIN_ERROR", e.message)
         }
     }
-
     @ReactMethod
-    fun showOffers() {
-        Tyrads.getInstance().showOffers()
+    fun showOffers(route: String? = null, campaignID: Int? = null) {
+        Tyrads.getInstance().showOffers(route = route, campaignID = campaignID)
     }
 
   companion object {

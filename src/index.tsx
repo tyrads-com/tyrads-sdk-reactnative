@@ -32,7 +32,7 @@ const Tyrads = {
     if (Platform.OS === 'ios') {
       return TyradsSdk.showOffers(launchMode, route, campaignID);
     } else {
-      return TyradsSdk.showOffers();
+      return TyradsSdk.showOffers(route, campaignID);
     }
   },
 };
