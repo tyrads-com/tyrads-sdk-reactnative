@@ -3,14 +3,23 @@ import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 
+
 export default function App() {
-  const [apiKey, setApiKey] = useState('');
-  const [apiSecret, setApiSecret] = useState('');
-  const [userId, setUserId] = useState('');
+  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
+  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
+  const [userId, setUserId] = useState('66');
 
   useEffect(() => {
     loadStoredCredentials();
+    initialization()
   }, []);
+
+  const initialization = async () => {
+    Tyrads.init(apiKey, apiSecret);
+    Tyrads.loginUser(userId);
+
+    console.log('initialized');
+  }
 
   const loadStoredCredentials = async () => {
     const storedApiKey = await AsyncStorage.getItem('apiKey');
@@ -38,6 +47,12 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Tyrads.TopPremiumOffers
+        showMore={true}
+        showMyOffers={false}
+        viewStyle={1}
+        style={{ width: 300, height: 200, backgroundColor: 'lightblue' }}
+      />
       <TextInput
         style={styles.input}
         placeholder="API Key"

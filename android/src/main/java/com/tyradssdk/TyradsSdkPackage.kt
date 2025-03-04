@@ -7,11 +7,12 @@ import com.facebook.react.uimanager.ViewManager
 
 
 class TyradsSdkPackage : ReactPackage {
+
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return listOf(TyradsSdkModule(reactContext))
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return emptyList()
+    return listOf(ComposeViewManager())
   }
 }

@@ -80,6 +80,14 @@ android {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
   }
+
+  buildFeatures {
+      compose true
+  }
+
+  composeOptions {
+      kotlinCompilerExtensionVersion '1.5.10'
+  }
 }
 
 repositories {
@@ -93,9 +101,16 @@ dependencies {
   // For < 0.71, this will be from the local maven repo
   // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
   //noinspection GradleDynamicVersion
-  implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation ("com.github.tyrads-com:tyrads-sdk-android:060678cd14")
 
+  implementation "androidx.activity:activity-compose:1.7.0"
+  implementation "androidx.compose.ui:ui:1.5.0"
+  implementation "androidx.compose.material:material:1.5.10"
+  implementation "androidx.compose.ui:ui-tooling-preview:1.5.10"
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+
+  implementation "com.facebook.react:react-native:+"
+
+  implementation ("com.github.tyrads-com:tyrads-sdk-android:v2.0.0-beta")
 }
 

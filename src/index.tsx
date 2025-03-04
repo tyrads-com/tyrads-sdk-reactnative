@@ -1,4 +1,7 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, requireNativeComponent, View, Text} from 'react-native';
+
+const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
+
 
 const LINKING_ERROR =
   `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -34,6 +37,29 @@ const Tyrads = {
     } else {
       return TyradsSdk.showOffers(route, campaignID);
     }
+  },
+  TopPremiumOffers: ({
+    showMore = true,
+    showMyOffers = true,
+    showMyOffersEmptyView = false,
+    viewStyle = 2,
+  }: {
+    showMore?: boolean;
+    showMyOffers?: boolean;
+    showMyOffersEmptyView?: boolean;
+    viewStyle?: number;
+  } = {}) => {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text> Some Testing </Text>
+        <TyradsSdkComposeView
+          showMore={showMore}
+          showMyOffers={showMyOffers}
+          showMyOffersEmptyView={showMyOffersEmptyView}
+          viewStyle={viewStyle}
+        />
+      </View>
+    );
   },
 };
 
