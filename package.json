@@ -1,6 +1,6 @@
 {
   "name": "@tyrads.com/tyrads-sdk",
-  "version": "1.1.7",
+  "version": "2.0.0",
   "description": "Tyrads SDK for React Native ",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
@@ -183,5 +183,14 @@
     "type": "module-legacy",
     "languages": "kotlin-swift",
     "version": "0.40.0"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "axios": "^1.8.1",
+    "i18next": "^24.2.2",
+    "i18next-http-backend": "^3.0.2",
+    "numeral": "^2.0.6",
+    "react-i18next": "^15.4.1",
+    "react-native-text-ticker": "^1.14.0"
   }
 }
