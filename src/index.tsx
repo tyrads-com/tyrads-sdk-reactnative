@@ -1,6 +1,11 @@
-import { NativeModules, Platform, requireNativeComponent, View, Text} from 'react-native';
+import { NativeModules, Platform, View,} from 'react-native';
 
-const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
+import TopOffers from './acmo/modules/dashboard/top_offers';
+import { saveData } from './acmo/core/storage/storage';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
+
+// const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
 
 const LINKING_ERROR =
@@ -24,7 +29,16 @@ const Tyrads = {
   init: (apiKey: string, apiSecret: string) => {
     return TyradsSdk.init(apiKey, apiSecret);
   },
-  loginUser: (userId: string) => {
+  loginUser: async (userId: string) =>{
+    try{
+      var data = await TyradsSdk.loginUser(userId);
+      console.log("data from login: ",data);
+
+      await saveData('apiHeaders', data);
+      await saveData('language', JSON.parse(data).languageCode);
+    }catch (err){
+      console.log(err);
+    }
     return TyradsSdk.loginUser(userId);
   },
   showOffers: ({
@@ -38,11 +52,11 @@ const Tyrads = {
       return TyradsSdk.showOffers(route, campaignID);
     }
   },
-  TopPremiumOffers: ({
+  topPremiumOffers: ({
     showMore = true,
     showMyOffers = true,
     showMyOffersEmptyView = false,
-    viewStyle = 2,
+    viewStyle = 1,
   }: {
     showMore?: boolean;
     showMyOffers?: boolean;
@@ -50,15 +64,16 @@ const Tyrads = {
     viewStyle?: number;
   } = {}) => {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text> Some Testing </Text>
-        <TyradsSdkComposeView
-          showMore={showMore}
-          showMyOffers={showMyOffers}
-          showMyOffersEmptyView={showMyOffersEmptyView}
-          viewStyle={viewStyle}
-        />
-      </View>
+      <I18nextProvider i18n={i18n}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <TopOffers
+            showMore={showMore}
+            showMyOffers={showMyOffers}
+            showMyOffersEmptyView={showMyOffersEmptyView}
+            style={viewStyle}
+          />
+        </View>
+      </I18nextProvider>
     );
   },
 };
