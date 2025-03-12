@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View, TextInput } from 'react-native';
+import { Button, StyleSheet, View, TextInput, SafeAreaView, ScrollView } from 'react-native';
 import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
@@ -7,7 +7,9 @@ import { useState, useEffect } from 'react';
 export default function App() {
   const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
   const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
-  const [userId, setUserId] = useState('66');
+  const [userId, setUserId] = useState('6');
+
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     loadStoredCredentials();
@@ -16,7 +18,13 @@ export default function App() {
 
   const initialization = async () => {
     Tyrads.init(apiKey, apiSecret);
-    Tyrads.loginUser(userId);
+    try{
+      await Tyrads.loginUser(userId);
+    }catch (err){
+      console.log(err);
+    }finally{
+      setLoading(false);
+    }
 
     console.log('initialized');
   }
@@ -46,33 +54,35 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Tyrads.TopPremiumOffers
-        showMore={true}
-        showMyOffers={false}
-        viewStyle={1}
-        style={{ width: 300, height: 200, backgroundColor: 'lightblue' }}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="API Key"
-        value={apiKey}
-        onChangeText={setApiKey}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="API Secret"
-        value={apiSecret}
-        onChangeText={setApiSecret}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="User ID"
-        value={userId}
-        onChangeText={setUserId}
-      />
-      <Button title="Show Offers" onPress={handleButtonClick} />
-    </View>
+    <SafeAreaView style = {{flex : 1}}>
+      <ScrollView style = {{marginTop : 40}}>
+          <View style={styles.container}>
+          {!isLoading && <Tyrads.topPremiumOffers
+          viewStyle = {1}
+          />}
+          <View style = {{height : 20}}></View>
+          <TextInput
+            style={styles.input}
+            placeholder="API Key"
+            value={apiKey}
+            onChangeText={setApiKey}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="API Secret"
+            value={apiSecret}
+            onChangeText={setApiSecret}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="User ID"
+            value={userId}
+            onChangeText={setUserId}
+          />
+          <Button title="Show Offers" onPress={handleButtonClick} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
