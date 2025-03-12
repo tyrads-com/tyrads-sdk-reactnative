@@ -4,6 +4,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.google.gson.Gson
+import android.util.Log
 import com.tyrads.sdk.Tyrads
 
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
@@ -25,11 +30,19 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod
     fun loginUser(userId: String, promise: Promise) {
-        try {
-            Tyrads.getInstance().loginUser(userId)
-            promise.resolve(null)
-        } catch (e: Exception) {
-            promise.reject("LOGIN_ERROR", e.message)
+      Tyrads.getInstance().tyradScope.launch {
+            try {
+                val apiHeaders = Tyrads.getInstance().loginUser(userId)
+                Log.i("bmd", "apiHeaders: $apiHeaders")
+                if (apiHeaders != null) {
+                    val jsonString = Gson().toJson(apiHeaders)
+                    promise.resolve(jsonString)
+                } else {
+                    promise.resolve(null)
+                }
+            } catch (e: Exception) {
+                promise.reject("LOGIN_ERROR", e.message)
+            }
         }
     }
     @ReactMethod
