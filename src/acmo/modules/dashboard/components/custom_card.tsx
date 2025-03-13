@@ -1,7 +1,12 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { type ReactNode } from 'react';
+import { View, StyleSheet, type ViewStyle } from 'react-native';
 
-const CustomCard = ({ children, style }) => {
+interface CustomCardProps {
+  children: ReactNode;
+  style?: ViewStyle;
+}
+
+const CustomCard: React.FC<CustomCardProps> = ({ children, style }) => {
   return <View style={[styles.card, style]}>{children}</View>;
 };
 

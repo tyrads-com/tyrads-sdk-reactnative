@@ -4,35 +4,38 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  ScrollView,
 } from 'react-native';
-import PremiumOption2 from './components/premium_option_2';
-import MyGamesButton from './components/my_games_button';
+import { fetchCampaignsData } from './repository';
 import PremiumHeaderSection from './components/premium_header';
-import axios from 'axios';
 import CustomCard from './components/custom_card';
-import PremiumOption3 from './components/premium_option_3';
+import MyGamesButton from './components/my_games_button';
 import PremiumOption1 from './components/premium_option_1';
+import PremiumOption2 from './components/premium_option_2';
+import PremiumOption3 from './components/premium_option_3';
 import PremiumOption4 from './components/premium_option_4';
 
-import { getData } from '../../core/storage/storage';
-import { fetchCampaignsData } from './repository';
+interface TopOffersProps {
+  showMore?: boolean;
+  showMyOffers?: boolean;
+  showMyOffersEmptyView?: boolean;
+  style?: number;
+}
 
-const TopOffers = ({
+const TopOffers: React.FC<TopOffersProps> = ({
   showMore,
-  showMyOffers,
-  showMyOffersEmptyView,
+  showMyOffers = false,
+  showMyOffersEmptyView = false,
   style = 1,
 }) => {
-  const [campaigns, setCampaigns] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [premiumColor, setPremiumColor] = useState('#1C90DF');
-  const [language, setLanguage] = useState('en');
+  const [campaigns, setCampaigns] = useState<TransformedCampaign[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [premiumColor, setPremiumColor] = useState<string>('#1C90DF');
+  // const [language, setLanguage] = useState<string>('en');
 
   useEffect(() => {
     fetchCampaignsData(
-      setLanguage,
+      // setLanguage,
       setPremiumColor,
       setCampaigns,
       setError,
@@ -60,7 +63,7 @@ const TopOffers = ({
     if (showMyOffersEmptyView) {
       return (
         <View style={styles.noCampaignContainer}>
-          <Text>{t('No campaigns available')}</Text>
+          <Text>No campaigns available</Text>
         </View>
       );
     } else {
@@ -92,7 +95,7 @@ const TopOffers = ({
                 <PremiumOption4 data={campaigns} premiumColor={premiumColor} />
               );
             default:
-              return <Text>{t('Please specify correct style')}</Text>;
+              return <Text>Please specify a correct style</Text>;
           }
         })()}
         <View style={styles.gameListSpacer} />

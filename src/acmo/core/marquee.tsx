@@ -1,7 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Text, View, StyleSheet, Dimensions } from 'react-native';
+import { Animated, View, StyleSheet, Dimensions, type TextStyle,} from 'react-native';
 
-const MarqueeText = ({ text, speed = 15, repeat = 100 }) => {
+interface MarqueeTextProps {
+  text: string;
+  speed?: number;
+  repeat?: number;
+  style?: TextStyle;
+}
+
+const MarqueeText: React.FC<MarqueeTextProps> = ({ text, speed = 15, repeat = 100, style }) => {
   const translateX = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -33,7 +40,7 @@ const MarqueeText = ({ text, speed = 15, repeat = 100 }) => {
     <View style={styles.container}>
       <Animated.Text
         numberOfLines={1}
-        style={[styles.text, { transform: [{ translateX }] }]}
+        style={[styles.text, style, { transform: [{ translateX }] }]}
       >
         {text}
       </Animated.Text>
@@ -49,7 +56,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontWeight: 'bold',
-    whiteSpace: 'nowrap',
   },
 });
 

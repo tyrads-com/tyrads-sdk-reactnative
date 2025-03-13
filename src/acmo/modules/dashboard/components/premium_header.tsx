@@ -1,16 +1,21 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet,} from 'react-native';
 import Tyrads from '../../../..';
 import { useTranslation } from 'react-i18next';
 
-const PremiumHeaderSection = ({ showMore , premiumColor}) => {
-  const {t} = useTranslation();
+interface PremiumHeaderSectionProps {
+  showMore?: boolean;
+  premiumColor?: string;
+}
+
+const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = true, premiumColor }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.headerContainer}>
       <View style={styles.leftContainer}>
-        <View style={[styles.starContainer , { backgroundColor: premiumColor || '#1C90DF' }]}>
+        <View style={[styles.starContainer, { backgroundColor: premiumColor || '#1C90DF' }]}>
           <Image
-            source={require('../../../../assets/images/star_pointed.png')} 
+            source={require('../../../../assets/images/star_pointed.png')}
             style={[styles.starIcon, { tintColor: 'white' }]}
           />
         </View>
@@ -21,14 +26,11 @@ const PremiumHeaderSection = ({ showMore , premiumColor}) => {
       {showMore && (
         <TouchableOpacity style={styles.rightContainer} onPress={() => Tyrads.showOffers()}>
           <Text style={[styles.moreOffersText, { color: premiumColor }]} numberOfLines={1}>
-            {
-              t('dashboard.more_offers')
-            }
+            {t('dashboard.more_offers')}
           </Text>
           <Image
-            source={require('../../../../assets/images/right_arrow.png')} 
-            style={{ width: 11, height: 11 , objectFit: 'contain', marginLeft: 5, tintColor: premiumColor || "#1C90DF" }}
-
+            source={require('../../../../assets/images/right_arrow.png')}
+            style={{ width: 11, height: 11, objectFit: 'contain', marginLeft: 5, tintColor: premiumColor || "#1C90DF" }}
           />
         </TouchableOpacity>
       )}
@@ -48,8 +50,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16, 
-    paddingVertical: 6, 
+    paddingHorizontal: 16,
+    paddingVertical: 6,
   },
   leftContainer: {
     flexDirection: 'row',
@@ -57,12 +59,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   starIcon: {
-    width: 12, 
+    width: 12,
     height: 12,
   },
   headerText: {
-    marginLeft: 8, 
-    fontSize: 16, 
+    marginLeft: 8,
+    fontSize: 16,
     fontWeight: 'bold',
     flex: 1,
   },
@@ -70,8 +72,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  moreOffersText: { 
-    fontSize: 14, 
+  moreOffersText: {
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });

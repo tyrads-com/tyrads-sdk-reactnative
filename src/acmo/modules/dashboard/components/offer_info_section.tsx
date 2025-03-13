@@ -1,15 +1,23 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from 'react';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, type ViewStyle,} from "react-native";
 import numeral from 'numeral';
 import TextTicker from "react-native-text-ticker";
 import Tyrads from "../../../..";
 import { useTranslation } from "react-i18next";
 
 const { width } = Dimensions.get('window');
-const OfferInfoSection = ({ details, premiumColor , style}) => {
-  const {t} = useTranslation();
+
+interface OfferInfoSectionProps {
+  details: TransformedCampaign;
+  premiumColor?: string;
+  style?: ViewStyle;
+}
+
+const OfferInfoSection: React.FC<OfferInfoSectionProps> = ({ details, premiumColor, style }) => {
+  const { t } = useTranslation();
 
   return (
-    <View style={[styles.infoContainer, style ,{ backgroundColor: premiumColor || '#1C90DF' }]}>
+    <View style={[styles.infoContainer, style, { backgroundColor: premiumColor || '#1C90DF' }]}>
       <View style={styles.infoRow}>
         <View style={styles.leftInfo}>
           <Image
@@ -19,7 +27,7 @@ const OfferInfoSection = ({ details, premiumColor , style}) => {
           />
           <View style={styles.gameDetails}>
             {details.title.length > 20 ? (
-              <View style={{ overflow: 'hidden',}}>
+              <View style={{ overflow: 'hidden' }}>
                 <TextTicker
                   style={styles.gameTitle}
                   duration={3000}
@@ -36,17 +44,17 @@ const OfferInfoSection = ({ details, premiumColor , style}) => {
                 {details.title}
               </Text>
             )}
-            
+
             <View style={styles.rewardDetails}>
               <Image
-                source={{uri: details.currency.adUnitCurrencyIcon}}
+                source={{ uri: details.currency.adUnitCurrencyIcon }}
                 resizeMode="contain"
                 style={styles.coinIcon}
               />
               <Text style={styles.points}>{numeral(details.points).format("0.00a").toUpperCase()}</Text>
               <Text style={styles.points}>{''}{details.currency.adUnitCurrencyName}</Text>
               <Text style={styles.rewards}>
-                {'  '}
+                {' '}
                 {details.rewards} {t('dashboard.rewards', { count: details.rewards })}
               </Text>
             </View>
@@ -56,7 +64,7 @@ const OfferInfoSection = ({ details, premiumColor , style}) => {
           onPress={() => {
             Tyrads.showOffers({
               route: 'campaign-details',
-              campaignId: details.campaignId
+              campaignID: details.campaignId
             })
           }}
           style={styles.playButton}
@@ -72,8 +80,8 @@ const OfferInfoSection = ({ details, premiumColor , style}) => {
 
 const styles = StyleSheet.create({
   infoContainer: {
-    width: width, 
-    paddingVertical: 8, 
+    width: width,
+    paddingVertical: 8,
     paddingHorizontal: 16,
   },
   infoRow: {
@@ -88,47 +96,47 @@ const styles = StyleSheet.create({
     width: '68%',
   },
   gameIcon: {
-    width: 50, 
+    width: 50,
     height: 50,
-    borderRadius: 8, 
+    borderRadius: 8,
   },
   gameDetails: {
-    marginLeft: 10, 
+    marginLeft: 10,
   },
   gameTitle: {
-    color: 'white', 
-    fontSize: 14, 
-    marginBottom: 4, 
+    color: 'white',
+    fontSize: 14,
+    marginBottom: 4,
   },
   rewardDetails: {
     flexDirection: 'row',
-    marginTop: 4, 
+    marginTop: 4,
   },
   coinIcon: {
-    width: 18, 
+    width: 18,
     height: 18,
   },
   points: {
     color: 'white',
-    fontSize: 12, 
-    marginLeft: 4, 
+    fontSize: 12,
+    marginLeft: 4,
   },
   rewards: {
     color: 'lightgrey',
-    fontSize: 11, 
+    fontSize: 11,
     fontStyle: 'italic',
   },
   playButton: {
-    paddingHorizontal: 12, 
-    paddingVertical: 2, 
-    height: 30, 
-    borderRadius: 8, 
+    paddingHorizontal: 12,
+    paddingVertical: 2,
+    height: 30,
+    borderRadius: 8,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
   playButtonText: {
-    fontSize: 14, 
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
