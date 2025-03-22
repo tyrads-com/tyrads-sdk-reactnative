@@ -6,6 +6,8 @@ Tyrads SDK for React Native
 
 ```sh
 npm install @tyrads.com/tyrads-sdk
+# or
+yarn add @tyrads.com/tyrads-sdk
 ```
 
 ## Usage

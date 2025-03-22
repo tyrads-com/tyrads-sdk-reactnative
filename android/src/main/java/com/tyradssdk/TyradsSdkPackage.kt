@@ -13,6 +13,9 @@ class TyradsSdkPackage : ReactPackage {
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return listOf(ComposeViewManager())
+    return emptyList()
   }
+  // override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
+  //   return listOf(ComposeViewManager())
+  // }
 }

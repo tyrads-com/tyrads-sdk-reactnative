@@ -81,13 +81,13 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
-  buildFeatures {
-      compose true
-  }
+  // buildFeatures {
+  //     compose true
+  // }
 
-  composeOptions {
-      kotlinCompilerExtensionVersion '1.5.10'
-  }
+  // composeOptions {
+  //     kotlinCompilerExtensionVersion '1.5.10'
+  // }
 }
 
 repositories {
@@ -103,14 +103,14 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation "androidx.activity:activity-compose:1.7.0"
-  implementation "androidx.compose.ui:ui:1.5.0"
-  implementation "androidx.compose.material:material:1.5.10"
-  implementation "androidx.compose.ui:ui-tooling-preview:1.5.10"
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+  // implementation "androidx.activity:activity-compose:1.7.0"
+  // implementation "androidx.compose.ui:ui:1.5.0"
+  // implementation "androidx.compose.material:material:1.5.10"
+  // implementation "androidx.compose.ui:ui-tooling-preview:1.5.10"
+  // implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
 
   implementation "com.facebook.react:react-native:+"
-  implementation 'com.google.code.gson:gson:2.10.1'
+  implementation 'com.google.code.gson:gson:+'
 
   implementation 'com.github.tyrads-com:tyrads-sdk-android:fd619c7f0c'
 }

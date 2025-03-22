@@ -1,6 +1,6 @@
 {
   "name": "@tyrads.com/tyrads-sdk",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Tyrads SDK for React Native ",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",

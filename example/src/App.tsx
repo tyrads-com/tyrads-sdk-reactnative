@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react';
 
 
 export default function App() {
-  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
-  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
-  const [userId, setUserId] = useState('6');
+  const [apiKey, setApiKey] = useState('YOUR_API_KEY');
+  const [apiSecret, setApiSecret] = useState('YOUR_API_SECRET');
+  const [userId, setUserId] = useState('YOUR_USER_ID');
 
   const [isLoading, setLoading] = useState(true);
 
