@@ -49,8 +49,8 @@ export default function App() {
     console.log('Button Clicked');
     await saveCredentials();
     Tyrads.init(apiKey, apiSecret);
-    Tyrads.loginUser(userId);
-    Tyrads.showOffers({ launchMode: 3 });
+    await Tyrads.loginUser(userId);
+    Tyrads.showOffers({ launchMode: 2 });
   };
 
   return (

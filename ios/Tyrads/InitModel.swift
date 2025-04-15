@@ -37,10 +37,12 @@ struct User: Codable {
 struct PublisherApp: Codable {
     let headerColor: String
     let mainColor: String
+  let premiumColor: String
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         headerColor = try container.decodeIfPresent(String.self, forKey: .headerColor) ?? ""
         mainColor = try container.decodeIfPresent(String.self, forKey: .mainColor) ?? ""
+      premiumColor = try container.decodeIfPresent(String.self, forKey: .premiumColor) ?? ""
     }
 }

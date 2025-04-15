@@ -19,6 +19,7 @@ interface TopOffersProps {
   showMyOffers?: boolean;
   showMyOffersEmptyView?: boolean;
   style?: number;
+  onNavigate: (route?: string, campaignID?: number) => void;
 }
 
 const TopOffers: React.FC<TopOffersProps> = ({
@@ -26,6 +27,7 @@ const TopOffers: React.FC<TopOffersProps> = ({
   showMyOffers = false,
   showMyOffersEmptyView = false,
   style = 1,
+  onNavigate
 }) => {
   const [campaigns, setCampaigns] = useState<TransformedCampaign[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -42,6 +44,17 @@ const TopOffers: React.FC<TopOffersProps> = ({
       setIsLoading
     );
   }, []);
+
+  const handleShowOffers = () => {
+    onNavigate();
+  };
+  const handleCampaignPress = (campaignId: number) => {
+    onNavigate('campaign-details',campaignId );
+  };
+
+  const handleMoreOffersPress = (route: string) => {
+    onNavigate(route);
+  };
 
   if (isLoading) {
     return (
@@ -74,32 +87,32 @@ const TopOffers: React.FC<TopOffersProps> = ({
   return (
     <CustomCard style={{}}>
       <View style={{ flex: 1 }}>
-        <PremiumHeaderSection showMore={showMore} premiumColor={premiumColor} />
+        <PremiumHeaderSection showMore={showMore} premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
         {(() => {
           switch (style) {
             case 1:
               return (
-                <PremiumOption1 data={campaigns} premiumColor={premiumColor} />
+                <PremiumOption1 data={campaigns} premiumColor={premiumColor} onCampaignPress={handleCampaignPress} />
               );
             case 2:
               return (
-                <PremiumOption2 data={campaigns} premiumColor={premiumColor} />
+                <PremiumOption2 data={campaigns} premiumColor={premiumColor}  onCampaignPress={handleCampaignPress} />
               );
             case 3:
               return (
-                <PremiumOption3 data={campaigns} premiumColor={premiumColor} />
+                <PremiumOption3 data={campaigns} premiumColor={premiumColor}  onCampaignPress={handleCampaignPress} />
               );
             case 4:
               return (
-                <PremiumOption4 data={campaigns} premiumColor={premiumColor} />
+                <PremiumOption4 data={campaigns} premiumColor={premiumColor} onCampaignPress={handleCampaignPress} />
               );
             default:
               return <Text>Please specify a correct style</Text>;
           }
         })()}
         <View style={styles.gameListSpacer} />
-        {showMyOffers && <MyGamesButton premiumColor={premiumColor} />}
+        {showMyOffers && <MyGamesButton premiumColor={premiumColor} onPress={handleMoreOffersPress}/>}
       </View>
     </CustomCard>
   );

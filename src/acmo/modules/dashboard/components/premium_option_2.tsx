@@ -9,16 +9,16 @@ import {
 } from 'react-native';
 import AutoScrollPagerWithIndicators from './auto_scroller';
 import OfferInfoSection from './offer_info_section';
-import Tyrads from '../../../..';
 
 const { width } = Dimensions.get('window');
 
 interface PremiumOption2Props {
   data: TransformedCampaign[];
   premiumColor?: string;
+  onCampaignPress?: (campaignId: number) => void;
 }
 
-const PremiumOption2: React.FC<PremiumOption2Props> = ({ data, premiumColor }) => {
+const PremiumOption2: React.FC<PremiumOption2Props> = ({ data, onCampaignPress, premiumColor }) => {
   return (
     <AutoScrollPagerWithIndicators
       totalPages={data.length}
@@ -26,18 +26,14 @@ const PremiumOption2: React.FC<PremiumOption2Props> = ({ data, premiumColor }) =
       content={(page) => (
         <TouchableOpacity
           key={page}
-          onPress={() =>
-            Tyrads.showOffers({
-              route: 'campaign-details',
-              campaignID: data[page]?.campaignId,
-            })
+          onPress={() => onCampaignPress && onCampaignPress(data[page]?.campaignId ?? 0)
           }
           activeOpacity={0.8}
         >
           {data[page] && (
             <>
               <OfferBanner details={data[page]} index={page} premiumColor={premiumColor} />
-              <OfferInfoSection details={data[page]} premiumColor={premiumColor} />
+              <OfferInfoSection details={data[page]} premiumColor={premiumColor} onButtonPress={() => onCampaignPress && onCampaignPress(data[page]?.campaignId ?? 0)}/>
             </>
           )}
         </TouchableOpacity>

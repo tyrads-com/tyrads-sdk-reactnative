@@ -34,10 +34,14 @@ const Tyrads = {
       var data = await TyradsSdk.loginUser(userId);
       console.log("data from login: ",data);
 
+      if(typeof data === "object"){
+        data = JSON.stringify(data);
+      }
+
       await saveData('apiHeaders', data);
       await saveData('language', JSON.parse(data).languageCode);
     }catch (err){
-      console.log(err);
+      console.log(`error from login: ${err}`);
     }
     return TyradsSdk.loginUser(userId);
   },
@@ -63,6 +67,9 @@ const Tyrads = {
     showMyOffersEmptyView?: boolean;
     viewStyle?: number;
   } = {}) => {
+    const handleNavigation = (route?: string, campaignID?: number) => {
+      Tyrads.showOffers({ route, campaignID });
+    };
     return (
       <I18nextProvider i18n={i18n}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -71,6 +78,7 @@ const Tyrads = {
             showMyOffers={showMyOffers}
             showMyOffersEmptyView={showMyOffersEmptyView}
             style={viewStyle}
+            onNavigate={handleNavigation}
           />
         </View>
       </I18nextProvider>

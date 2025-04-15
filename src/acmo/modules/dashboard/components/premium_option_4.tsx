@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import AutoScrollPagerWithIndicators from './auto_scroller';
 import numeral from 'numeral';
-import Tyrads from '../../../../index';
 import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
@@ -17,9 +16,10 @@ const { width } = Dimensions.get('window');
 interface PremiumOption4Props {
   data: TransformedCampaign[];
   premiumColor?: string;
+  onCampaignPress?: (campaignId: number) => void;
 }
 
-const PremiumOption4: React.FC<PremiumOption4Props> = ({ data, premiumColor }) => {
+const PremiumOption4: React.FC<PremiumOption4Props> = ({ data, onCampaignPress, premiumColor }) => {
   return (
     <AutoScrollPagerWithIndicators
       totalPages={data.length}
@@ -28,7 +28,7 @@ const PremiumOption4: React.FC<PremiumOption4Props> = ({ data, premiumColor }) =
         <View key={page}>
           {
             data[page] && (
-              <OfferBanner details={data[page]} index={page} premiumColor={premiumColor} />
+              <OfferBanner details={data[page]} index={page} premiumColor={premiumColor}  onCampaignPress={onCampaignPress} />
             )
           }
         </View>
@@ -40,10 +40,11 @@ const PremiumOption4: React.FC<PremiumOption4Props> = ({ data, premiumColor }) =
 interface OfferBannerProps {
   details: TransformedCampaign;
   index: number;
+  onCampaignPress?: (campaignId: number) => void;
   premiumColor?: string;
 }
 
-const OfferBanner: React.FC<OfferBannerProps> = ({ details, index, premiumColor }) => {
+const OfferBanner: React.FC<OfferBannerProps> = ({ details, index, onCampaignPress, premiumColor }) => {
   const { t } = useTranslation();
   return (
     <View style={styles.outerContainer}>
@@ -81,7 +82,7 @@ const OfferBanner: React.FC<OfferBannerProps> = ({ details, index, premiumColor 
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => Tyrads.showOffers({ route: "campaign-details", campaignID: details.campaignId })}
+          onPress={() => onCampaignPress && onCampaignPress(details.campaignId)}
           style={[styles.playButton, { backgroundColor: premiumColor || '#1C90DF' }]}
         >
           <Text style={styles.playButtonText}>{t('dashboard.play_button')}</Text>
