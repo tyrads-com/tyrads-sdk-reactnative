@@ -8,15 +8,15 @@ import {
   StyleSheet,
 } from 'react-native';
 import TextTicker from 'react-native-text-ticker';
-import Tyrads from '../../../../index';
 import { useTranslation } from 'react-i18next';
 
 interface PremiumOption1Props {
   data: TransformedCampaign[];
   premiumColor?: string;
+  onCampaignPress?: (campaignId: number) => void;
 }
 
-const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, premiumColor }) => {
+const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, onCampaignPress, premiumColor }) => {
   const { t } = useTranslation();
   console.log("Prmium Color", premiumColor);
 
@@ -25,12 +25,7 @@ const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, premiumColor }) =
       {data.map((item, index) => (
         <TouchableOpacity
           key={index}
-          onPress={() => {
-            Tyrads.showOffers({
-              route: "campaign-details",
-              campaignID: item.campaignId,
-            });
-          }}
+          onPress={() => onCampaignPress && onCampaignPress(item.campaignId)}
           style={styles.itemContainer}
           activeOpacity={0.75}
         >

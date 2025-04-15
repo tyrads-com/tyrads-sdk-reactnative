@@ -2,7 +2,6 @@ import React from 'react';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, type ViewStyle,} from "react-native";
 import numeral from 'numeral';
 import TextTicker from "react-native-text-ticker";
-import Tyrads from "../../../..";
 import { useTranslation } from "react-i18next";
 
 const { width } = Dimensions.get('window');
@@ -11,9 +10,10 @@ interface OfferInfoSectionProps {
   details: TransformedCampaign;
   premiumColor?: string;
   style?: ViewStyle;
+  onButtonPress: () => void;
 }
 
-const OfferInfoSection: React.FC<OfferInfoSectionProps> = ({ details, premiumColor, style }) => {
+const OfferInfoSection: React.FC<OfferInfoSectionProps> = ({ details, premiumColor, style, onButtonPress }) => {
   const { t } = useTranslation();
 
   return (
@@ -61,12 +61,7 @@ const OfferInfoSection: React.FC<OfferInfoSectionProps> = ({ details, premiumCol
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => {
-            Tyrads.showOffers({
-              route: 'campaign-details',
-              campaignID: details.campaignId
-            })
-          }}
+          onPress={onButtonPress}
           style={styles.playButton}
         >
           <Text style={[styles.playButtonText, { color: premiumColor || '#1C90DF' }]}>

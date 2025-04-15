@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet,} from 'react-native';
-import Tyrads from '../../../..';
 import { useTranslation } from 'react-i18next';
 
 interface PremiumHeaderSectionProps {
   showMore?: boolean;
   premiumColor?: string;
+  onShowOffers?: () => void;
 }
 
-const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = true, premiumColor }) => {
+const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = true, premiumColor, onShowOffers }) => {
   const { t } = useTranslation();
   return (
     <View style={styles.headerContainer}>
@@ -24,7 +24,7 @@ const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = 
         </Text>
       </View>
       {showMore && (
-        <TouchableOpacity style={styles.rightContainer} onPress={() => Tyrads.showOffers()}>
+        <TouchableOpacity style={styles.rightContainer} onPress={onShowOffers}>
           <Text style={[styles.moreOffersText, { color: premiumColor }]} numberOfLines={1}>
             {t('dashboard.more_offers')}
           </Text>
