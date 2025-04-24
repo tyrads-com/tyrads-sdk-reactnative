@@ -162,7 +162,7 @@ public class Tyrads : NSObject {
             campaignIDString = String(campaignIDValue)
         }
        let urlString =
-       "https://staging-websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)"
+       "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)"
 
         do {
             guard let url = URL(string: urlString) else {
