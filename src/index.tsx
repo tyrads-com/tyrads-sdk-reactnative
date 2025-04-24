@@ -65,14 +65,16 @@ const Tyrads = {
     showMyOffers = true,
     showMyOffersEmptyView = false,
     viewStyle = 1,
+    launchMode = 2,
   }: {
     showMore?: boolean;
     showMyOffers?: boolean;
     showMyOffersEmptyView?: boolean;
     viewStyle?: number;
+    launchMode?: number;
   } = {}) => {
     const handleNavigation = (route?: string, campaignID?: number) => {
-      Tyrads.showOffers({ route, campaignID });
+      Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode});
     };
     return (
       <I18nextProvider i18n={i18n}>
