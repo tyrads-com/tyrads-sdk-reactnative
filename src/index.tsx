@@ -29,22 +29,26 @@ const Tyrads = {
   init: (apiKey: string, apiSecret: string) => {
     return TyradsSdk.init(apiKey, apiSecret);
   },
-  loginUser: async (userId: string) =>{
-    try{
-      var data = await TyradsSdk.loginUser(userId);
-      console.log("data from login: ",data);
-
-      if(typeof data === "object"){
-        data = JSON.stringify(data);
+  loginUser: async (userId: string) => {
+    try {
+      const data = await TyradsSdk.loginUser(userId);
+      console.log("data from login: ", data);
+  
+      if (typeof data === "object") {
+        await saveData('apiHeaders', JSON.stringify(data));
+        await saveData('language', data.languageCode);
+      } else if (typeof data === "string") {
+        await saveData('apiHeaders', data);
+        await saveData('language', JSON.parse(data).languageCode);
       }
-
-      await saveData('apiHeaders', data);
-      await saveData('language', JSON.parse(data).languageCode);
-    }catch (err){
+  
+      return data;
+    } catch (err) {
       console.log(`error from login: ${err}`);
+      return null;
     }
-    return TyradsSdk.loginUser(userId);
   },
+  
   showOffers: ({
     launchMode = 3,
     route,
