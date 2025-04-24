@@ -1167,7 +1167,7 @@ PODS:
   - RNCAsyncStorage (2.1.2):
     - React-Core
   - SocketRocket (0.7.0)
-  - tyrads-sdk (2.0.0-beta.1):
+  - tyrads-sdk (2.0.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1425,9 +1425,9 @@ SPEC CHECKSUMS:
   ReactCommon: 9f285823dbe955099978d9bff65a7653ca029256
   RNCAsyncStorage: b9f5f78da5d16a853fe3dc22e8268d932fc45a83
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  tyrads-sdk: 5c838372460ecd882aa22b52607cdeda0adf18b9
+  tyrads-sdk: b144e74d7ef647aef6a5b089a393b471ae43c153
   Yoga: 950bbfd7e6f04790fdb51149ed51df41f329fcc8
 
 PODFILE CHECKSUM: f4c13f771eca445521be6b9d3da798499b15787a
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2
