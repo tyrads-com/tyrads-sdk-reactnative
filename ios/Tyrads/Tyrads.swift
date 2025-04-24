@@ -7,7 +7,7 @@ import WebKit
 
 
 /// The TyradsSdk class provides methods for configuring the SDK and displaying offers.
-public class Tyrads {
+public class Tyrads : NSObject {
     /// Shared instance of the TyradsSdk.
     public static let instance = Tyrads()
 
@@ -162,7 +162,7 @@ public class Tyrads {
             campaignIDString = String(campaignIDValue)
         }
        let urlString =
-       "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)"
+       "https://staging-websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)"
 
         do {
             guard let url = URL(string: urlString) else {
@@ -172,13 +172,25 @@ public class Tyrads {
             switch launchMode {
             case 1, 2:
                 DispatchQueue.main.async {
-                    let webView = WKWebView(frame: UIScreen.main.bounds)
-                    webView.load(URLRequest(url: url))
-
+                    let config = WKWebViewConfiguration()
+                    let userContentController = WKUserContentController()
+                    
+                    userContentController.add(self, name: "clickHandler")
+                    config.userContentController = userContentController
+                    
+                    let webView = WKWebView(frame: UIScreen.main.bounds, configuration: config)
+                    webView.navigationDelegate = self
+                    
+                    if #available(iOS 16.4, *) {
+                        webView.isInspectable = true
+                    }
+                    
                     let viewController = UIViewController()
                     viewController.view = webView
-                    viewController.modalPresentationStyle = .fullScreen // Add this line to set the presentation style
-
+                    viewController.modalPresentationStyle = .fullScreen
+                    
+                    webView.load(URLRequest(url: url))
+                    
                     if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
                         rootViewController.present(viewController, animated: true, completion: nil)
                     }
@@ -194,6 +206,65 @@ public class Tyrads {
             }
         } catch {
             print("An error occurred: \(error)")
+        }
+    }
+}
+
+
+extension Tyrads: WKScriptMessageHandler {
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "clickHandler",
+              let messageDict = message.body as? [String: Any] else {
+            return
+        }
+        print("Message data: \(messageDict)")
+        
+        if let action = messageDict["action"] as? String {
+            switch action {
+            case "closeWebview":
+                DispatchQueue.main.async {
+                    UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true)
+                }
+                
+            case "changeLanguage":
+                if let langCode = messageDict["languageCode"] as? String {
+                    // Handle language change
+                    self.currentLanguage = langCode
+                    // Notify any observers if needed
+                }
+                
+            default:
+                print("Unknown command: \(action)")
+            }
+        }
+    }
+}
+
+extension Tyrads: WKNavigationDelegate {
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        let js = """
+        window.addEventListener('message', (event) => {
+            try {
+                const message = typeof event.data === 'string' 
+                                ? JSON.parse(event.data) 
+                                : event.data;
+                if (message && message.command === 'webview_command') {
+                    window.webkit.messageHandlers.clickHandler.postMessage({
+                        command: message.command,
+                        action: message.action,
+                        languageCode: message.languageCode
+                    });
+                }
+            } catch (error) {
+                console.log('Message handling error:', error);
+            }
+        });
+        """
+        
+        webView.evaluateJavaScript(js) { _, error in
+            if let error = error {
+                print("JavaScript injection failed: \(error)")
+            }
         }
     }
 }
