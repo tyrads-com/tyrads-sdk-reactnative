@@ -17,7 +17,9 @@ export default function App() {
   }, []);
 
   const initialization = async () => {
-    Tyrads.init(apiKey, apiSecret);
+    setTimeout(async () => {
+      await Tyrads.init(apiKey, apiSecret);
+    }, 1000);
     try{
       await Tyrads.loginUser(userId);
     }catch (err){
@@ -58,7 +60,7 @@ export default function App() {
       <ScrollView style = {{marginTop : 40}}>
           <View style={styles.container}>
           {!isLoading && <Tyrads.topPremiumOffers
-          viewStyle = {1}
+          viewStyle = {2}
           />}
           <View style = {{height : 20}}></View>
           <TextInput
