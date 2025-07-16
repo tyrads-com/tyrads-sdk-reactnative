@@ -19,13 +19,15 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   }
 
     @ReactMethod
-    fun init(apiKey: String, apiSecret: String, promise: Promise) {
+    fun init(apiKey: String, apiSecret: String, encKey: String? = null, promise: Promise) {
+      Tyrads.getInstance().tyradScope.launch {
         try {
-            Tyrads.getInstance().init(this.reactApplicationContext, apiKey, apiSecret)
-            promise.resolve(null)
+          Tyrads.getInstance().init(this.reactApplicationContext, apiKey, apiSecret)
+          promise.resolve(null)
         } catch (e: Exception) {
-            promise.reject("INIT_ERROR", e.message)
+          promise.reject("INIT_ERROR", e.message)
         }
+      }
     }
 
     @ReactMethod
@@ -47,7 +49,9 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
     }
     @ReactMethod
     fun showOffers(route: String? = null, campaignID: Int? = null) {
+      Tyrads.getInstance().tyradScope.launch {
         Tyrads.getInstance().showOffers(route = route, campaignID = campaignID)
+      }
     }
 
   companion object {
