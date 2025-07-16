@@ -22,8 +22,8 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
     fun init(apiKey: String, apiSecret: String, encKey: String? = null, promise: Promise) {
       Tyrads.getInstance().tyradScope.launch {
         try {
-          Tyrads.getInstance().init(this.reactApplicationContext, apiKey, apiSecret)
-          promise.resolve(null)
+          Tyrads.getInstance().init(reactApplicationContext, apiKey, apiSecret, encKey)
+          promise.resolve(true)
         } catch (e: Exception) {
           promise.reject("INIT_ERROR", e.message)
         }
