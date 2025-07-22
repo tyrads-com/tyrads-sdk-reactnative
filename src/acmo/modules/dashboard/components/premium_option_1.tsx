@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import TextTicker from 'react-native-text-ticker';
+// import TextTicker from 'react-native-text-ticker';
 import { useTranslation } from 'react-i18next';
+import MarqueeText from '../../../core/marquee';
 
 interface PremiumOption1Props {
   data: TransformedCampaign[];
@@ -35,7 +36,7 @@ const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, onCampaignPress, 
               <View style={{ width: '100%' }}>
                 {item.title.length > 25 ? (
                   <View style={{ overflow: 'hidden' }}>
-                    <TextTicker
+                    {/* <TextTicker
                       style={styles.titleText}
                       duration={3000}
                       loop
@@ -44,7 +45,13 @@ const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, onCampaignPress, 
                       marqueeDelay={1000}
                     >
                       {item.title}
-                    </TextTicker>
+                    </TextTicker> */}
+                    <MarqueeText
+                      text={item.title}
+                      speed={15}
+                      repeat={100}
+                      style={styles.titleText}
+                    />
                   </View>
                 ) : (
                   <Text numberOfLines={1} style={styles.titleText}>
