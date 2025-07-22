@@ -6,9 +6,9 @@ import UIKit
 class TyradsSdk: NSObject {
 
   @objc
-  func `init`(_ apiKey: String, secretKey: String) {
+  func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil) {
     NSLog("TyradsModule: init called with apiKey: \(apiKey) and secretKey: \(secretKey)")
-    Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey)
+    Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey, encKey: encKey)
   }
 
   @objc

@@ -8,10 +8,10 @@
 import Foundation
 
 struct AcmoInitModel: Codable {
-    let data: Data
+    let data: UserData
 }
 
-struct Data: Codable {
+struct UserData: Codable {
     let newRegisteredUser: Bool
     let user: User
     let publisherApp: PublisherApp

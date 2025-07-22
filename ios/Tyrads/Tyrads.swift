@@ -13,12 +13,20 @@ public class Tyrads : NSObject {
 
     private var apiKey: String = ""
     private var apiSecret: String = ""
+    private var encKey: String?
     private var publisherUserID: String = ""
     private var currentLanguage: String = "en"
     private var newUser: Bool = false
     private var loginData: AcmoInitModel?
     var initializationWait = DispatchSemaphore(value: 0)
     private var debugMode: Bool = false
+  
+    private var _isSecure: Bool = false
+    public var isSecure: Bool {
+        get {
+            return _isSecure
+        }
+    }
 
     private func log(_ message: String) {
         if debugMode {
@@ -31,9 +39,11 @@ public class Tyrads : NSObject {
     /// - Parameters:
     ///   - apiKey: The API key provided by Tyrads.
     ///   - secretKey: The secret key provided by Tyrads.
-    @objc public func configure( apiKey: String, secretKey: String, debugMode: Bool = false) {
+  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, debugMode: Bool = false) {
         self.apiKey = apiKey
         self.apiSecret = secretKey
+        self.encKey = encKey
+        self._isSecure = (encKey != nil)
         self.debugMode = debugMode
         self.currentLanguage = Locale.current.languageCode ?? ""
     }
@@ -70,9 +80,16 @@ public class Tyrads : NSObject {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue(self.apiKey, forHTTPHeaderField: "X-API-Key")
             request.setValue(self.apiSecret, forHTTPHeaderField: "X-API-Secret")
-
-            do {
-                request.httpBody = try JSONSerialization.data(withJSONObject: fd)
+            request.setValue(_isSecure ? "BASIC" : "PLAIN", forHTTPHeaderField: "X-Secure-Mode")
+          
+           do {
+               let requestBody = _isSecure && !(encKey ?? "").isEmpty
+                       ? try AcmoEncrypt(encKey!).encryptDataAESGCM(data: fd)
+                       : fd
+             
+               print("Req Body: \(requestBody)")
+               
+               request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
             } catch {
                 self.log("Failed to serialize request body: \(error)")
                 completion(nil)
@@ -162,7 +179,7 @@ public class Tyrads : NSObject {
             campaignIDString = String(campaignIDValue)
         }
        let urlString =
-       "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)"
+       "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&encKey=\(Tyrads.instance.encKey ?? "")&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&pc=\(Tyrads.instance.loginData?.data.publisherApp.premiumColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)&sdkVersion=\(AcmoConfig.SDK_VERSION)"
 
         do {
             guard let url = URL(string: urlString) else {
@@ -230,7 +247,6 @@ extension Tyrads: WKScriptMessageHandler {
                 if let langCode = messageDict["languageCode"] as? String {
                     // Handle language change
                     self.currentLanguage = langCode
-                    // Notify any observers if needed
                 }
                 
             default:
