@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View, TextInput, SafeAreaView, ScrollView } from 'react-native';
+import { Button, StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert } from 'react-native';
 import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
@@ -7,62 +7,91 @@ import { useState, useEffect } from 'react';
 export default function App() {
   const [apiKey, setApiKey] = useState('YOUR_API_KEY');
   const [apiSecret, setApiSecret] = useState('YOUR_API_SECRET');
+  const [encKey, setEncKey] = useState('YOUR_ENC_KEY');
   const [userId, setUserId] = useState('YOUR_USER_ID');
 
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadStoredCredentials();
-    initialization()
+    const task = InteractionManager.runAfterInteractions(async () => {
+      const creds = await loadStoredCredentials()
+      await initialization(creds);
+    });
+
+    return () => {
+      task.cancel();
+    };
   }, []);
 
-  const initialization = async () => {
-    setTimeout(async () => {
-      await Tyrads.init(apiKey, apiSecret);
-    }, 1000);
-    try{
-      await Tyrads.loginUser(userId);
-    }catch (err){
-      console.log(err);
-    }finally{
+
+  const initialization = async ({
+    storedApiKey,
+    storedApiSecret,
+    storedEncKey,
+    storedUserId,
+  }: {
+    storedApiKey: string,
+    storedApiSecret: string,
+    storedEncKey: string,
+    storedUserId: string
+  }) => {
+    if (!storedApiKey || !storedApiSecret || !storedUserId) {
+      Alert.alert(
+        'Missing Fields',
+        'These fields (API Key, Secret, User ID) are required.'
+      );
+      setLoading(false);
+      return;
+    }
+    try {
+      await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey);
+      await Tyrads.loginUser(storedUserId);
+      console.log('Initialized successfully');
+    } catch (err) {
+      console.log('Initialization error:', err);
+    } finally {
       setLoading(false);
     }
-
-    console.log('initialized');
-  }
+  };
 
   const loadStoredCredentials = async () => {
-    const storedApiKey = await AsyncStorage.getItem('apiKey');
-    const storedApiSecret = await AsyncStorage.getItem('apiSecret');
-    const storedUserId = await AsyncStorage.getItem('userId');
+    const storedApiKey = await AsyncStorage.getItem('apiKey') || '';
+    const storedApiSecret = await AsyncStorage.getItem('apiSecret') || '';
+    const storedEncKey = await AsyncStorage.getItem('encKey') || '';
+    const storedUserId = await AsyncStorage.getItem('userId') || '';
 
-    if (storedApiKey) setApiKey(storedApiKey);
-    if (storedApiSecret) setApiSecret(storedApiSecret);
-    if (storedUserId) setUserId(storedUserId);
+    setApiKey(storedApiKey);
+    setApiSecret(storedApiSecret);
+    setEncKey(storedEncKey);
+    setUserId(storedUserId);
+
+    return { storedApiKey, storedApiSecret, storedEncKey, storedUserId };
   };
+
 
   const saveCredentials = async () => {
     await AsyncStorage.setItem('apiKey', apiKey);
     await AsyncStorage.setItem('apiSecret', apiSecret);
+    await AsyncStorage.setItem('encKey', encKey);
     await AsyncStorage.setItem('userId', userId);
   };
 
   const handleButtonClick = async () => {
     console.log('Button Clicked');
     await saveCredentials();
-    Tyrads.init(apiKey, apiSecret);
+    await Tyrads.init(apiKey, apiSecret, encKey);
     await Tyrads.loginUser(userId);
     Tyrads.showOffers({ launchMode: 2 });
   };
 
   return (
-    <SafeAreaView style = {{flex : 1}}>
-      <ScrollView style = {{marginTop : 40}}>
-          <View style={styles.container}>
-          {!isLoading && <Tyrads.topPremiumOffers
-          viewStyle = {2}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ marginTop: 40 }}>
+        <View style={styles.container}>
+          {isLoading ? <ActivityIndicator size={28} /> : <Tyrads.topPremiumOffers
+            viewStyle={1}
           />}
-          <View style = {{height : 20}}></View>
+          <View style={{ height: 20 }}></View>
           <TextInput
             style={styles.input}
             placeholder="API Key"
@@ -74,6 +103,12 @@ export default function App() {
             placeholder="API Secret"
             value={apiSecret}
             onChangeText={setApiSecret}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Encryption Key (optional)"
+            value={encKey}
+            onChangeText={setEncKey}
           />
           <TextInput
             style={styles.input}
