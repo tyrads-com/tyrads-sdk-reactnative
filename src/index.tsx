@@ -26,13 +26,13 @@ const TyradsSdk = NativeModules.TyradsSdk
     );
 
 const Tyrads = {
-  init: (apiKey: string, apiSecret: string) => {
-    return TyradsSdk.init(apiKey, apiSecret);
+  init: async (apiKey: string, apiSecret: string, encKey?: string) => {
+    const data = await TyradsSdk.init(apiKey, apiSecret, encKey);
+    return data;
   },
   loginUser: async (userId: string) => {
     try {
       const data = await TyradsSdk.loginUser(userId);
-      console.log("data from login: ", data);
   
       if (typeof data === "object") {
         await saveData('apiHeaders', JSON.stringify(data));
@@ -44,20 +44,19 @@ const Tyrads = {
   
       return data;
     } catch (err) {
-      console.log(`error from login: ${err}`);
       return null;
     }
   },
   
-  showOffers: ({
+  showOffers: async ({
     launchMode = 3,
     route,
     campaignID = 0,
   }: { launchMode?: number; route?: string; campaignID?: number } = {}) => {
     if (Platform.OS === 'ios') {
-      return TyradsSdk.showOffers(launchMode, route, campaignID);
+      return await TyradsSdk.showOffers(launchMode, route, campaignID);
     } else {
-      return TyradsSdk.showOffers(route, campaignID);
+      return await TyradsSdk.showOffers(route, campaignID);
     }
   },
   topPremiumOffers: ({
