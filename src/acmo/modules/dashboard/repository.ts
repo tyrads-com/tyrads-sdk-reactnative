@@ -60,7 +60,7 @@ export const fetchCampaignsData = async (
     };
 
     const response: AxiosResponse<{ data: Campaign[] }> = await axios.get(
-      `https://api.tyrads.com/v2.0/campaigns?lang=${parsedHeaderData.languageCode}`,
+      `https://api.tyrads.com/v3.0/campaigns?lang=${parsedHeaderData.languageCode}`,
       {
         headers: headers,
       }
