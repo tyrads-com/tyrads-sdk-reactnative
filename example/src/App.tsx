@@ -10,7 +10,8 @@ export default function App() {
   const [encKey, setEncKey] = useState('YOUR_ENC_KEY');
   const [userId, setUserId] = useState('YOUR_USER_ID');
 
-  const [isLoading, setLoading] = useState(true);
+  const [isPremiumLoading, setPremiumLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(async () => {
@@ -40,7 +41,7 @@ export default function App() {
         'Missing Fields',
         'These fields (API Key, Secret, User ID) are required.'
       );
-      setLoading(false);
+      setPremiumLoading(false);
       return;
     }
     try {
@@ -50,7 +51,7 @@ export default function App() {
     } catch (err) {
       console.log('Initialization error:', err);
     } finally {
-      setLoading(false);
+      setPremiumLoading(false);
     }
   };
 
@@ -78,17 +79,24 @@ export default function App() {
 
   const handleButtonClick = async () => {
     console.log('Button Clicked');
-    await saveCredentials();
-    await Tyrads.init(apiKey, apiSecret, encKey);
-    await Tyrads.loginUser(userId);
-    Tyrads.showOffers({ launchMode: 2 });
+    const task = InteractionManager.runAfterInteractions(async () => {
+      setLoading(true);
+      await saveCredentials();
+      await Tyrads.init(apiKey, apiSecret, encKey);
+      await Tyrads.loginUser(userId);
+      await Tyrads.showOffers({ launchMode: 2 });
+      setLoading(false);
+    });
+    return () => {
+      task.cancel();
+    };
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ marginTop: 40 }}>
         <View style={styles.container}>
-          {isLoading ? <ActivityIndicator size={28} /> : <Tyrads.topPremiumOffers
+          {isPremiumLoading ? <ActivityIndicator size={28} /> : <Tyrads.topPremiumOffers
             viewStyle={1}
           />}
           <View style={{ height: 20 }}></View>
@@ -116,7 +124,10 @@ export default function App() {
             value={userId}
             onChangeText={setUserId}
           />
-          <Button title="Show Offers" onPress={handleButtonClick} />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {isLoading && <ActivityIndicator size={28} style={{ marginLeft: 10 }} />}
+            <Button title="Show Offers" onPress={handleButtonClick} />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
