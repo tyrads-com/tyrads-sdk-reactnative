@@ -7,9 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-// import TextTicker from 'react-native-text-ticker';
 import { useTranslation } from 'react-i18next';
-import MarqueeText from '../../../core/marquee';
 
 interface PremiumOption1Props {
   data: TransformedCampaign[];
@@ -33,31 +31,14 @@ const PremiumOption1: React.FC<PremiumOption1Props> = ({ data, onCampaignPress, 
           <View style={{ flexDirection: 'row', flex: 8, marginRight: 10 }}>
             <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
             <View style={styles.infoContainer}>
-              <View style={{ width: '100%' }}>
-                {item.title.length > 25 ? (
-                  <View style={{ overflow: 'hidden' }}>
-                    {/* <TextTicker
-                      style={styles.titleText}
-                      duration={3000}
-                      loop
-                      bounce
-                      repeatSpacer={50}
-                      marqueeDelay={1000}
-                    >
-                      {item.title}
-                    </TextTicker> */}
-                    <MarqueeText
-                      text={item.title}
-                      speed={15}
-                      repeat={100}
-                      style={styles.titleText}
-                    />
-                  </View>
-                ) : (
-                  <Text numberOfLines={1} style={styles.titleText}>
-                    {item.title}
-                  </Text>
-                )}
+              <View style={{ flex: 1 }}>
+                <Text
+                  numberOfLines={1}
+                  style={styles.titleText}
+                  ellipsizeMode="tail"
+                >
+                  {item.title}
+                </Text>
               </View>
               <View style={styles.infoRow}>
                 <View style={[styles.rankContainer, { backgroundColor: premiumColor || '#1C90DF' }]}>
@@ -103,10 +84,12 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginLeft: 8,
+    flex: 1,
   },
   titleText: {
     fontSize: 14,
     fontWeight: 'bold',
+    overflow: 'hidden'
   },
   infoRow: {
     flexDirection: 'row',

@@ -191,7 +191,6 @@
     "axios": "^1.8.1",
     "i18next": "^24.2.2",
     "numeral": "^2.0.6",
-    "react-i18next": "^15.4.1",
-    "react-native-text-ticker": "^1.14.0"
+    "react-i18next": "^15.4.1"
   }
 }
