@@ -1,7 +1,8 @@
-import { Button, StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text } from 'react-native';
 import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
+import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
 
 
 export default function App() {
@@ -96,9 +97,9 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ marginTop: 40 }}>
         <View style={styles.container}>
-          {isPremiumLoading ? <ActivityIndicator size={28} /> : <Tyrads.topPremiumOffers
-            viewStyle={1}
-          />}
+          <Tyrads.topPremiumOffers
+            viewStyle={PremiumWidgetStyles.list}
+          />
           <View style={{ height: 20 }}></View>
           <TextInput
             style={styles.input}
@@ -124,9 +125,20 @@ export default function App() {
             value={userId}
             onChangeText={setUserId}
           />
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {isLoading && <ActivityIndicator size={28} style={{ marginLeft: 10 }} />}
-            <Button title="Show Offers" onPress={handleButtonClick} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12,}}>
+            <TouchableOpacity
+              style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+              onPress={handleButtonClick}
+              disabled={isLoading}
+            >
+              {isLoading ?
+                <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'}/> :
+                null}
+              <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
+                Show Offers
+              </Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </ScrollView>
