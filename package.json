@@ -71,6 +71,7 @@
     "@types/jest": "^29.5.5",
     "@types/numeral": "^2.0.5",
     "@types/react": "^18.2.44",
+    "@types/react-native-snap-carousel": "^3.8.11",
     "commitlint": "^17.0.2",
     "del-cli": "^5.1.0",
     "eslint": "^8.51.0",
@@ -191,6 +192,7 @@
     "axios": "^1.8.1",
     "i18next": "^24.2.2",
     "numeral": "^2.0.6",
-    "react-i18next": "^15.4.1"
+    "react-i18next": "^15.4.1",
+    "react-native-snap-carousel": "^3.9.1"
   }
 }

@@ -13,13 +13,13 @@ const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = 
   return (
     <View style={styles.headerContainer}>
       <View style={styles.leftContainer}>
-        <View style={[styles.starContainer, { backgroundColor: premiumColor || '#1C90DF' }]}>
+        <View style={styles.starContainer}>
           <Image
-            source={require('../../../../assets/images/star_pointed.png')}
-            style={[styles.starIcon, { tintColor: 'white' }]}
+            source={require('../../../../assets/images/diamond.png')}
+            style={[styles.starIcon, { tintColor: premiumColor }]}
           />
         </View>
-        <Text style={styles.headerText} numberOfLines={1} adjustsFontSizeToFit ellipsizeMode="tail">
+        <Text style={[styles.headerText, { color: premiumColor }]} numberOfLines={1} ellipsizeMode="tail">
           {t('dashboard.suggested_offers')}
         </Text>
       </View>
@@ -29,8 +29,8 @@ const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = 
             {t('dashboard.more_offers')}
           </Text>
           <Image
-            source={require('../../../../assets/images/right_arrow.png')}
-            style={{ width: 11, height: 11, objectFit: 'contain', marginLeft: 5, tintColor: premiumColor || "#1C90DF" }}
+            source={require('../../../../assets/images/angle_up.png')}
+            style={{ transform: [{ rotate: '90deg' }], width: 11, height: 11, objectFit: 'contain', marginLeft: 5, tintColor: premiumColor || "#1C90DF" }}
           />
         </TouchableOpacity>
       )}
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingTop: 10,
   },
   leftContainer: {
     flexDirection: 'row',
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     flex: 1,
   },

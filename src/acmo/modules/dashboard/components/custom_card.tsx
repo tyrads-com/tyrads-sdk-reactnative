@@ -13,17 +13,13 @@ const CustomCard: React.FC<CustomCardProps> = ({ children, style }) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
+    borderRadius: 16,
     paddingTop: 6,
     paddingBottom: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
     alignSelf: 'center',
   },
 });

@@ -1,8 +1,9 @@
 import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text } from 'react-native';
-import Tyrads from '@tyrads.com/tyrads-sdk';
+// import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
+import Tyrads from '../../src/index';
 
 
 export default function App() {
@@ -97,9 +98,7 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ marginTop: 40 }}>
         <View style={styles.container}>
-          <Tyrads.topPremiumOffers
-            viewStyle={PremiumWidgetStyles.list}
-          />
+          {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.sliderCards} />}
           <View style={{ height: 20 }}></View>
           <TextInput
             style={styles.input}

@@ -2,44 +2,47 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import { fetchCampaignsData } from './repository';
+import { fetchPremiumOfferDetails, openOffer } from './repository';
 import PremiumHeaderSection from './components/premium_header';
 import CustomCard from './components/custom_card';
-import MyGamesButton from './components/my_games_button';
-import PremiumOption1 from './components/premium_option_1';
-import PremiumOption2 from './components/premium_option_2';
-import PremiumOption3 from './components/premium_option_3';
-import PremiumOption4 from './components/premium_option_4';
+import ActiveOffersButton from './components/active_offers_button';
+import { AcmoOfferListItem } from './components/offer_list_item';
+import AcmoOfferCard from './components/offer_card';
+import AcmoScrollPager from './components/custom_scroller';
+import PremiumEmptyView from './components/premium_empty_widget';
+import PremiumWidgetsLoading from './components/premium_loading';
 
-interface TopOffersProps {
-  showMore?: boolean;
-  showMyOffers?: boolean;
-  showMyOffersEmptyView?: boolean;
-  style?: number;
+export const enum PremiumWidgetStyles {
+  list,
+  sliderCards,
+}
+
+interface PremiumWidgetProps {
+  widgetStyle?: PremiumWidgetStyles;
   onNavigate: (route?: string, campaignID?: number) => void;
 }
 
-const TopOffers: React.FC<TopOffersProps> = ({
-  showMore,
-  showMyOffers = false,
-  showMyOffersEmptyView = false,
-  style = 1,
+const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
+  widgetStyle = PremiumWidgetStyles.list,
   onNavigate
 }) => {
-  const [campaigns, setCampaigns] = useState<TransformedCampaign[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [premiumColor, setPremiumColor] = useState<string>('#1C90DF');
-  // const [language, setLanguage] = useState<string>('en');
+  const [currencySale, setCurrencySale] = useState<CurrencySales>();
+  const [activeCount, setActiveCount] = useState<number>(0);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+
 
   useEffect(() => {
-    fetchCampaignsData(
-      // setLanguage,
+    fetchPremiumOfferDetails(
       setPremiumColor,
       setCampaigns,
+      setCurrencySale,
+      setActiveCount,
       setError,
       setIsLoading
     );
@@ -49,18 +52,30 @@ const TopOffers: React.FC<TopOffersProps> = ({
     onNavigate();
   };
   const handleCampaignPress = (campaignId: number) => {
-    onNavigate('campaign-details',campaignId );
+    onNavigate(`offers/${campaignId}`);
   };
 
   const handleMoreOffersPress = (route: string) => {
     onNavigate(route);
   };
 
+  const handleButtonPress = async (campaign: Campaign) => {
+    await openOffer(campaign);
+    await fetchPremiumOfferDetails(
+      setPremiumColor,
+      setCampaigns,
+      setCurrencySale,
+      setActiveCount,
+      setError,
+      setIsLoading
+    );
+  }
+
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
+      <PremiumWidgetsLoading
+        widgetStyle={widgetStyle}
+      />
     );
   }
 
@@ -72,53 +87,75 @@ const TopOffers: React.FC<TopOffersProps> = ({
     );
   }
 
+
   if (campaigns.length === 0) {
-    if (showMyOffersEmptyView) {
-      return (
-        <View style={styles.noCampaignContainer}>
-          <Text>No campaigns available</Text>
-        </View>
-      );
-    } else {
-      return <View />;
-    }
+    return <PremiumEmptyView
+      colorPremium={premiumColor}
+      onContinue={handleShowOffers}
+    />
   }
 
   return (
-    <CustomCard style={{}}>
+    <CustomCard style={{ flexDirection: 'row' }}>
       <View style={{ flex: 1 }}>
-        <PremiumHeaderSection showMore={showMore} premiumColor={premiumColor} onShowOffers={handleShowOffers} />
+        <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
         {(() => {
-          switch (style) {
-            case 1:
+          switch (widgetStyle) {
+            case PremiumWidgetStyles.list:
               return (
-                <PremiumOption1 data={campaigns} premiumColor={premiumColor} onCampaignPress={handleCampaignPress} />
+                campaigns.map((item, index) => (
+                  <AcmoOfferListItem
+                    key={index}
+                    onPress={async () => handleCampaignPress && handleCampaignPress(item.campaignId)}
+                    offer={item}
+                    currencySales={currencySale}
+                    index={index}
+                    loadingIndex={loadingIndex}
+                    setLoadingIndex={setLoadingIndex}
+                    colorPremium={premiumColor}
+                    onButtonTap={async () => handleButtonPress(item)}
+                  />
+                ))
               );
-            case 2:
+            case PremiumWidgetStyles.sliderCards:
               return (
-                <PremiumOption2 data={campaigns} premiumColor={premiumColor}  onCampaignPress={handleCampaignPress} />
-              );
-            case 3:
-              return (
-                <PremiumOption3 data={campaigns} premiumColor={premiumColor}  onCampaignPress={handleCampaignPress} />
-              );
-            case 4:
-              return (
-                <PremiumOption4 data={campaigns} premiumColor={premiumColor} onCampaignPress={handleCampaignPress} />
+                <AcmoScrollPager
+                  totalPages={campaigns.length}
+                  activeIndicatorColor={premiumColor}
+                  content={(index) => (
+                    <AcmoOfferCard
+                      item={campaigns[index]!}
+                      onButtonClick={async () => handleButtonPress(campaigns[index]!)}
+                      currencySaleModel={currencySale}
+                      premiumColor={premiumColor}
+                      isLoading={false}
+                      onTap={async () => handleCampaignPress && handleCampaignPress(campaigns[index]!.campaignId)}
+                    />
+                  )}
+                />
               );
             default:
               return <Text>Please specify a correct style</Text>;
           }
         })()}
         <View style={styles.gameListSpacer} />
-        {showMyOffers && <MyGamesButton premiumColor={premiumColor} onPress={handleMoreOffersPress}/>}
+        <ActiveOffersButton activeCount={activeCount} premiumColor={premiumColor} onPress={handleMoreOffersPress} />
       </View>
     </CustomCard>
   );
 };
 
 const styles = StyleSheet.create({
+  itemContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -141,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TopOffers;
+export default PremiumWidgets;

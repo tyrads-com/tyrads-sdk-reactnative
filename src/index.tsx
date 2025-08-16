@@ -1,6 +1,6 @@
 import { NativeModules, Platform, View,} from 'react-native';
 
-import TopOffers from './acmo/modules/dashboard/top_offers';
+import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
 import { saveData } from './acmo/core/storage/storage';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
@@ -60,16 +60,10 @@ const Tyrads = {
     }
   },
   topPremiumOffers: ({
-    showMore = true,
-    showMyOffers = true,
-    showMyOffersEmptyView = false,
-    viewStyle = 1,
+    widgetStyle,
     launchMode = 2,
   }: {
-    showMore?: boolean;
-    showMyOffers?: boolean;
-    showMyOffersEmptyView?: boolean;
-    viewStyle?: number;
+    widgetStyle?: PremiumWidgetStyles;
     launchMode?: number;
   } = {}) => {
     const handleNavigation = (route?: string, campaignID?: number) => {
@@ -79,10 +73,7 @@ const Tyrads = {
       <I18nextProvider i18n={i18n}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <TopOffers
-            showMore={showMore}
-            showMyOffers={showMyOffers}
-            showMyOffersEmptyView={showMyOffersEmptyView}
-            style={viewStyle}
+            widgetStyle={widgetStyle}
             onNavigate={handleNavigation}
           />
         </View>
