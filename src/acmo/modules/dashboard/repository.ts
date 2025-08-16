@@ -1,5 +1,6 @@
-import axios, { type AxiosResponse } from 'axios';
+import axios from 'axios';
 import { getData } from '../../core/storage/storage';
+import { acmoLaunchURLForce } from '../../core/helpers/launcher';
 
 interface ApiHeaders {
   languageCode: string;
@@ -12,28 +13,11 @@ interface ApiHeaders {
   userAgent: string;
 }
 
-const transformCampaigns = (campaigns: Campaign[]): TransformedCampaign[] => {
-  return campaigns.map((campaign) => ({
-    campaignId: campaign.campaignId || 0,
-    appId: campaign.app?.id || 0,
-    title: campaign.app?.title || 'Unknown Title',
-    creativePackName:
-      campaign.creative?.creativePacks?.[0]?.creativePackName || '',
-    fileUrl:
-      campaign.creative?.creativePacks?.[0]?.creatives?.[0]?.fileUrl || '',
-    points: campaign.campaignPayout?.totalPayoutConverted || 0,
-    rewards: campaign.campaignPayout?.totalEvents || 0,
-    currency: campaign.currency || {},
-    thumbnail: campaign.app?.thumbnail || '',
-    premium: campaign.premium || false,
-    sortingScore: campaign.sortingScore || 0,
-  }));
-};
-
-export const fetchCampaignsData = async (
-  // setLanguage: (language: string) => void,
+export const fetchPremiumOfferDetails = async (
   setPremiumColor: (color: string) => void,
-  setCampaigns: (campaigns: TransformedCampaign[]) => void,
+  setCampaigns: (campaigns: Campaign[]) => void,
+  setCurrencySale: (currencySale: CurrencySales) => void,
+  setActiveCount: (activeCount: number) => void,
   setError: (error: string) => void,
   setIsLoading: (loading: boolean) => void
 ): Promise<void> => {
@@ -41,11 +25,9 @@ export const fetchCampaignsData = async (
 
   try {
     const data: any = await getData('apiHeaders');
-    if (!data) {
-      throw new Error('apiHeaders data not found.');
-    }
+    if (!data) throw new Error('apiHeaders data not found.');
+
     const parsedHeaderData: ApiHeaders = JSON.parse(data);
-    // setLanguage(parsedHeaderData.languageCode);
     setPremiumColor(parsedHeaderData.premiumColor);
 
     const headers = {
@@ -59,37 +41,130 @@ export const fetchCampaignsData = async (
       'User-Agent': parsedHeaderData.userAgent,
     };
 
-    const response: AxiosResponse<{ data: Campaign[] }> = await axios.get(
-      `https://api.tyrads.com/v3.0/campaigns?lang=${parsedHeaderData.languageCode}`,
-      {
-        headers: headers,
-      }
-    );
+    const langParam = `?lang=${parsedHeaderData.languageCode}`;
 
-    const transformedCampaigns = transformCampaigns(response.data.data);
+    const [campaignsRes, currencyRes, summaryRes] = await Promise.all([
+      axios.get<{ data: Campaign[] }>(`https://api.tyrads.com/v3.0/campaigns${langParam}`, { headers }),
+      axios.get<{ data: { CurrencySales: CurrencySales } }>(`https://api.tyrads.com/v3.0/engagement${langParam}`, { headers }),
+      axios.get<{ data: { activeCampaignCount: number } }>(`https://api.tyrads.com/v3.0/activated-campaigns/summary${langParam}`, { headers })
+    ]);
 
-    const hotOffers = transformedCampaigns
-    .sort((a, b) => {
-      if (a.premium && !b.premium) return -1;
-      if (!a.premium && b.premium) return 1;
-      return b.sortingScore - a.sortingScore;
-    })
-    .filter((item) => item.points > 0)
-    .slice(0, 5);
+    const hotOffers = campaignsRes.data.data
+      .sort((a, b) => {
+        if (a.premium && !b.premium) return -1;
+        if (!a.premium && b.premium) return 1;
+        return b.sortingScore - a.sortingScore;
+      })
+      .filter(item => item.campaignPayout.totalPlayablePayoutConverted > 0)
+      .slice(0, 5);
+    // const currency: CurrencySales = {
+    //   "name": "Ramadhan Karem",
+    //   "multiplier": 1.5,
+    //   "bannerUrl": "",
+    //   "dateStart": "2025-03-10T00:00:00.000Z",
+    //   "dateEnd": "2025-03-10T23:59:59.000Z",
+    //   remainingTimeSeconds: undefined
+    // };
 
     setCampaigns(hotOffers);
+
+    setCurrencySale(currencyRes.data.data.CurrencySales);
+
+    setActiveCount(summaryRes.data.data.activeCampaignCount);
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
       console.log('Response Error:', error.response.data);
-      console.log('Status Code:', error.response.status);
-      console.log('Response Headers:', error.response.headers);
     } else if (axios.isAxiosError(error) && error.request) {
       console.log('No Response from API:', error.request);
     } else {
-      console.log('Error setting up request:', error.message);
+      console.log('Request Setup Error:', error.message);
     }
-    setError('Something went wrong, please try again');
+    setError('Something went wrong, please try again.');
   } finally {
     setIsLoading(false);
   }
 };
+
+const track = async (activity: string) => {
+  const data: any = await getData('apiHeaders');
+  if (!data) throw new Error('apiHeaders data not found.');
+
+  const parsedHeaderData: ApiHeaders = JSON.parse(data);
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    'X-User-ID': parsedHeaderData.xUserId,
+    'X-API-Key': parsedHeaderData.xApiKey,
+    'X-API-Secret': parsedHeaderData.xApiSecret,
+    'X-SDK-Platform': parsedHeaderData.xSdkPlatform,
+    'X-SDK-Version': parsedHeaderData.xSdkVersion,
+    'User-Agent': parsedHeaderData.userAgent,
+  };
+  try {
+    const fd = {
+      "activity": activity
+    };
+    await axios.post('https://api.tyrads.com/v3.0/user-activities', fd, { headers });
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.log('Response Error:', error.response.data);
+    } else if (axios.isAxiosError(error) && error.request) {
+      console.log('No Response from API:', error.request);
+    } else {
+      console.log('Request Setup Error:', error);
+    }
+  }
+}
+
+export const openOffer = async (campaign: Campaign) => {
+  const campaignId = campaign.campaignId;
+  const clickUrl = campaign.tracking.clickUrl;
+  const isRetryDownload = campaign.isRetryDownload;
+  const isInstalled = campaign.isInstalled;
+  const previewUrl = campaign.app.previewUrl;
+  const s2sClickUrl = campaign.tracking.s2sClickUrl;
+
+  const data: any = await getData('apiHeaders');
+  if (!data) throw new Error('apiHeaders data not found.');
+
+  const parsedHeaderData: ApiHeaders = JSON.parse(data);
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    'X-User-ID': parsedHeaderData.xUserId,
+    'X-API-Key': parsedHeaderData.xApiKey,
+    'X-API-Secret': parsedHeaderData.xApiSecret,
+    'X-SDK-Platform': parsedHeaderData.xSdkPlatform,
+    'X-SDK-Version': parsedHeaderData.xSdkVersion,
+    'User-Agent': parsedHeaderData.userAgent,
+  };
+
+  try {
+    var url = clickUrl;
+    if (isInstalled) {
+      url = previewUrl;
+    } else {
+      if (isRetryDownload) {
+        await track("CampaignActivatedRetry");
+      } else {
+        await track("CampaignActivated");
+      }
+      await axios.post(`https://api.tyrads.com/v3.0/campaigns/active/${campaignId}`, {}, { headers });
+    }
+    if (s2sClickUrl != null) {
+      const res = await axios.get(s2sClickUrl);
+      if (res.status == 200) {
+        // url = res.data.url;
+        return;
+      }
+    }
+    await acmoLaunchURLForce(url);
+  } catch (error) {
+    console.log('=============Error=============');
+    console.log(error);
+    console.log('====================================');
+  }
+}
+
