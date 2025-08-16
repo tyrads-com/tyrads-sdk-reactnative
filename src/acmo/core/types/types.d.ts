@@ -1,16 +1,3 @@
-interface TransformedCampaign {
-  campaignId: number;
-  appId: number;
-  title: string;
-  creativePackName: string;
-  fileUrl: string;
-  points: number;
-  rewards: number;
-  currency: any;
-  thumbnail: string;
-  premium: boolean;
-  sortingScore: number;
-}
 
 interface Campaign {
   campaignId: number;
@@ -54,6 +41,7 @@ interface Campaign {
   tracking: {
     impressionUrl: string;
     clickUrl: string;
+    s2sClickUrl: string;
   };
   targeting: {
     os: string;
@@ -88,7 +76,17 @@ interface Campaign {
       }[];
     }[];
   };
+  isInstalled: boolean;
   isRetryDownload: boolean;
   capReached: boolean;
   premium: boolean;
+}
+
+interface CurrencySales {
+  name: null | string,
+  multiplier: null | number,
+  bannerUrl: null | string,
+  dateStart: String?= null,
+  dateEnd: String?= null,
+  remainingTimeSeconds: Int?= null
 }
