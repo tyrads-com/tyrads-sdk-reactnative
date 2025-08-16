@@ -15,11 +15,13 @@ struct UserData: Codable {
     let newRegisteredUser: Bool
     let user: User
     let publisherApp: PublisherApp
+    let token: String
     
     enum CodingKeys: String, CodingKey {
         case newRegisteredUser = "newRegisteredUser"
         case user
         case publisherApp
+      case token
     }
     
     init(from decoder: Decoder) throws {
@@ -27,6 +29,7 @@ struct UserData: Codable {
         newRegisteredUser = try container.decodeIfPresent(Bool.self, forKey: .newRegisteredUser) ?? false
         user = try container.decode(User.self, forKey: .user)
         publisherApp = try container.decode(PublisherApp.self, forKey: .publisherApp)
+      token = try container.decode(String.self, forKey: .token)
     }
 }
 
