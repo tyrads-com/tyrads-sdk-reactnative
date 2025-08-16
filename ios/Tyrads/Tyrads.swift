@@ -15,6 +15,7 @@ public class Tyrads : NSObject {
     private var apiSecret: String = ""
     private var encKey: String?
     private var publisherUserID: String = ""
+    private var token: String = ""
     private var currentLanguage: String = "en"
     private var newUser: Bool = false
     private var loginData: AcmoInitModel?
@@ -58,11 +59,13 @@ public class Tyrads : NSObject {
         var advertisingId = ""
 
         func finalizeLogin() {
+            let deviceDetails = getDeviceDetails()
             let fd: [String: Any] = [
                 "publisherUserId": userId,
                 "platform": "iOS",
                 "identifierType": identifierType,
-                "identifier": advertisingId
+                "identifier": advertisingId,
+                "deviceData": deviceDetails
             ]
 
             self.log("Initializing with data: \(fd)")
@@ -110,7 +113,7 @@ public class Tyrads : NSObject {
                 }
 
                 if let responseString = String(data: data, encoding: .utf8) {
-                    self.log("Received response: \(responseString)")
+                    NSLog("Received response: \(responseString)")
 
                     guard let jsonData = responseString.data(using: .utf8),
                           let acmoInitModel = try? JSONDecoder().decode(AcmoInitModel.self, from: jsonData) else {
@@ -122,6 +125,7 @@ public class Tyrads : NSObject {
                     self.loginData = acmoInitModel
                     self.publisherUserID = acmoInitModel.data.user.publisherUserId
                     self.newUser = acmoInitModel.data.newRegisteredUser
+                    self.token = acmoInitModel.data.token
                     self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
                     self.initializationWait.signal()
 
@@ -178,9 +182,21 @@ public class Tyrads : NSObject {
         if let campaignIDValue = campaignID {
             campaignIDString = String(campaignIDValue)
         }
-       let urlString =
-       "https://websdk.tyrads.com/?apiKey=\(Tyrads.instance.apiKey)&apiSecret=\(Tyrads.instance.apiSecret)&encKey=\(Tyrads.instance.encKey ?? "")&userID=\(Tyrads.instance.publisherUserID)&newUser=\(Tyrads.instance.newUser)&platform=\(AcmoConfig.SDK_PLATFORM)&hc=\(Tyrads.instance.loginData?.data.publisherApp.headerColor ?? "")&mc=\(Tyrads.instance.loginData?.data.publisherApp.mainColor ?? "")&pc=\(Tyrads.instance.loginData?.data.publisherApp.premiumColor ?? "")&launchMode=\(launchMode)&route=\(route ?? "")&campaignID=\(campaignIDString)&lang=\(Tyrads.instance.currentLanguage)&av=\(AcmoConfig.ACMO_VERSION)&sdkVersion=\(AcmoConfig.SDK_VERSION)"
-
+       var components = URLComponents()
+       components.scheme = "https"
+       components.host = "sdk.tyrads.com"
+       components.path = "/\(route ?? "")"
+       components.queryItems = [
+          URLQueryItem(name: "token", value: self.token)
+       ]
+       var urlString: String = ""
+       if let url = components.url {
+          urlString = url.absoluteString
+          print(urlString)
+       } else {
+          print("Failed to create URL with components: \(components)")
+       }
+       
         do {
             guard let url = URL(string: urlString) else {
                 throw NSError(domain: "TyradsSdk", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -238,8 +254,8 @@ extension Tyrads: WKScriptMessageHandler {
         
         if let action = messageDict["action"] as? String {
             switch action {
-            case "closeWebview":
-                DispatchQueue.main.async {
+            case "closeWebView":
+              DispatchQueue.main.async {
                     UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true)
                 }
                 
@@ -258,24 +274,38 @@ extension Tyrads: WKScriptMessageHandler {
 
 extension Tyrads: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        let js = """
-        window.addEventListener('message', (event) => {
-            try {
-                const message = typeof event.data === 'string' 
-                                ? JSON.parse(event.data) 
-                                : event.data;
-                if (message && message.command === 'webview_command') {
-                    window.webkit.messageHandlers.clickHandler.postMessage({
-                        command: message.command,
-                        action: message.action,
-                        languageCode: message.languageCode
-                    });
-                }
-            } catch (error) {
-                console.log('Message handling error:', error);
-            }
-        });
-        """
+//        let js = """
+//        window.addEventListener('message', (event) => {
+//            try {
+//                const message = typeof event.data === 'string' 
+//                                ? JSON.parse(event.data) 
+//                                : event.data;
+//                if (message && message.command === 'webview_command') {
+//                    window.webkit.messageHandlers.clickHandler.postMessage({
+//                        command: message.command,
+//                        action: message.action,
+//                        languageCode: message.languageCode
+//                    });
+//                }
+//            } catch (error) {
+//                console.log('Message handling error:', error);
+//            }
+//        });
+//        """
+      let js = """
+      window.addEventListener('message', (event) => {
+          try {
+              const message = typeof event.data === 'string' 
+                              ? JSON.parse(event.data) 
+                              : event.data;
+              if (message) {
+                  window.webkit.messageHandlers.clickHandler.postMessage(message);
+              }
+          } catch (error) {
+              console.log('Message handling error:', error);
+          }
+      });
+      """
         
         webView.evaluateJavaScript(js) { _, error in
             if let error = error {
