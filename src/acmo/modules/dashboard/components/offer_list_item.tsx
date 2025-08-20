@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 4,
+    color: '#323434',
   },
   payoutRow: {
     flexDirection: 'row',
@@ -204,6 +205,7 @@ const styles = StyleSheet.create({
   payoutText: {
     fontSize: 12,
     fontWeight: '700',
+    color: '#323434',
   },
   button: {
     marginLeft: 4,
