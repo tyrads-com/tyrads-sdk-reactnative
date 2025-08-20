@@ -52,10 +52,10 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
     onNavigate();
   };
   const handleCampaignPress = (campaignId: number) => {
-    onNavigate(`offers/${campaignId}`);
+    onNavigate("offers", campaignId);
   };
 
-  const handleMoreOffersPress = (route: string) => {
+  const handleActiveOffersPress = (route: string) => {
     onNavigate(route);
   };
 
@@ -140,7 +140,7 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
           }
         })()}
         <View style={styles.gameListSpacer} />
-        <ActiveOffersButton activeCount={activeCount} premiumColor={premiumColor} onPress={handleMoreOffersPress} />
+        <ActiveOffersButton activeCount={activeCount} premiumColor={premiumColor} onPress={handleActiveOffersPress} />
       </View>
     </CustomCard>
   );

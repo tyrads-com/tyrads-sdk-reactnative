@@ -48,10 +48,27 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
         }
     }
     @ReactMethod
-    fun showOffers(route: String? = null, campaignID: Int? = null) {
-      Tyrads.getInstance().tyradScope.launch {
-        Tyrads.getInstance().showOffers(route = route, campaignID = campaignID)
-      }
+    fun showOffers(route: String? = null, promise: Promise) {
+        Tyrads.getInstance().tyradScope.launch {
+            try {
+                Tyrads.getInstance().showOffers(route = route, campaignID = null)
+                promise.resolve(true)
+            } catch (e: Exception) {
+                promise.reject("SHOW_OFFERS_ERROR", e.message)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun showOfferDetails(route: String? = null, campaignID: Int? = null, promise: Promise) {
+        Tyrads.getInstance().tyradScope.launch {
+            try {
+                Tyrads.getInstance().showOffers(route = route, campaignID = campaignID)
+                promise.resolve(true)
+            } catch (e: Exception) {
+                promise.reject("SHOW_OFFERS_ERROR", e.message)
+            }
+        }
     }
 
   companion object {
