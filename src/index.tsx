@@ -51,12 +51,15 @@ const Tyrads = {
   showOffers: async ({
     launchMode = 3,
     route,
-    campaignID = 0,
-  }: { launchMode?: number; route?: string; campaignID?: number } = {}) => {
+    campaignID,
+  }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
     if (Platform.OS === 'ios') {
       return await TyradsSdk.showOffers(launchMode, route, campaignID);
     } else {
-      return await TyradsSdk.showOffers(route, campaignID);
+      if(campaignID == null) {
+        return await TyradsSdk.showOffers(route);
+      }
+      return await TyradsSdk.showOfferDetails(route, campaignID);
     }
   },
   topPremiumOffers: ({
@@ -66,7 +69,7 @@ const Tyrads = {
     widgetStyle?: PremiumWidgetStyles;
     launchMode?: number;
   } = {}) => {
-    const handleNavigation = (route?: string, campaignID?: number) => {
+    const handleNavigation = (route?: string, campaignID?: number | null) => {
       Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode});
     };
     return (

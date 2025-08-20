@@ -4,13 +4,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
 import Tyrads from '../../src/index';
+// import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET, TYRADS_SDK_ENC_KEY } from '@env';
 
 
 export default function App() {
-  const [apiKey, setApiKey] = useState('YOUR_API_KEY');
-  const [apiSecret, setApiSecret] = useState('YOUR_API_SECRET');
-  const [encKey, setEncKey] = useState('YOUR_ENC_KEY');
-  const [userId, setUserId] = useState('YOUR_USER_ID');
+  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
+  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
+  const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
+  const [userId, setUserId] = useState('user9780');
 
   const [isPremiumLoading, setPremiumLoading] = useState(true);
   const [isLoading, setLoading] = useState(false);
@@ -43,7 +44,6 @@ export default function App() {
         'Missing Fields',
         'These fields (API Key, Secret, User ID) are required.'
       );
-      setPremiumLoading(false);
       return;
     }
     try {
@@ -52,16 +52,14 @@ export default function App() {
       console.log('Initialized successfully');
     } catch (err) {
       console.log('Initialization error:', err);
-    } finally {
-      setPremiumLoading(false);
-    }
+    } 
   };
 
   const loadStoredCredentials = async () => {
-    const storedApiKey = await AsyncStorage.getItem('apiKey') || '';
-    const storedApiSecret = await AsyncStorage.getItem('apiSecret') || '';
-    const storedEncKey = await AsyncStorage.getItem('encKey') || '';
-    const storedUserId = await AsyncStorage.getItem('userId') || '';
+    const storedApiKey = await AsyncStorage.getItem('apiKey') || apiKey;
+    const storedApiSecret = await AsyncStorage.getItem('apiSecret') || apiSecret;
+    const storedEncKey = await AsyncStorage.getItem('encKey') || encKey;
+    const storedUserId = await AsyncStorage.getItem('userId') || userId;
 
     setApiKey(storedApiKey);
     setApiSecret(storedApiSecret);
@@ -98,7 +96,7 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ marginTop: 40 }}>
         <View style={styles.container}>
-          {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.sliderCards} />}
+          {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />}
           <View style={{ height: 20 }}></View>
           <TextInput
             style={styles.input}
