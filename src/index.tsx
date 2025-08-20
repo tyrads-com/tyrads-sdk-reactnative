@@ -54,7 +54,10 @@ const Tyrads = {
     campaignID,
   }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
     if (Platform.OS === 'ios') {
-      return await TyradsSdk.showOffers(launchMode, route, campaignID);
+      if(campaignID == null) {
+        return await TyradsSdk.showOffers(launchMode, route);
+      }
+      return await TyradsSdk.showOfferDetails(launchMode, route, campaignID);
     } else {
       if(campaignID == null) {
         return await TyradsSdk.showOffers(route);
