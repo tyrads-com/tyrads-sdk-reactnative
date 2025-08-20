@@ -18,9 +18,9 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     shadowColor: '#000',
     alignSelf: 'center',
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.03,
-    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.24,
+    shadowRadius: 3.5,
     elevation: 4,
   },
 });
