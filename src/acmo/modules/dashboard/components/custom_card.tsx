@@ -17,10 +17,11 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     paddingBottom: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
     alignSelf: 'center',
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.03,
+    shadowRadius: 18,
+    elevation: 4,
   },
 });
 
