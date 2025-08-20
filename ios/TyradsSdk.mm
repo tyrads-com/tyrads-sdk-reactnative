@@ -11,6 +11,12 @@ RCT_EXTERN_METHOD(loginUser:(NSString *)userId
                   rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(showOffers:(NSInteger)launchMode
                   route:(NSString)route
-                  campaignID:(NSInteger)campaignID)
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(showOfferDetails:(NSInteger)launchMode
+                  route:(NSString)route
+                  campaignID:(NSInteger)campaignID
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 
 @end

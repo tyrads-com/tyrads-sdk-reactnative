@@ -20,6 +20,7 @@ public class Tyrads : NSObject {
     private var newUser: Bool = false
     private var loginData: AcmoInitModel?
     var initializationWait = DispatchSemaphore(value: 0)
+    private var initializationContinuation: CheckedContinuation<Void, Never>?
     private var debugMode: Bool = false
   
     private var _isSecure: Bool = false
@@ -34,6 +35,14 @@ public class Tyrads : NSObject {
             NSLog(message)
         }
     }
+  
+  private func ensureInitialized() async {
+      guard self.token.isEmpty else { return }
+
+      await withCheckedContinuation { continuation in
+          self.initializationContinuation = continuation
+      }
+  }
 
     /// Configures the Tyrads SDK with the provided API key and secret key.
     ///
@@ -52,142 +61,106 @@ public class Tyrads : NSObject {
     /// Logs in the user with the provided user ID or retrieves the user ID from UserDefaults.
     ///
     /// - Parameter userID: Optional. The user ID to log in with. If nil, the SDK will attempt to retrieve the user ID from UserDefaults.
-    public func loginUser(_ userID: String? = nil, completion: @escaping (ApiHeaders?) -> Void) {
+    public func loginUser(_ userID: String? = nil) async throws -> ApiHeaders? {
         let userId = userID ?? UserDefaults.standard.string(forKey: "acmo-tyrads-sdk-user-id") ?? ""
-
         let identifierType = "IDFA"
         var advertisingId = ""
 
-        func finalizeLogin() {
-            let deviceDetails = getDeviceDetails()
-            let fd: [String: Any] = [
-                "publisherUserId": userId,
-                "platform": "iOS",
-                "identifierType": identifierType,
-                "identifier": advertisingId,
-                "deviceData": deviceDetails
-            ]
-
-            self.log("Initializing with data: \(fd)")
-
-            guard let url = URL(string: AcmoConfig.BASE_URL + "initialize") else {
-                self.log("Failed to create URL")
-                completion(nil)
-                return
-            }
-
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue(AcmoConfig.SDK_PLATFORM, forHTTPHeaderField: "X-SDK-Platform")
-            request.setValue(AcmoConfig.SDK_VERSION, forHTTPHeaderField: "X-SDK-Version")
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue(self.apiKey, forHTTPHeaderField: "X-API-Key")
-            request.setValue(self.apiSecret, forHTTPHeaderField: "X-API-Secret")
-            request.setValue(_isSecure ? "BASIC" : "PLAIN", forHTTPHeaderField: "X-Secure-Mode")
-          
-           do {
-               let requestBody = _isSecure && !(encKey ?? "").isEmpty
-                       ? try AcmoEncrypt(encKey!).encryptDataAESGCM(data: fd)
-                       : fd
-             
-               print("Req Body: \(requestBody)")
-               
-               request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
-            } catch {
-                self.log("Failed to serialize request body: \(error)")
-                completion(nil)
-                return
-            }
-
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    self.log("Network request failed: \(error)")
-                    completion(nil)
-                    return
-                }
-
-                guard let data = data else {
-                    self.log("No data received from the server")
-                    completion(nil)
-                    return
-                }
-
-                if let responseString = String(data: data, encoding: .utf8) {
-                    NSLog("Received response: \(responseString)")
-
-                    guard let jsonData = responseString.data(using: .utf8),
-                          let acmoInitModel = try? JSONDecoder().decode(AcmoInitModel.self, from: jsonData) else {
-                        self.log("Failed to decode response")
-                        completion(nil)
-                        return
-                    }
-
-                    self.loginData = acmoInitModel
-                    self.publisherUserID = acmoInitModel.data.user.publisherUserId
-                    self.newUser = acmoInitModel.data.newRegisteredUser
-                    self.token = acmoInitModel.data.token
-                    self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
-                    self.initializationWait.signal()
-
-                    // Build ApiHeaders object
-                    let headers = ApiHeaders(
-                        xApiKey: self.apiKey,
-                        xApiSecret: self.apiSecret,
-                        xUserId: self.publisherUserID,
-                        xSdkPlatform: AcmoConfig.SDK_PLATFORM,
-                        xSdkVersion: AcmoConfig.SDK_VERSION,
-                        userAgent: UIDevice.current.systemName + "/" + UIDevice.current.systemVersion,
-                        languageCode: Locale.current.languageCode ?? "en",
-                        premiumColor: acmoInitModel.data.publisherApp.premiumColor,
-                        headerColor: acmoInitModel.data.publisherApp.headerColor,
-                        mainColor: acmoInitModel.data.publisherApp.mainColor
-                    )
-
-                    completion(headers)
-                }
-            }
-
-            task.resume()
-            self.log("Network request started")
-        }
-
         if #available(iOS 14, *) {
             self.log("Requesting tracking authorization for iOS 14+")
-            ATTrackingManager.requestTrackingAuthorization { status in
-                switch status {
-                case .authorized:
-                    advertisingId = ASIdentifierManager.shared().advertisingIdentifier.uuidString
-                    self.log("Tracking authorized. Advertising ID: \(advertisingId)")
-                case .denied, .restricted, .notDetermined:
-                    advertisingId = ""
-                    self.log("Tracking not authorized or restricted")
-                @unknown default:
-                    self.log("Unknown tracking status")
-                }
-                finalizeLogin()
+            let status = await ATTrackingManager.requestTrackingAuthorization()
+            switch status {
+            case .authorized:
+                advertisingId = ASIdentifierManager.shared().advertisingIdentifier.uuidString
+                self.log("Tracking authorized. Advertising ID: \(advertisingId)")
+            case .denied, .restricted, .notDetermined:
+                advertisingId = ""
+                self.log("Tracking not authorized or restricted")
+            @unknown default:
+                self.log("Unknown tracking status")
             }
         } else {
             advertisingId = ASIdentifierManager.shared().advertisingIdentifier.uuidString
             self.log("iOS version < 14. Advertising ID: \(advertisingId)")
-            finalizeLogin()
         }
+
+        let deviceDetails = getDeviceDetails()
+        let fd: [String: Any] = [
+            "publisherUserId": userId,
+            "platform": "iOS",
+            "identifierType": identifierType,
+            "identifier": advertisingId,
+            "deviceData": deviceDetails
+        ]
+
+        self.log("Initializing with data: \(fd)")
+        guard let url = URL(string: AcmoConfig.BASE_URL + "initialize") else {
+            self.log("Failed to create URL")
+            throw NSError(domain: "TyradsSdk", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(AcmoConfig.SDK_PLATFORM, forHTTPHeaderField: "X-SDK-Platform")
+        request.setValue(AcmoConfig.SDK_VERSION, forHTTPHeaderField: "X-SDK-Version")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(self.apiKey, forHTTPHeaderField: "X-API-Key")
+        request.setValue(self.apiSecret, forHTTPHeaderField: "X-API-Secret")
+        request.setValue(_isSecure ? "BASIC" : "PLAIN", forHTTPHeaderField: "X-Secure-Mode")
+        
+        do {
+            let requestBody = _isSecure && !(encKey ?? "").isEmpty ? try AcmoEncrypt(encKey!).encryptDataAESGCM(data: fd) : fd
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        } catch {
+            self.log("Failed to serialize request body: \(error)")
+            throw error
+        }
+        
+        // Use the async URLSession API to get data
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        let responseString = String(data: data, encoding: .utf8)
+        self.log("Received response: \(responseString ?? "nil")")
+
+        guard let acmoInitModel = try? JSONDecoder().decode(AcmoInitModel.self, from: data) else {
+            self.log("Failed to decode response")
+            throw NSError(domain: "TyradsSdk", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to decode response"])
+        }
+
+        self.loginData = acmoInitModel
+        self.publisherUserID = acmoInitModel.data.user.publisherUserId
+        self.newUser = acmoInitModel.data.newRegisteredUser
+        self.token = acmoInitModel.data.token
+        self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
+
+        let headers = await ApiHeaders(
+            xApiKey: self.apiKey,
+            xApiSecret: self.apiSecret,
+            xUserId: self.publisherUserID,
+            xSdkPlatform: AcmoConfig.SDK_PLATFORM,
+            xSdkVersion: AcmoConfig.SDK_VERSION,
+            userAgent: UIDevice.current.systemName + "/" + UIDevice.current.systemVersion,
+            languageCode: Locale.current.languageCode ?? "en",
+            premiumColor: acmoInitModel.data.publisherApp.premiumColor,
+            headerColor: acmoInitModel.data.publisherApp.headerColor,
+            mainColor: acmoInitModel.data.publisherApp.mainColor
+        )
+        return headers
     }
 
 
 
 
-     public func showOffers(_ launchMode: Int = 3, route: String? = nil, campaignID: Int? = nil) {
-        self.initializationWait.wait()
-        var campaignIDString: String = "0"
-        if let campaignIDValue = campaignID {
-            campaignIDString = String(campaignIDValue)
-        }
+     public func showOffers(_ launchMode: Int = 3, route: String? = nil, campaignID: Int? = nil) async {
+//        self.initializationWait.wait()
+       await ensureInitialized()
        var components = URLComponents()
        components.scheme = "https"
        components.host = "sdk.tyrads.com"
-       components.path = "/\(route ?? "")"
+    //    components.path = "/\(route ?? "")"
        components.queryItems = [
-          URLQueryItem(name: "token", value: self.token)
+          URLQueryItem(name: "token", value: self.token),
+          URLQueryItem(name: "to", value: campaignID != nil ? "\(route ?? "")/\(campaignID!)" : route)
        ]
        var urlString: String = ""
        if let url = components.url {
@@ -205,28 +178,19 @@ public class Tyrads : NSObject {
             switch launchMode {
             case 1, 2:
                 DispatchQueue.main.async {
-                    let config = WKWebViewConfiguration()
-                    let userContentController = WKUserContentController()
+                    let acmoVC = AcmoWebViewController(url: url)
+                    acmoVC.modalPresentationStyle = .fullScreen
                     
-                    userContentController.add(self, name: "clickHandler")
-                    config.userContentController = userContentController
-                    
-                    let webView = WKWebView(frame: UIScreen.main.bounds, configuration: config)
-                    webView.navigationDelegate = self
-                    
-                    if #available(iOS 16.4, *) {
-                        webView.isInspectable = true
-                    }
-                    
-                    let viewController = UIViewController()
-                    viewController.view = webView
-                    viewController.modalPresentationStyle = .fullScreen
-                    
-                    webView.load(URLRequest(url: url))
-                    
-                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
-                        rootViewController.present(viewController, animated: true, completion: nil)
-                    }
+//                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+//                        rootViewController.present(acmoVC, animated: true, completion: nil)
+//                    }
+                  if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+                                      var topViewController = rootViewController
+                                      while let presentedVC = topViewController.presentedViewController {
+                                          topViewController = presentedVC
+                                      }
+                                      topViewController.present(acmoVC, animated: true, completion: nil)
+                                  }
                 }
             case 3:
                 DispatchQueue.main.async {
@@ -239,78 +203,6 @@ public class Tyrads : NSObject {
             }
         } catch {
             print("An error occurred: \(error)")
-        }
-    }
-}
-
-
-extension Tyrads: WKScriptMessageHandler {
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == "clickHandler",
-              let messageDict = message.body as? [String: Any] else {
-            return
-        }
-        print("Message data: \(messageDict)")
-        
-        if let action = messageDict["action"] as? String {
-            switch action {
-            case "closeWebView":
-              DispatchQueue.main.async {
-                    UIApplication.shared.windows.first?.rootViewController?.dismiss(animated: true)
-                }
-                
-            case "changeLanguage":
-                if let langCode = messageDict["languageCode"] as? String {
-                    // Handle language change
-                    self.currentLanguage = langCode
-                }
-                
-            default:
-                print("Unknown command: \(action)")
-            }
-        }
-    }
-}
-
-extension Tyrads: WKNavigationDelegate {
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-//        let js = """
-//        window.addEventListener('message', (event) => {
-//            try {
-//                const message = typeof event.data === 'string' 
-//                                ? JSON.parse(event.data) 
-//                                : event.data;
-//                if (message && message.command === 'webview_command') {
-//                    window.webkit.messageHandlers.clickHandler.postMessage({
-//                        command: message.command,
-//                        action: message.action,
-//                        languageCode: message.languageCode
-//                    });
-//                }
-//            } catch (error) {
-//                console.log('Message handling error:', error);
-//            }
-//        });
-//        """
-      let js = """
-      window.addEventListener('message', (event) => {
-          try {
-              const message = typeof event.data === 'string' 
-                              ? JSON.parse(event.data) 
-                              : event.data;
-              if (message) {
-                  window.webkit.messageHandlers.clickHandler.postMessage(message);
-              }
-          } catch (error) {
-              console.log('Message handling error:', error);
-          }
-      });
-      """
-        
-        webView.evaluateJavaScript(js) { _, error in
-            if let error = error {
-                print("JavaScript injection failed: \(error)")
-            }
         }
     }
 }
