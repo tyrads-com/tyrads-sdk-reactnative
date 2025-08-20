@@ -181,16 +181,9 @@ public class Tyrads : NSObject {
                     let acmoVC = AcmoWebViewController(url: url)
                     acmoVC.modalPresentationStyle = .fullScreen
                     
-//                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
-//                        rootViewController.present(acmoVC, animated: true, completion: nil)
-//                    }
-                  if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
-                                      var topViewController = rootViewController
-                                      while let presentedVC = topViewController.presentedViewController {
-                                          topViewController = presentedVC
-                                      }
-                                      topViewController.present(acmoVC, animated: true, completion: nil)
-                                  }
+                    if let rootViewController = UIApplication.shared.windows.first?.rootViewController {
+                        rootViewController.present(acmoVC, animated: true, completion: nil)
+                    }
                 }
             case 3:
                 DispatchQueue.main.async {

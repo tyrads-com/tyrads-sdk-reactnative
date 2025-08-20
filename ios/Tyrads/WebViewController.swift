@@ -1,10 +1,12 @@
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
-class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
+class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
 
     var webView: WKWebView!
     var initialURL: URL
+  
+    private let internalDomains: [String] = ["sdk.tyrads.com", "acmo.in"]
     
     private func log(_ message: String) {
         NSLog("AcmoWebViewController: \(message)")
@@ -31,6 +33,7 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
 
         webView = WKWebView(frame: self.view.bounds, configuration: config)
         webView.navigationDelegate = self
+        webView.uiDelegate = self
         self.view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -80,7 +83,9 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        log("WebView did finish navigation.")
+        if let url = webView.url {
+            print("Page loaded successfully. Final URL: \(url.absoluteString)")
+        }
         
         let js = """
         window.addEventListener('message', (event) => {
@@ -106,6 +111,49 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
                 self.log("JavaScript listener injected successfully.")
             }
         }
+    }
+  
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+          
+        guard let url = navigationAction.request.url, let host = url.host else {
+            decisionHandler(.cancel)
+            return
+        }
+        
+        if host == "about:blank" {
+            decisionHandler(.allow)
+            return
+        }
+        
+        let isInternalDomain = internalDomains.contains(where: { host.hasSuffix($0) })
+        
+        if host != webView.url?.host && !isInternalDomain {
+            log("Intercepted external URL via navigation action: \(url.absoluteString). Opening externally.")
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            decisionHandler(.cancel)
+            return
+        }
+        
+        log("Allowed navigation to: \(url.absoluteString)")
+        decisionHandler(.allow)
+    }
+    
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
+        guard let url = navigationAction.request.url else {
+            return nil
+        }
+        
+        let isInternalDomain = internalDomains.contains(where: { url.host?.hasSuffix($0) ?? false })
+        
+        if !isInternalDomain {
+            log("Intercepted new window via UI delegate: \(url.absoluteString). Opening externally.")
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            return nil
+        }
+        
+        log("Allowed new window for internal domain: \(url.absoluteString)")
+        return nil
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
