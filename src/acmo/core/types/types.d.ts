@@ -86,7 +86,7 @@ interface CurrencySales {
   name: null | string,
   multiplier: null | number,
   bannerUrl: null | string,
-  dateStart: String?= null,
-  dateEnd: String?= null,
-  remainingTimeSeconds: Int?= null
+  dateStart: null | string,
+  dateEnd: null | string,
+  remainingTimeSeconds: null | number
 }
