@@ -68,10 +68,10 @@ Tyrads.showOffers({ launchMode: 3 });// provide launchMode: 2 to open the Offerw
 The Tyrads SDK supports deeplinking to specific sections of the offerwall. When initializing or interacting with the SDK, you can specify a route to open a particular page. For campaign-specific routes, you'll need to provide the campaignID as well.
 
 Available routes and their usage:
-- `campaigns` - opens the Campaigns Page
-- `campaigns-activated` - opens the Activated Campaigns Page
-- `campaign-details` - opens the Campaign Details Page (requires campaignID)
-- `campaign-tickets` - opens the Campaign Tickets Page (requires campaignID)
+- `offers` - opens the Campaigns Page
+- `active-offers` - opens the Activated Campaigns Page
+- `offer-details` - opens the Campaign Details Page (requires campaignID)
+- `support` - opens the Campaign Tickets Page (requires campaignID)
 
 ```js
 
@@ -79,16 +79,16 @@ Available routes and their usage:
 Tyrads.showOffers();
 
 // Explicitly specifying the Campaigns Page
-Tyrads.showOffers({ route: "campaigns" });
+Tyrads.showOffers({ route: "offers" });
 
 // Activated Campaigns Page
-Tyrads.showOffers({ route: "campaigns-activated" });
+Tyrads.showOffers({ route: "active-offers" });
 
 // Campaign Details Page (requires campaignID)
-Tyrads.showOffers({ route: "campaign-details", campaignID: "your_campaign_id_here" });
+Tyrads.showOffers({ route: "offer-details", campaignID: "your_campaign_id_here" });
 
 // Campaign Tickets Page (requires campaignID)
-Tyrads.showOffers({ route: "campaign-tickets", campaignID: "your_campaign_id_here" });
+Tyrads.showOffers({ route: "support", campaignID: "your_campaign_id_here" });
 
 ```
 </details>
