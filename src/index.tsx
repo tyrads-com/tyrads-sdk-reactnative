@@ -1,9 +1,10 @@
-import { NativeModules, Platform, View,} from 'react-native';
+import { NativeModules, Platform, View, } from 'react-native';
 
 import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
 import { saveData } from './acmo/core/storage/storage';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
+import Localization from './acmo/core/services/localization_service';
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -17,23 +18,28 @@ const LINKING_ERROR =
 const TyradsSdk = NativeModules.TyradsSdk
   ? NativeModules.TyradsSdk
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
 
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string) => {
     const data = await TyradsSdk.init(apiKey, apiSecret, encKey);
+    await saveData('credentials', {
+      "X-API-Key": apiKey,
+      "X-API-Secret": apiSecret,
+    });
+    await Localization.getInstance().init("id");
     return data;
   },
   loginUser: async (userId: string) => {
     try {
       const data = await TyradsSdk.loginUser(userId);
-  
+
       if (typeof data === "object") {
         await saveData('apiHeaders', JSON.stringify(data));
         await saveData('language', data.languageCode);
@@ -41,25 +47,25 @@ const Tyrads = {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
       }
-  
+
       return data;
     } catch (err) {
       return null;
     }
   },
-  
+
   showOffers: async ({
     launchMode = 3,
     route,
     campaignID,
   }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
     if (Platform.OS === 'ios') {
-      if(campaignID == null) {
+      if (campaignID == null) {
         return await TyradsSdk.showOffers(launchMode, route);
       }
       return await TyradsSdk.showOfferDetails(launchMode, route, campaignID);
     } else {
-      if(campaignID == null) {
+      if (campaignID == null) {
         return await TyradsSdk.showOffers(route);
       }
       return await TyradsSdk.showOfferDetails(route, campaignID);
@@ -73,7 +79,7 @@ const Tyrads = {
     launchMode?: number;
   } = {}) => {
     const handleNavigation = (route?: string, campaignID?: number | null) => {
-      Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode});
+      Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
     };
     return (
       <I18nextProvider i18n={i18n}>

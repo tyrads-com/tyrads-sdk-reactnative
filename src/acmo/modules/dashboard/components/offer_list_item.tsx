@@ -8,12 +8,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import numeral from 'numeral';
+import type LocalizationService from '../../../core/services/localization_service';
 
 
 
 type Props = {
   offer: Campaign;
   currencySales?: CurrencySales;
+  localization: LocalizationService;
   onButtonTap: () => Promise<void>;
   onPress: () => Promise<void>;
   index: number;
@@ -34,6 +36,7 @@ const rankIcons = [
 export const AcmoOfferListItem: React.FC<Props> = ({
   offer,
   currencySales,
+  localization,
   onButtonTap,
   onPress,
   index,
@@ -62,7 +65,8 @@ export const AcmoOfferListItem: React.FC<Props> = ({
           {currencySales && (
             <View style={[styles.bonusBadge, { backgroundColor: `${colorPremium}20` }]}>
               <Text style={[styles.bonusText, { color: colorPremium }]}>
-                {bonusMultiplier}x BONUS
+                {localization.translate('data.shared.label.bonusTagCaps',
+                  { 'multiplier': currencySales?.multiplier! },)}
               </Text>
             </View>
           )}
@@ -115,7 +119,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
               },
             ]}
           >
-            Play
+            {localization.translate("data.widget.button.play")}
           </Text>
         </TouchableOpacity>
 

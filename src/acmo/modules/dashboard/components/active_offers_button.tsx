@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View, } from 'react-native';
+import LocalizationService from '../../../core/services/localization_service';
 // import { useTranslation } from 'react-i18next';
 
 interface ActiveOffersBtnProps {
@@ -9,14 +10,14 @@ interface ActiveOffersBtnProps {
 }
 
 const ActiveOffersButton: React.FC<ActiveOffersBtnProps> = ({ premiumColor, activeCount, onPress }) => {
-  // const { t } = useTranslation();
+  const localization = LocalizationService.getInstance()
   return (
     <TouchableOpacity
       style={[styles.button, { borderColor: premiumColor }]}
       onPress={() => onPress && onPress('active-offers')}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={[styles.buttonText, { color: premiumColor }]}>Active Offers</Text>
+        <Text style={[styles.buttonText, { color: premiumColor }]}>{localization.translate("data.offers.button.activeOffers")}</Text>
         {activeCount > 0 &&
           <View style={styles.activeCountContainer}>
             <Text style={styles.activeCountText}>{activeCount > 99 ? '99+' : activeCount}</Text>

@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet,} from 'react-native';
-import { useTranslation } from 'react-i18next';
+import LocalizationService from '../../../core/services/localization_service';
 
 interface PremiumHeaderSectionProps {
   showMore?: boolean;
   premiumColor?: string;
+  localization: LocalizationService;
   onShowOffers?: () => void;
 }
 
-const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = true, premiumColor, onShowOffers }) => {
-  const { t } = useTranslation();
+const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = true, premiumColor, localization, onShowOffers }) => {
+  
   return (
     <View style={styles.headerContainer}>
       <View style={styles.leftContainer}>
@@ -20,13 +21,13 @@ const PremiumHeaderSection: React.FC<PremiumHeaderSectionProps> = ({ showMore = 
           />
         </View>
         <Text style={[styles.headerText, { color: premiumColor }]} numberOfLines={1} ellipsizeMode="tail">
-          {t('dashboard.suggested_offers')}
+          {localization.translate('data.widget.page.title')}
         </Text>
       </View>
       {showMore && (
         <TouchableOpacity style={styles.rightContainer} onPress={onShowOffers}>
           <Text style={[styles.moreOffersText, { color: premiumColor }]} numberOfLines={1}>
-            {t('dashboard.more_offers')}
+            {localization.translate('data.widget.button.moreOffers')}
           </Text>
           <Image
             source={require('../../../../assets/images/angle_up.png')}

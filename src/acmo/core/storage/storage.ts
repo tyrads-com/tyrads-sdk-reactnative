@@ -26,3 +26,17 @@ export const getData = async <T>(key: string): Promise<T | null> => {
     return null;
   }
 };
+
+export const clearData = async <T>(key: string): Promise<T | null> => {
+  try {
+    await AsyncStorage.removeItem(key);
+    return true as T;
+  } catch (e: any) {
+    if (e instanceof Error) {
+      console.error('Error getting object:', e.message);
+    } else {
+      console.error('An unknown error occurred while getting.');
+    }
+    return false as T;
+  }
+};
