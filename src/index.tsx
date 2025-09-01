@@ -1,10 +1,9 @@
-import { NativeModules, Platform, View, } from 'react-native';
+import {NativeModules, Platform, View, } from 'react-native';
 
 import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
 import { saveData } from './acmo/core/storage/storage';
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
 import Localization from './acmo/core/services/localization_service';
+import { LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -26,27 +25,48 @@ const TyradsSdk = NativeModules.TyradsSdk
     }
   );
 
+
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string) => {
     const data = await TyradsSdk.init(apiKey, apiSecret, encKey);
-    await saveData('credentials', {
-      "X-API-Key": apiKey,
-      "X-API-Secret": apiSecret,
+
+    await saveData("credentials", {
+      'X-API-Key': apiKey,
+      'X-API-Secret': apiSecret
     });
-    await Localization.getInstance().init("id");
+
+    let languageCode = "en";
+    try {
+      const parsed = typeof data === "string" ? JSON.parse(data) : data;
+      if (parsed?.languageCode) {
+        languageCode = parsed.languageCode;
+        console.log('====================================');
+        console.log("Language Code:", parsed.languageCode);
+        console.log('====================================');
+      }
+    } catch { }
+
+    await saveData("language", languageCode);
+    await Localization.getInstance().init(languageCode);
+    await updateProviderLanguage(languageCode);
     return data;
   },
   loginUser: async (userId: string) => {
     try {
       const data = await TyradsSdk.loginUser(userId);
+      var lang = "en"
 
       if (typeof data === "object") {
         await saveData('apiHeaders', JSON.stringify(data));
         await saveData('language', data.languageCode);
+        lang = data.languageCode
       } else if (typeof data === "string") {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
+        lang = JSON.parse(data).languageCode
       }
+
+      // await updateProviderLanguage(lang);
 
       return data;
     } catch (err) {
@@ -82,15 +102,19 @@ const Tyrads = {
       Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
     };
     return (
-      <I18nextProvider i18n={i18n}>
+      <LocalizationProvider>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <TopOffers
             widgetStyle={widgetStyle}
             onNavigate={handleNavigation}
           />
         </View>
-      </I18nextProvider>
+      </LocalizationProvider>
     );
+  },
+  changeLanguage: async (lang: string) => {
+    await Localization.getInstance().init(lang);
+    return TyradsSdk.changeLanguage(lang);
   },
 };
 

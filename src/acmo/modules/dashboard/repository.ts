@@ -63,7 +63,7 @@ export const fetchPremiumOfferDetails = async (
     //   "bannerUrl": "",
     //   "dateStart": "2025-03-10T00:00:00.000Z",
     //   "dateEnd": "2025-03-10T23:59:59.000Z",
-    //   remainingTimeSeconds: undefined
+    //   remainingTimeSeconds: 3090
     // };
 
     setCampaigns(hotOffers);

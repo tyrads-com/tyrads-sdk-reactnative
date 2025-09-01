@@ -8,14 +8,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import numeral from 'numeral';
-import type LocalizationService from '../../../core/services/localization_service';
+import { useLocalization } from '../../localization/localization_context';
 
 
 
 type Props = {
   offer: Campaign;
   currencySales?: CurrencySales;
-  localization: LocalizationService;
   onButtonTap: () => Promise<void>;
   onPress: () => Promise<void>;
   index: number;
@@ -36,7 +35,6 @@ const rankIcons = [
 export const AcmoOfferListItem: React.FC<Props> = ({
   offer,
   currencySales,
-  localization,
   onButtonTap,
   onPress,
   index,
@@ -48,6 +46,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
   const bonusMultiplier = currencySales?.multiplier ?? 1;
   const isLoading = loadingIndex === index;
   const anyLoading = loadingIndex != null;
+  const { t } = useLocalization();
 
   return (
     <TouchableOpacity
@@ -65,7 +64,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
           {currencySales && (
             <View style={[styles.bonusBadge, { backgroundColor: `${colorPremium}20` }]}>
               <Text style={[styles.bonusText, { color: colorPremium }]}>
-                {localization.translate('data.shared.label.bonusTagCaps',
+                {t('data.shared.label.bonusTagCaps',
                   { 'multiplier': currencySales?.multiplier! },)}
               </Text>
             </View>
@@ -119,7 +118,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
               },
             ]}
           >
-            {localization.translate("data.widget.button.play")}
+            {t("data.widget.button.play")}
           </Text>
         </TouchableOpacity>
 

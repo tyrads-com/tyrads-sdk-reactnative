@@ -13,7 +13,6 @@ import AcmoOfferCard from './components/offer_card';
 import AcmoScrollPager from './components/custom_scroller';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
-import LocalizationService from '../../core/services/localization_service';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -36,7 +35,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   const [currencySale, setCurrencySale] = useState<CurrencySales>();
   const [activeCount, setActiveCount] = useState<number>(0);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
-  const localization = LocalizationService.getInstance();
 
   useEffect(() => {
     fetchPremiumOfferDetails(
@@ -100,7 +98,7 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   return (
     <CustomCard style={{ flexDirection: 'row' }}>
       <View style={{ flex: 1 }}>
-        <PremiumHeaderSection premiumColor={premiumColor} localization={localization} onShowOffers={handleShowOffers} />
+        <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
         {(() => {
           switch (widgetStyle) {
@@ -112,7 +110,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
                     onPress={async () => handleCampaignPress && handleCampaignPress(item.campaignId)}
                     offer={item}
                     currencySales={currencySale}
-                    localization={localization}
                     index={index}
                     loadingIndex={loadingIndex}
                     setLoadingIndex={setLoadingIndex}
