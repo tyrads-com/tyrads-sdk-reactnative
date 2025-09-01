@@ -31,7 +31,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   private fun sendEvent(eventName: String, data: String) {
     val reactContext = reactApplicationContext
     if (reactContext.hasActiveCatalystInstance()) {
-      Tyrads.getInstance().tyradScope.launch {
+      scope.launch {
         reactContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
           .emit(eventName, data)

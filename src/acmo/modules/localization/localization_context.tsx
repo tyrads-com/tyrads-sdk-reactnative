@@ -24,8 +24,8 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   const changeLanguage = async (lang: string) => {
-    await service.init(lang);
-    setCurrentLanguage(lang); // triggers re-render
+    await service.changeLanguage(lang);
+    setCurrentLanguage(lang);
   };
 
   const t = (key: string, args?: Record<string, string | number>) => service.translate(key, args);
@@ -42,5 +42,11 @@ export const useLocalization = () => useContext(LocalizationContext);
 export const updateProviderLanguage = async (lang: string) => {
   const service = LocalizationService.getInstance();
   await service.init(lang);
+  _updateLanguage?.(lang);
+};
+
+export const changeProviderLanguage = async (lang: string) => {
+  const service = LocalizationService.getInstance();
+  await service.changeLanguage(lang);
   _updateLanguage?.(lang);
 };

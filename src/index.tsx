@@ -1,9 +1,9 @@
-import {NativeModules, Platform, View, } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform, View, } from 'react-native';
 
 import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
 import { saveData } from './acmo/core/storage/storage';
 import Localization from './acmo/core/services/localization_service';
-import { LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
+import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -25,6 +25,9 @@ const TyradsSdk = NativeModules.TyradsSdk
     }
   );
 
+const tyradsEmitter = new NativeEventEmitter(TyradsSdk);
+
+let languageChangedSubscription: any = null;
 
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string) => {
@@ -40,34 +43,35 @@ const Tyrads = {
       const parsed = typeof data === "string" ? JSON.parse(data) : data;
       if (parsed?.languageCode) {
         languageCode = parsed.languageCode;
-        console.log('====================================');
-        console.log("Language Code:", parsed.languageCode);
-        console.log('====================================');
       }
     } catch { }
+
+    TyradsSdk.startObserving();
+    languageChangedSubscription?.remove();
+    languageChangedSubscription = tyradsEmitter.addListener(
+      'LanguageChanged',
+      async (lang: string) => {
+        console.log('LanguageChanged event from Android SDK:', lang);
+        await changeProviderLanguage(lang);
+      }
+    );
 
     await saveData("language", languageCode);
     await Localization.getInstance().init(languageCode);
     await updateProviderLanguage(languageCode);
+
     return data;
   },
   loginUser: async (userId: string) => {
     try {
       const data = await TyradsSdk.loginUser(userId);
-      var lang = "en"
-
       if (typeof data === "object") {
         await saveData('apiHeaders', JSON.stringify(data));
         await saveData('language', data.languageCode);
-        lang = data.languageCode
       } else if (typeof data === "string") {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
-        lang = JSON.parse(data).languageCode
       }
-
-      // await updateProviderLanguage(lang);
-
       return data;
     } catch (err) {
       return null;
@@ -113,9 +117,9 @@ const Tyrads = {
     );
   },
   changeLanguage: async (lang: string) => {
-    await Localization.getInstance().init(lang);
-    return TyradsSdk.changeLanguage(lang);
+    return await TyradsSdk.changeLanguage(lang);
   },
+
 };
 
 export default Tyrads;
