@@ -4,7 +4,9 @@
 
 RCT_EXTERN_METHOD(init:(NSString *)apiKey 
                   secretKey:(NSString *)secretKey 
-                  encKey:(NSString * _Nullable)encKey)
+                  encKey:(NSString * _Nullable)encKey
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 // RCT_EXTERN_METHOD(loginUser:(NSString *)userId)
 RCT_EXTERN_METHOD(loginUser:(NSString *)userId
                   resolver:(RCTPromiseResolveBlock)resolve

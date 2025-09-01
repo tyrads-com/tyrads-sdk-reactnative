@@ -6,9 +6,21 @@ import UIKit
 class TyradsSdk: NSObject {
 
   @objc
-  func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil) {
+  func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     NSLog("TyradsModule: init called with apiKey: \(apiKey) and secretKey: \(secretKey)")
-    Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey, encKey: encKey)
+    Task {
+      do{
+        let locale = await Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey, encKey: encKey)
+        let result: [String: Any] = [
+                  "success": true,
+                  "languageCode": locale
+                ]
+        resolve (result)
+      } catch{
+        reject("INIT_FAILED", "Failed to initialize", nil)
+      }
+    }
+    
   }
 
   @objc

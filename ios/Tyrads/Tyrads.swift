@@ -16,7 +16,7 @@ public class Tyrads : NSObject {
     private var encKey: String?
     private var publisherUserID: String = ""
     private var token: String = ""
-    private var currentLanguage: String = "en"
+    internal var currentLanguage: String = "en"
     private var newUser: Bool = false
     private var loginData: AcmoInitModel?
     var initializationWait = DispatchSemaphore(value: 0)
@@ -49,13 +49,16 @@ public class Tyrads : NSObject {
     /// - Parameters:
     ///   - apiKey: The API key provided by Tyrads.
     ///   - secretKey: The secret key provided by Tyrads.
-  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, debugMode: Bool = false) {
+  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, debugMode: Bool = false) async -> String {
         self.apiKey = apiKey
         self.apiSecret = secretKey
         self.encKey = encKey
         self._isSecure = (encKey != nil)
         self.debugMode = debugMode
         self.currentLanguage = Locale.current.languageCode ?? ""
+    
+        let locale = UserDefaults.standard.string(forKey: "locale")
+        return locale ?? self.currentLanguage
     }
 
     /// Logs in the user with the provided user ID or retrieves the user ID from UserDefaults.
@@ -132,6 +135,8 @@ public class Tyrads : NSObject {
         self.newUser = acmoInitModel.data.newRegisteredUser
         self.token = acmoInitModel.data.token
         self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
+      let locale = UserDefaults.standard.string(forKey: "locale")
+      
 
         let headers = await ApiHeaders(
             xApiKey: self.apiKey,
@@ -140,7 +145,7 @@ public class Tyrads : NSObject {
             xSdkPlatform: AcmoConfig.SDK_PLATFORM,
             xSdkVersion: AcmoConfig.SDK_VERSION,
             userAgent: UIDevice.current.systemName + "/" + UIDevice.current.systemVersion,
-            languageCode: Locale.current.languageCode ?? "en",
+            languageCode: locale ?? self.currentLanguage,
             premiumColor: acmoInitModel.data.publisherApp.premiumColor,
             headerColor: acmoInitModel.data.publisherApp.headerColor,
             mainColor: acmoInitModel.data.publisherApp.mainColor
