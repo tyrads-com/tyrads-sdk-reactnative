@@ -74,8 +74,7 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
             case "changeLanguage":
                 if let langCode = messageDict["value"] as? String {
                     log("Action: changeLanguage received. Language Code: \(langCode)")
-                  UserDefaults.standard.set(langCode, forKey: "locale")
-                  Tyrads.instance.currentLanguage = langCode
+                  Tyrads.instance.changeLanguage(langCode)
 //                  let value = UserDefaults.standard.string(forKey: "locale")
                 }
                 

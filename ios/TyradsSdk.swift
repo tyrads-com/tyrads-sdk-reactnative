@@ -1,9 +1,29 @@
 import Foundation
 import UIKit
+import Combine
+import React
 
 
 @objc(TyradsSdk)
-class TyradsSdk: NSObject {
+class TyradsSdk: RCTEventEmitter {
+  
+    private var cancellable: AnyCancellable?
+
+    override func startObserving() {
+        cancellable = Tyrads.instance.languagePublisher
+        .sink { [weak self] lang in
+          self?.sendEvent(withName: "LanguageChanged", body: lang)
+        }
+    }
+
+    override func stopObserving() {
+      cancellable?.cancel()
+      cancellable = nil
+    }
+
+    override func supportedEvents() -> [String]! {
+      return ["LanguageChanged"]
+    }
 
   @objc
   func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
@@ -16,8 +36,8 @@ class TyradsSdk: NSObject {
                   "languageCode": locale
                 ]
         resolve (result)
-      } catch{
-        reject("INIT_FAILED", "Failed to initialize", nil)
+      } catch {
+        reject("INIT_FAILED", "Failed to initialize", error)
       }
     }
     
@@ -70,5 +90,10 @@ class TyradsSdk: NSObject {
               resolve(nil)
           }
       }
-
+    
+    @objc
+    func changeLanguage(_ lang: String) {
+      Tyrads.instance.changeLanguage(lang)
+    }
+  
 }

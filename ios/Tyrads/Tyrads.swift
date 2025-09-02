@@ -3,7 +3,7 @@ import UIKit
 import AppTrackingTransparency
 import AdSupport
 import WebKit
-
+import Combine
 
 
 /// The TyradsSdk class provides methods for configuring the SDK and displaying offers.
@@ -16,7 +16,15 @@ public class Tyrads : NSObject {
     private var encKey: String?
     private var publisherUserID: String = ""
     private var token: String = ""
-    internal var currentLanguage: String = "en"
+    internal var currentLanguage: String = "en" {
+          didSet {
+              if oldValue != currentLanguage {
+                  languagePublisher.send(currentLanguage)
+              }
+          }
+      }
+
+    public let languagePublisher = PassthroughSubject<String, Never>()
     private var newUser: Bool = false
     private var loginData: AcmoInitModel?
     var initializationWait = DispatchSemaphore(value: 0)
@@ -55,10 +63,11 @@ public class Tyrads : NSObject {
         self.encKey = encKey
         self._isSecure = (encKey != nil)
         self.debugMode = debugMode
-        self.currentLanguage = Locale.current.languageCode ?? ""
     
-        let locale = UserDefaults.standard.string(forKey: "locale")
-        return locale ?? self.currentLanguage
+        let savedLocale = UserDefaults.standard.string(forKey: "locale")
+        let deviceLocale = Locale.current.languageCode ?? "en"
+        self.currentLanguage = savedLocale ?? deviceLocale
+        return self.currentLanguage
     }
 
     /// Logs in the user with the provided user ID or retrieves the user ID from UserDefaults.
@@ -135,8 +144,6 @@ public class Tyrads : NSObject {
         self.newUser = acmoInitModel.data.newRegisteredUser
         self.token = acmoInitModel.data.token
         self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
-      let locale = UserDefaults.standard.string(forKey: "locale")
-      
 
         let headers = await ApiHeaders(
             xApiKey: self.apiKey,
@@ -145,7 +152,7 @@ public class Tyrads : NSObject {
             xSdkPlatform: AcmoConfig.SDK_PLATFORM,
             xSdkVersion: AcmoConfig.SDK_VERSION,
             userAgent: UIDevice.current.systemName + "/" + UIDevice.current.systemVersion,
-            languageCode: locale ?? self.currentLanguage,
+            languageCode: self.currentLanguage,
             premiumColor: acmoInitModel.data.publisherApp.premiumColor,
             headerColor: acmoInitModel.data.publisherApp.headerColor,
             mainColor: acmoInitModel.data.publisherApp.mainColor
@@ -202,5 +209,10 @@ public class Tyrads : NSObject {
         } catch {
             print("An error occurred: \(error)")
         }
+    }
+
+    public func changeLanguage(_ lang: String) {
+        self.currentLanguage = lang
+        UserDefaults.standard.set(lang, forKey: "locale")
     }
 }

@@ -2,6 +2,8 @@
 
 @interface RCT_EXTERN_MODULE(TyradsSdk, NSObject)
 
+RCT_EXTERN_METHOD(startObserving)
+RCT_EXTERN_METHOD(stopObserving)
 RCT_EXTERN_METHOD(init:(NSString *)apiKey 
                   secretKey:(NSString *)secretKey 
                   encKey:(NSString * _Nullable)encKey
@@ -20,5 +22,6 @@ RCT_EXTERN_METHOD(showOfferDetails:(NSInteger)launchMode
                   campaignID:(NSInteger)campaignID
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(changeLanguage:(NSString *)lang)
 
 @end
