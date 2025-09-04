@@ -1,0 +1,181 @@
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+} from 'react-native';
+import { fetchPremiumOfferDetails, openOffer } from './repository';
+import PremiumHeaderSection from './components/premium_header';
+import CustomCard from './components/custom_card';
+import ActiveOffersButton from './components/active_offers_button';
+import { AcmoOfferListItem } from './components/offer_list_item';
+import AcmoOfferCard from './components/offer_card';
+import AcmoScrollPager from './components/custom_scroller';
+import PremiumEmptyView from './components/premium_empty_widget';
+import PremiumWidgetsLoading from './components/premium_loading';
+
+export const enum PremiumWidgetStyles {
+  list,
+  sliderCards,
+}
+
+interface PremiumWidgetProps {
+  widgetStyle?: PremiumWidgetStyles;
+  onNavigate: (route?: string, campaignID?: number) => void;
+}
+
+const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
+  widgetStyle = PremiumWidgetStyles.list,
+  onNavigate
+}) => {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [premiumColor, setPremiumColor] = useState<string>('#1C90DF');
+  const [currencySale, setCurrencySale] = useState<CurrencySales>();
+  const [activeCount, setActiveCount] = useState<number>(0);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchPremiumOfferDetails(
+      setPremiumColor,
+      setCampaigns,
+      setCurrencySale,
+      setActiveCount,
+      setError,
+      setIsLoading
+    );
+
+  }, []);
+
+  const handleShowOffers = () => {
+    onNavigate();
+  };
+  const handleCampaignPress = (campaignId: number) => {
+    onNavigate("offers", campaignId);
+  };
+
+  const handleActiveOffersPress = (route: string) => {
+    onNavigate(route);
+  };
+
+  const handleButtonPress = async (campaign: Campaign) => {
+    await openOffer(campaign);
+    await fetchPremiumOfferDetails(
+      setPremiumColor,
+      setCampaigns,
+      setCurrencySale,
+      setActiveCount,
+      setError,
+      setIsLoading
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <PremiumWidgetsLoading
+        widgetStyle={widgetStyle}
+      />
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
+
+
+  if (campaigns.length === 0) {
+    return <PremiumEmptyView
+      colorPremium={premiumColor}
+      onContinue={handleShowOffers}
+    />
+  }
+
+  return (
+    <CustomCard style={{ flexDirection: 'row' }}>
+      <View style={{ flex: 1 }}>
+        <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
+        <View style={styles.headerSpacer} />
+        {(() => {
+          switch (widgetStyle) {
+            case PremiumWidgetStyles.list:
+              return (
+                campaigns.map((item, index) => (
+                  <AcmoOfferListItem
+                    key={index}
+                    onPress={async () => handleCampaignPress && handleCampaignPress(item.campaignId)}
+                    offer={item}
+                    currencySales={currencySale}
+                    index={index}
+                    loadingIndex={loadingIndex}
+                    setLoadingIndex={setLoadingIndex}
+                    colorPremium={premiumColor}
+                    onButtonTap={async () => handleButtonPress(item)}
+                  />
+                ))
+              );
+            case PremiumWidgetStyles.sliderCards:
+              return (
+                <AcmoScrollPager
+                  totalPages={campaigns.length}
+                  activeIndicatorColor={premiumColor}
+                  content={(index) => (
+                    <AcmoOfferCard
+                      item={campaigns[index]!}
+                      onButtonClick={async () => handleButtonPress(campaigns[index]!)}
+                      currencySaleModel={currencySale}
+                      premiumColor={premiumColor}
+                      isLoading={false}
+                      onTap={async () => handleCampaignPress && handleCampaignPress(campaigns[index]!.campaignId)}
+                    />
+                  )}
+                />
+              );
+            default:
+              return <Text>Please specify a correct style</Text>;
+          }
+        })()}
+        <View style={styles.gameListSpacer} />
+        <ActiveOffersButton activeCount={activeCount} premiumColor={premiumColor} onPress={handleActiveOffersPress} />
+      </View>
+    </CustomCard>
+  );
+};
+
+const styles = StyleSheet.create({
+  itemContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    padding: 16,
+  },
+  errorText: {
+    color: 'red',
+  },
+  noCampaignContainer: {
+    padding: 16,
+  },
+  headerSpacer: {
+    height: 10,
+  },
+  gameListSpacer: {
+    height: 10,
+  },
+});
+
+export default PremiumWidgets;
