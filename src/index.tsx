@@ -4,6 +4,7 @@ import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_off
 import { saveData } from './acmo/core/storage/storage';
 import Localization from './acmo/core/services/localization_service';
 import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
+import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -114,6 +115,17 @@ const Tyrads = {
           />
         </View>
       </LocalizationProvider>
+    );
+  },
+  topPremiumOffersLoading: (
+    { widgetStyle = PremiumWidgetStyles.list }: {
+      widgetStyle?: PremiumWidgetStyles;
+    }
+  ) => {
+    return (
+      <PremiumWidgetsLoading
+        widgetStyle={widgetStyle}
+      />
     );
   },
   changeLanguage: async (lang: string) => {

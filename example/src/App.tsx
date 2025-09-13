@@ -11,15 +11,16 @@ export default function App() {
   const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
   const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
   const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
-  const [userId, setUserId] = useState('user9780');
+  const [userId, setUserId] = useState('user5346');
 
-  const [isPremiumLoading, setPremiumLoading] = useState(true);
+  const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(async () => {
       const creds = await loadStoredCredentials()
       await initialization(creds);
+      setReady(true);
     });
 
     return () => {
@@ -52,7 +53,7 @@ export default function App() {
       console.log('Initialized successfully');
     } catch (err) {
       console.log('Initialization error:', err);
-    } 
+    }
   };
 
   const loadStoredCredentials = async () => {
@@ -96,7 +97,12 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ marginTop: 40 }}>
         <View style={styles.container}>
-          {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />}
+          {isReady ? (
+            <Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />
+          ) : (
+            <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
+          )}
+          {/* {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />} */}
           <View style={{ height: 20 }}></View>
           <TextInput
             style={styles.input}
@@ -122,14 +128,14 @@ export default function App() {
             value={userId}
             onChangeText={setUserId}
           />
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12,}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12, }}>
             <TouchableOpacity
               style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
               onPress={handleButtonClick}
               disabled={isLoading}
             >
               {isLoading ?
-                <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'}/> :
+                <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'} /> :
                 null}
               <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
                 Show Offers

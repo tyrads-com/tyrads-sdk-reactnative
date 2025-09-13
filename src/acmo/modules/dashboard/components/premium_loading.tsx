@@ -6,12 +6,10 @@ import CustomCard from './custom_card';
 
 interface PremiumWidgetsLoadingProps {
   widgetStyle: PremiumWidgetStyles;
-  itemHeight?: number;
 }
 
 const PremiumWidgetsLoading: React.FC<PremiumWidgetsLoadingProps> = ({
   widgetStyle,
-  itemHeight,
 }) => {
   return (
     <CustomCard style={{
@@ -23,7 +21,7 @@ const PremiumWidgetsLoading: React.FC<PremiumWidgetsLoadingProps> = ({
         <Shimmer style={{ width: 105, height: 18, borderRadius: 4 }} />
       </View>
 
-      {widgetStyle === PremiumWidgetStyles.list ? (
+      {widgetStyle === PremiumWidgetStyles.list && (
         <View style={styles.listContainer}>
           {[...Array(4)].map((_, index) => (
             <View key={index} style={styles.listTile}>
@@ -38,14 +36,10 @@ const PremiumWidgetsLoading: React.FC<PremiumWidgetsLoadingProps> = ({
             </View>
           ))}
         </View>
-      ) : (
-        <>
-          <Shimmer style={{ width: '100%', height: itemHeight }} />
-        </>
       )}
 
       {widgetStyle === PremiumWidgetStyles.sliderCards && (
-        <Shimmer shimmerHeight={150} style={{ flexDirection: 'row', height: 150, }} />
+        <Shimmer shimmerHeight={150} style={{ flexDirection: 'row', height: 150, marginTop: 16 }} />
       )}
 
       <Shimmer shimmerHeight={42} style={{ flexDirection: 'row', height: 42, borderRadius: 21, marginVertical: 16 }} />
