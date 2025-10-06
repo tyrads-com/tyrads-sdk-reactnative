@@ -13,7 +13,7 @@ import AcmoOfferCard from './components/offer_card';
 import AcmoScrollPager from './components/custom_scroller';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
-import Tyrads from '../../../index';
+import TyradsNativeMethods from '../../core/helpers/native_methods';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -61,10 +61,10 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   };
 
   const handleButtonPress = async (campaign: Campaign) => {
-    let isReady = await Tyrads.isPrivacyAccepted()
+    let isReady = await TyradsNativeMethods.isPrivacyAccepted()
     if (!isReady) {
       try {
-        const result = await Tyrads.checkOnboardingProcess();
+        const result = await TyradsNativeMethods.checkOnboardingProcess();
         console.log("Privacy flow result:", result);
         isReady = result === true;
       } catch (err) {
