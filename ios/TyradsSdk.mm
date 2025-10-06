@@ -4,8 +4,8 @@
 
 RCT_EXTERN_METHOD(startObserving)
 RCT_EXTERN_METHOD(stopObserving)
-RCT_EXTERN_METHOD(init:(NSString *)apiKey 
-                  secretKey:(NSString *)secretKey 
+RCT_EXTERN_METHOD(init:(NSString *)apiKey
+                  secretKey:(NSString *)secretKey
                   encKey:(NSString * _Nullable)encKey
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
@@ -22,6 +22,13 @@ RCT_EXTERN_METHOD(showOfferDetails:(NSInteger)launchMode
                   campaignID:(NSInteger)campaignID
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(changeLanguage:(NSString *)lang)
+RCT_EXTERN_METHOD(changeLanguage:(NSString *)lang
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(isPrivacyAccepted:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(checkOnboardingProcess:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 
 @end
