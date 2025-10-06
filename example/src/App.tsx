@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
@@ -82,6 +82,14 @@ export default function App() {
     console.log('Button Clicked');
     const task = InteractionManager.runAfterInteractions(async () => {
       setLoading(true);
+      const prevUserId = await AsyncStorage.getItem('userId');
+
+      if (prevUserId && prevUserId === userId) {
+        console.log('Same userId detected, skipping re-initialization.');
+        await Tyrads.showOffers({ launchMode: 2 });
+        setLoading(false);
+        return;
+      }
       await saveCredentials();
       await Tyrads.init(apiKey, apiSecret, encKey);
       await Tyrads.loginUser(userId);
@@ -95,56 +103,64 @@ export default function App() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ marginTop: 40 }}>
-        <View style={styles.container}>
-          {isReady ? (
-            <Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />
-          ) : (
-            <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
-          )}
-          {/* {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />} */}
-          <View style={{ height: 20 }}></View>
-          <TextInput
-            style={styles.input}
-            placeholder="API Key"
-            value={apiKey}
-            onChangeText={setApiKey}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="API Secret"
-            value={apiSecret}
-            onChangeText={setApiSecret}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Encryption Key (optional)"
-            value={encKey}
-            onChangeText={setEncKey}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="User ID"
-            value={userId}
-            onChangeText={setUserId}
-          />
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12, }}>
-            <TouchableOpacity
-              style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
-              onPress={handleButtonClick}
-              disabled={isLoading}
-            >
-              {isLoading ?
-                <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'} /> :
-                null}
-              <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
-                Show Offers
-              </Text>
-            </TouchableOpacity>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          style={{ marginTop: 40 }}
+          // contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            {isReady ? (
+              <Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />
+            ) : (
+              <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
+            )}
+            <View style={{ height: 20 }}></View>
+            <TextInput
+              style={styles.input}
+              placeholder="API Key"
+              value={apiKey}
+              onChangeText={setApiKey}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="API Secret"
+              value={apiSecret}
+              onChangeText={setApiSecret}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Encryption Key (optional)"
+              value={encKey}
+              onChangeText={setEncKey}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="User ID"
+              value={userId}
+              onChangeText={setUserId}
+            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12, }}>
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={handleButtonClick}
+                disabled={isLoading}
+              >
+                {isLoading ?
+                  <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'} /> :
+                  null}
+                <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
+                  Show Offers
+                </Text>
+              </TouchableOpacity>
 
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
