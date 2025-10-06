@@ -259,7 +259,7 @@ public class Tyrads : NSObject {
   }
   public func getSkipUserUpdate() -> Bool{
     let key = "\(AcmoKeyNames.SKIP_FOR_USER_ID)\(self.publisherUserID)"
-    return UserDefaults.standard.bool(forKey: key)
+    return (UserDefaults.standard.bool(forKey: key) || newUser == false)
   }
 
   public func changeLanguage(_ lang: String) async {
