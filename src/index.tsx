@@ -132,6 +132,24 @@ const Tyrads = {
     return await TyradsSdk.changeLanguage(lang);
   },
 
+  isPrivacyAccepted: async () => {
+    try {
+      return await TyradsSdk.isPrivacyAccepted();
+    } catch (err) {
+      console.error("Error checking privacy acceptance:", err);
+      return false;
+    }
+  },
+
+  checkOnboardingProcess: async () => {
+    try {
+      const result = await TyradsSdk.checkOnboardingProcess();
+      return result === true;
+    } catch (err) {
+      console.error("Error showing privacy flow:", err);
+      return false;
+    }
+  }
 };
 
 export default Tyrads;

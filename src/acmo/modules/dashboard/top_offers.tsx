@@ -13,6 +13,7 @@ import AcmoOfferCard from './components/offer_card';
 import AcmoScrollPager from './components/custom_scroller';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
+import Tyrads from '../../../index';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -43,7 +44,7 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
       setCurrencySale,
       setActiveCount,
       setError,
-      setIsLoading
+      setIsLoading,
     );
 
   }, []);
@@ -60,6 +61,20 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   };
 
   const handleButtonPress = async (campaign: Campaign) => {
+    let isReady = await Tyrads.isPrivacyAccepted()
+    if (!isReady) {
+      try {
+        const result = await Tyrads.checkOnboardingProcess();
+        console.log("Privacy flow result:", result);
+        isReady = result === true;
+      } catch (err) {
+        console.error("Privacy flow error:", err);
+        isReady = false;
+      }
+    }
+    if (!isReady) {
+      return
+    }
     await openOffer(campaign);
     await fetchPremiumOfferDetails(
       setPremiumColor,
@@ -67,7 +82,7 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
       setCurrencySale,
       setActiveCount,
       setError,
-      setIsLoading
+      setIsLoading,
     );
   }
 
