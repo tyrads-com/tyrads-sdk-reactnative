@@ -5,6 +5,7 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
 
     var webView: WKWebView!
     var initialURL: URL
+    private var hasLoadedWithSkipParameter = false
   
     private let internalDomains: [String] = ["sdk.tyrads.com", "acmo.in"]
     
@@ -48,11 +49,30 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
             webView.isInspectable = true
         }
         
-        webView.load(URLRequest(url: initialURL))
+//        webView.load(URLRequest(url: initialURL))
+        loadURL()
         log("WebView loaded URL: \(initialURL.absoluteString)")
     }
+  private func loadURL() {
+    var components = URLComponents(url: initialURL, resolvingAgainstBaseURL: false)
+    let skipUserUpdate = Tyrads.instance.getSkipUserUpdate()
+    let skipValue = skipUserUpdate ? "true" : "false"
+    
+    components?.queryItems?.removeAll { $0.name == "skipUserInfo" }
+    components?.queryItems?.append(URLQueryItem(name: "skipUserInfo", value: skipValue))
+    
+    if let updatedURL = components?.url {
+      log("Loading URL with skipUserInfo=\(skipValue): \(updatedURL.absoluteString)")
+      let request = URLRequest(url: updatedURL)
+      webView.load(request)
+      hasLoadedWithSkipParameter = true
+    } else {
+      log("Failed to create updated URL, loading original")
+      webView.load(URLRequest(url: initialURL))
+    }
+  }
 
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+  public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == "clickHandler",
               let messageDict = message.body as? [String: Any] else {
             log("Received unknown message or invalid format.")
@@ -74,7 +94,9 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
             case "changeLanguage":
                 if let langCode = messageDict["value"] as? String {
                     log("Action: changeLanguage received. Language Code: \(langCode)")
-                  Tyrads.instance.changeLanguage(langCode)
+                  Task{
+                    await Tyrads.instance.changeLanguage(langCode)
+                  }
 //                  let value = UserDefaults.standard.string(forKey: "locale")
                 }
                 
