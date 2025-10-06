@@ -1,4 +1,5 @@
 import React from 'react';
+import {numeral} from '../../../core/helpers/numeral';
 import {
   View,
   Text,
@@ -7,7 +8,6 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import numeral from 'numeral';
 import { useLocalization } from '../../localization/localization_context';
 
 
@@ -77,7 +77,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
           <View style={styles.payoutRow}>
             {currencySales && (
               <Text style={styles.strikeText}>
-                {numeral(offer.campaignPayout.totalPlayablePayoutConverted).format('0.00a')}
+                {numeral(offer.campaignPayout.totalPlayablePayoutConverted)}
               </Text>
             )}
 
@@ -89,7 +89,7 @@ export const AcmoOfferListItem: React.FC<Props> = ({
             <Text style={styles.payoutText}>
               {numeral(
                 offer.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier
-              ).format('0.00a')}
+              )}
             </Text>
           </View>
         </View>

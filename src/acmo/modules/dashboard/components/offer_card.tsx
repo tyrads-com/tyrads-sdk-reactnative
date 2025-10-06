@@ -1,5 +1,5 @@
-import numeral from 'numeral';
 import React, { useState } from 'react';
+import {numeral} from '../../../core/helpers/numeral';
 import {
   View,
   Text,
@@ -71,13 +71,13 @@ const AcmoOfferCard: React.FC<Props> = ({
             <View style={styles.payoutSection}>
               {currencySaleModel?.multiplier && (
                 <Text style={styles.strikePayout}>
-                  {numeral(item.campaignPayout.totalPlayablePayoutConverted).format("0.00a").toUpperCase()}
+                  {numeral(item.campaignPayout.totalPlayablePayoutConverted)}
                 </Text>
               )}
               <View style={styles.payoutRow}>
                 <Image source={{ uri: item.currency.adUnitCurrencyIcon }} style={styles.currencyIcon} />
                 <Text style={styles.payoutText}>
-                  {numeral(item.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier).format("0.00a").toUpperCase()}
+                  {numeral(item.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier)}
                 </Text>
               </View>
             </View>
