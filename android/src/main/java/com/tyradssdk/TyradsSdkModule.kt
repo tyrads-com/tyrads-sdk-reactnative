@@ -22,6 +22,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+  private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private var languageJob: Job? = null
 
   override fun getName(): String {
@@ -127,6 +128,29 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
         promise.resolve(true)
       } catch (e: Exception) {
         promise.reject("CHANGE_LANGUAGE_ERROR", e.message)
+      }
+    }
+  }
+  @ReactMethod
+  fun isPrivacyAccepted(promise: Promise) {
+    Tyrads.getInstance().tyradScope.launch {
+      try {
+        val result = Tyrads.getInstance().isPrivacyAccepted()
+        promise.resolve(result)
+      } catch (e: Exception) {
+        promise.reject("PRIVACY_ERROR", e.message)
+      }
+    }
+  }
+
+  @ReactMethod
+  fun checkOnboardingProcess(promise: Promise) {
+    coroutineScope.launch {
+      try {
+        val result = Tyrads.getInstance().checkOnboardingProcess(reactApplicationContext)
+        promise.resolve(result)
+      } catch (e: Exception) {
+        promise.reject("ONBOARDING_PROCESS_ERROR", e.message)
       }
     }
   }
