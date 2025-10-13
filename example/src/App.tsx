@@ -15,6 +15,7 @@ export default function App() {
 
   const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [widgetKey, setWidgetKey] = useState(0);
 
   useEffect(() => {
     const task = InteractionManager.runAfterInteractions(async () => {
@@ -50,6 +51,7 @@ export default function App() {
     try {
       await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey);
       await Tyrads.loginUser(storedUserId);
+      setWidgetKey(prevKey => prevKey + 1);
       console.log('Initialized successfully');
     } catch (err) {
       console.log('Initialization error:', err);
@@ -83,16 +85,19 @@ export default function App() {
     const task = InteractionManager.runAfterInteractions(async () => {
       setLoading(true);
       const prevUserId = await AsyncStorage.getItem('userId');
+      let shouldReinit = false;
 
-      if (prevUserId && prevUserId === userId) {
+      if (prevUserId !== userId) {
+        shouldReinit = true;
+        console.log('Different userId detected, re-initializing.');
+        await saveCredentials();
+        await Tyrads.init(apiKey, apiSecret, encKey);
+        await Tyrads.loginUser(userId);
+        setWidgetKey(prevKey => prevKey + 1); 
+      } else {
         console.log('Same userId detected, skipping re-initialization.');
-        await Tyrads.showOffers({ launchMode: 2 });
-        setLoading(false);
-        return;
       }
-      await saveCredentials();
-      await Tyrads.init(apiKey, apiSecret, encKey);
-      await Tyrads.loginUser(userId);
+      
       await Tyrads.showOffers({ launchMode: 2 });
       setLoading(false);
     });
@@ -114,7 +119,7 @@ export default function App() {
         >
           <View style={styles.container}>
             {isReady ? (
-              <Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />
+              <Tyrads.topPremiumOffers key={widgetKey} widgetStyle={PremiumWidgetStyles.list} />
             ) : (
               <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
             )}
