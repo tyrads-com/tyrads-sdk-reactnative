@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   payoutRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 4,
   },
   strikeText: {
     fontSize: 12,
@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
   currencyIcon: {
     width: 14,
     height: 14,
-    marginHorizontal: 4,
   },
   payoutText: {
     fontSize: 12,
