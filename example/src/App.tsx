@@ -85,10 +85,8 @@ export default function App() {
     const task = InteractionManager.runAfterInteractions(async () => {
       setLoading(true);
       const prevUserId = await AsyncStorage.getItem('userId');
-      let shouldReinit = false;
 
       if (prevUserId !== userId) {
-        shouldReinit = true;
         console.log('Different userId detected, re-initializing.');
         await saveCredentials();
         await Tyrads.init(apiKey, apiSecret, encKey);
