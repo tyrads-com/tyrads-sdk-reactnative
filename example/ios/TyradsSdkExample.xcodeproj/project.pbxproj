@@ -490,8 +490,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4CXUGC85TS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TyradsSdkExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN SDK iFame";
@@ -508,6 +510,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnsdk.example;
 				PRODUCT_NAME = TyradsSdkExample;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "React Native SDK";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -521,8 +525,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4CXUGC85TS;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				INFOPLIST_FILE = TyradsSdkExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN SDK iFame";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
@@ -538,6 +544,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnsdk.example;
 				PRODUCT_NAME = TyradsSdkExample;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "React Native SDK";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
