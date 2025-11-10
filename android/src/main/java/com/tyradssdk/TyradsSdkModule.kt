@@ -58,10 +58,10 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun init(apiKey: String, apiSecret: String, encKey: String?, promise: Promise) {
+  fun init(apiKey: String, apiSecret: String, encKey: String?, engagementId: String?, promise: Promise) {
     Tyrads.getInstance().tyradScope.launch {
       try {
-        Tyrads.getInstance().init(reactApplicationContext, apiKey, apiSecret, encKey)
+        Tyrads.getInstance().init(reactApplicationContext, apiKey, apiSecret, encKey, engagementId)
 
         val lang = Tyrads.getInstance().currentLanguageCode.value
 

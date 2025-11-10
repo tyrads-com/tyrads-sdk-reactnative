@@ -31,8 +31,8 @@ const tyradsEmitter = new NativeEventEmitter(TyradsSdk);
 let languageChangedSubscription: any = null;
 
 const Tyrads = {
-  init: async (apiKey: string, apiSecret: string, encKey?: string) => {
-    const data = await TyradsSdk.init(apiKey, apiSecret, encKey);
+  init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string) => {
+    const data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
 
     await saveData("credentials", {
       'X-API-Key': apiKey,

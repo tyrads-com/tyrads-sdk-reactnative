@@ -14,6 +14,7 @@ public class Tyrads : NSObject {
     internal var apiKey: String = ""
     internal var apiSecret: String = ""
     internal var encKey: String?
+    internal var engagementId: String?
     internal var publisherUserID: String = ""
     internal var mainColor: String?
     private var token: String = ""
@@ -58,10 +59,11 @@ public class Tyrads : NSObject {
     /// - Parameters:
     ///   - apiKey: The API key provided by Tyrads.
     ///   - secretKey: The secret key provided by Tyrads.
-  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, debugMode: Bool = false) async -> String {
+  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, engagementId: String? = nil, debugMode: Bool = false) async -> String {
         self.apiKey = apiKey
         self.apiSecret = secretKey
         self.encKey = encKey
+        self.engagementId = engagementId
         self._isSecure = (encKey != nil)
         self.debugMode = debugMode
     
@@ -100,11 +102,14 @@ public class Tyrads : NSObject {
             advertisingId = ASIdentifierManager.shared().advertisingIdentifier.uuidString
             self.log("iOS version < 14. Advertising ID: \(advertisingId)")
         }
+      
+        let engagementId = self.engagementId
 
-        let fd: [String: Any] = [
+        let fd: [String: Any?] = [
             "publisherUserId": userId,
             "platform": "iOS",
             "identifierType": identifierType,
+            "engagementId": (engagementId != nil || engagementId != "") ? Int(engagementId!) : nil,
             "identifier": advertisingId,
             "deviceData": deviceDetails
         ]

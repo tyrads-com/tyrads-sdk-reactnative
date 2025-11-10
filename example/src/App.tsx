@@ -11,6 +11,7 @@ export default function App() {
   const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
   const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
   const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
+  const [engagementId, setEngagementId] = useState('');
   const [userId, setUserId] = useState('user5346');
 
   const [isReady, setReady] = useState(false);
@@ -49,7 +50,7 @@ export default function App() {
       return;
     }
     try {
-      await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey);
+      await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey, engagementId);
       await Tyrads.loginUser(storedUserId);
       setWidgetKey(prevKey => prevKey + 1);
       console.log('Initialized successfully');
@@ -89,7 +90,7 @@ export default function App() {
       if (prevUserId !== userId) {
         console.log('Different userId detected, re-initializing.');
         await saveCredentials();
-        await Tyrads.init(apiKey, apiSecret, encKey);
+        await Tyrads.init(apiKey, apiSecret, encKey, engagementId);
         await Tyrads.loginUser(userId);
         setWidgetKey(prevKey => prevKey + 1); 
       } else {
@@ -139,6 +140,12 @@ export default function App() {
               placeholder="Encryption Key (optional)"
               value={encKey}
               onChangeText={setEncKey}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Engagement ID (optional)"
+              value={engagementId}
+              onChangeText={setEngagementId}
             />
             <TextInput
               style={styles.input}

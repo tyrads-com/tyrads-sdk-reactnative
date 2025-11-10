@@ -13,7 +13,7 @@ class AcmoEncrypt {
       }
   }
   
-  func encryptDataAESGCM(data: [String: Any]) -> [String: String] {
+  func encryptDataAESGCM(data: [String: Any?]) -> [String: String] {
     do {
         let jsonData = try JSONSerialization.data(withJSONObject: data)
         let key = SymmetricKey(data: Data(encryptionKey.utf8))
