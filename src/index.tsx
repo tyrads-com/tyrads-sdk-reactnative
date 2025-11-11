@@ -5,6 +5,7 @@ import { saveData } from './acmo/core/storage/storage';
 import Localization from './acmo/core/services/localization_service';
 import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
 import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
+import TyradsNativeMethods from './acmo/core/helpers/native_methods';
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -32,6 +33,7 @@ let languageChangedSubscription: any = null;
 
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string) => {
+    TyradsNativeMethods.setSDKVersion();
     const data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
 
     await saveData("credentials", {
