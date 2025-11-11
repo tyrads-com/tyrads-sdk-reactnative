@@ -1,4 +1,5 @@
 import { NativeModules, Platform } from "react-native";
+import { AcmoConfig } from "../../../acmo_config";
 
 const LINKING_ERROR =
   `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -19,6 +20,11 @@ const TyradsSdk = NativeModules.TyradsSdk
 
 
 const TyradsNativeMethods = {
+
+  setSDKVersion: () => {
+    const version = AcmoConfig.SDK_VERSION;
+    TyradsSdk.setSDKVersion(version);
+  },
 
   isPrivacyAccepted: async () => {
     try {

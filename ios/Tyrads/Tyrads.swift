@@ -267,6 +267,10 @@ public class Tyrads : NSObject {
     let key = "\(AcmoKeyNames.SKIP_FOR_USER_ID)\(self.publisherUserID)"
     return (UserDefaults.standard.bool(forKey: key) || newUser == false)
   }
+  
+  public func setSDKVersion(_ sdkVersion: String) {
+    AcmoConfig.SDK_VERSION = sdkVersion
+  }
 
   public func changeLanguage(_ lang: String) async {
     self.currentLanguage = lang

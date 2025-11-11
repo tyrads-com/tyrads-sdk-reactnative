@@ -101,6 +101,11 @@ class TyradsSdk: RCTEventEmitter {
   }
   
   @objc
+  func setSDKVersion(_ version: String) {
+    Tyrads.instance.setSDKVersion(version)
+  }
+  
+  @objc
   func isPrivacyAccepted(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     let accepted = Tyrads.instance.isPrivacyAccepted()
     resolve(accepted)

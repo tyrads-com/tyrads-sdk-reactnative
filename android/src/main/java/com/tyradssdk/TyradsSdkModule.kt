@@ -131,6 +131,12 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
       }
     }
   }
+
+  @ReactMethod
+  fun setSDKVersion(version: String) {
+    Tyrads.getInstance().setUpSDKVersion(version)
+  }
+
   @ReactMethod
   fun isPrivacyAccepted(promise: Promise) {
     Tyrads.getInstance().tyradScope.launch {

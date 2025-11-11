@@ -26,6 +26,7 @@ RCT_EXTERN_METHOD(showOfferDetails:(NSInteger)launchMode
 RCT_EXTERN_METHOD(changeLanguage:(NSString *)lang
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(setSDKVersion: (NSString *) version)
 RCT_EXTERN_METHOD(isPrivacyAccepted:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(checkOnboardingProcess:(RCTPromiseResolveBlock)resolve
