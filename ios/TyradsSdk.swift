@@ -106,6 +106,31 @@ class TyradsSdk: RCTEventEmitter {
   }
   
   @objc
+  func setMediaSourceInfo(_ mediaSourceInfo: NSDictionary) {
+    do {
+      let data = try JSONSerialization.data(withJSONObject: mediaSourceInfo, options: [])
+      let decoded = try JSONDecoder().decode(TyradsMediaSourceInfo.self, from: data)
+      
+      Tyrads.instance.setMediaSourceInfo(decoded)
+    } catch {
+      NSLog("TyradsSDK Error: setMediaSourceInfo failed → \(error.localizedDescription)")
+    }
+  }
+  
+  @objc
+  func setUserInfo(_ userInfo: NSDictionary) {
+    do {
+      let data = try JSONSerialization.data(withJSONObject: userInfo, options: [])
+      let decoded = try JSONDecoder().decode(TyradsUserInfo.self, from: data)
+      
+      Tyrads.instance.setUserInfo(decoded)
+    } catch {
+      NSLog("TyradsSDK Error: setUserInfo failed → \(error.localizedDescription)")
+    }
+  }
+
+  
+  @objc
   func isPrivacyAccepted(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     let accepted = Tyrads.instance.isPrivacyAccepted()
     resolve(accepted)

@@ -27,6 +27,8 @@ RCT_EXTERN_METHOD(changeLanguage:(NSString *)lang
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(setSDKVersion: (NSString *) version)
+RCT_EXTERN_METHOD(setMediaSourceInfo:(NSDictionary *)mediaSourceInfo)
+RCT_EXTERN_METHOD(setUserInfo:(NSDictionary *)userInfo)
 RCT_EXTERN_METHOD(isPrivacyAccepted:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(checkOnboardingProcess:(RCTPromiseResolveBlock)resolve
