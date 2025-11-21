@@ -53,6 +53,9 @@ public class Tyrads : NSObject {
           self.initializationContinuation = continuation
       }
   }
+  
+  private var mediaSourceInfo: TyradsMediaSourceInfo?
+  private var userInfo: TyradsUserInfo?
 
     /// Configures the Tyrads SDK with the provided API key and secret key.
     ///
@@ -105,7 +108,7 @@ public class Tyrads : NSObject {
       
         let engagementId = self.engagementId
 
-        let fd: [String: Any?] = [
+        var fd: [String: Any?] = [
             "publisherUserId": userId,
             "platform": "iOS",
             "identifierType": identifierType,
@@ -113,6 +116,30 @@ public class Tyrads : NSObject {
             "identifier": advertisingId,
             "deviceData": deviceDetails
         ]
+      
+        if let info = mediaSourceInfo {
+            if let sub1 = info.sub1 { fd["sub1"] = sub1 }
+            if let sub2 = info.sub2 { fd["sub2"] = sub2 }
+            if let sub3 = info.sub3 { fd["sub3"] = sub3 }
+            if let sub4 = info.sub4 { fd["sub4"] = sub4 }
+            if let sub5 = info.sub5 { fd["sub5"] = sub5 }
+            if let mediaSourceName = info.mediaSourceName { fd["mediaSourceName"] = mediaSourceName }
+            if let mediaSourceId = info.mediaSourceId { fd["mediaSourceId"] = mediaSourceId }
+            if let mediaSubSourceId = info.mediaSubSourceId { fd["mediaSubSourceId"] = mediaSubSourceId }
+            if let incentivized = info.incentivized { fd["incentivized"] = incentivized }
+            if let mediaAdsetName = info.mediaAdsetName { fd["mediaAdsetName"] = mediaAdsetName }
+            if let mediaAdsetId = info.mediaAdsetId { fd["mediaAdsetId"] = mediaAdsetId }
+            if let mediaCreativeName = info.mediaCreativeName { fd["mediaCreativeName"] = mediaCreativeName }
+            if let mediaCreativeId = info.mediaCreativeId { fd["mediaCreativeId"] = mediaCreativeId }
+            if let mediaCampaignName = info.mediaCampaignName { fd["mediaCampaignName"] = mediaCampaignName }
+        }
+      
+
+        if let info = userInfo {
+            if let email = info.email { fd["email"] = email }
+            if let phoneNumber = info.phoneNumber { fd["phoneNumber"] = phoneNumber }
+            if let userGroup = info.userGroup { fd["userGroup"] = userGroup }
+        }
 
         self.log("Initializing with data: \(fd)")
         guard let url = URL(string: AcmoConfig.BASE_URL + "initialize") else {
@@ -270,6 +297,14 @@ public class Tyrads : NSObject {
   
   public func setSDKVersion(_ sdkVersion: String) {
     AcmoConfig.SDK_VERSION = sdkVersion
+  }
+  
+  public func setMediaSourceInfo(_ mediaSourceInfo: TyradsMediaSourceInfo){
+    self.mediaSourceInfo = mediaSourceInfo
+  }
+  
+  public func setUserInfo(_ userInfo: TyradsUserInfo){
+    self.userInfo = userInfo
   }
 
   public func changeLanguage(_ lang: String) async {
