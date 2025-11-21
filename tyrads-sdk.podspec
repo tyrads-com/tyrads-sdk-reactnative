@@ -16,9 +16,6 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   
-  s.dependency "Firebase/Core"
-  s.dependency "Firebase/Messaging"
-
   s.pod_target_xcconfig = {
     'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES',
     'OTHER_SWIFT_FLAGS' => '-DDEBUG'

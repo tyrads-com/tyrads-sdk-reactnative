@@ -74,7 +74,6 @@ public class Tyrads : NSObject {
         let deviceLocale = Locale.current.languageCode ?? "en"
         self.currentLanguage = savedLocale ?? deviceLocale
         await LocalizationService.shared.initialize(locale: self.currentLanguage)
-        FCMService.shared.initialize()
         return self.currentLanguage
     }
 
