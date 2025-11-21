@@ -3,11 +3,12 @@ import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicato
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
-import Tyrads from '../../src/index';
+import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
 // import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET, TYRADS_SDK_ENC_KEY } from '@env';
 
 
 export default function App() {
+  const [mediaSource, setMediaSource] = useState('');
   const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
   const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
   const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
@@ -87,16 +88,18 @@ export default function App() {
       setLoading(true);
       const prevUserId = await AsyncStorage.getItem('userId');
 
-      if (prevUserId !== userId) {
+      if (prevUserId !== userId || mediaSource !== '') {
         console.log('Different userId detected, re-initializing.');
         await saveCredentials();
-        await Tyrads.init(apiKey, apiSecret, encKey, engagementId);
+        await Tyrads.init(apiKey, apiSecret, encKey, engagementId,
+          (mediaSource != null && mediaSource !== '') ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
+        );
         await Tyrads.loginUser(userId);
-        setWidgetKey(prevKey => prevKey + 1); 
+        setWidgetKey(prevKey => prevKey + 1);
       } else {
         console.log('Same userId detected, skipping re-initialization.');
       }
-      
+
       await Tyrads.showOffers({ launchMode: 2 });
       setLoading(false);
     });
@@ -123,6 +126,12 @@ export default function App() {
               <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
             )}
             <View style={{ height: 20 }}></View>
+            <TextInput
+              style={styles.input}
+              placeholder="Media Source in JSON (optional)"
+              value={mediaSource}
+              onChangeText={setMediaSource}
+            />
             <TextInput
               style={styles.input}
               placeholder="API Key"
