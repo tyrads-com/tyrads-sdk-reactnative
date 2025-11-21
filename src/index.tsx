@@ -7,7 +7,7 @@ import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } 
 import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
 import TyradsNativeMethods from './acmo/core/helpers/native_methods';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types';
-export type { TyradsMediaSourceInfo } from './acmo/core/types/external_types'
+export type { TyradsMediaSourceInfo, TyradsUserInfo} from './acmo/core/types/external_types'
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
