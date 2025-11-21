@@ -6,6 +6,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableNativeMap
+import com.facebook.react.bridge.Arguments
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.google.gson.Gson
 import com.tyrads.sdk.Tyrads
+import com.tyrads.sdk.TyradsUserInfo
+import com.tyrads.sdk.TyradsMediaSourceInfo
 
 
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
@@ -135,6 +140,31 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun setSDKVersion(version: String) {
     Tyrads.getInstance().setUpSDKVersion(version)
+  }
+
+  @ReactMethod
+  fun setMediaSourceInfo(mediaSourceInfoMap: ReadableMap) {
+    try {
+      val jsonString = Gson().toJson(mediaSourceInfoMap.toHashMap())
+      val mediaSourceInfo = Gson().fromJson(jsonString, TyradsMediaSourceInfo::class.java)
+      Tyrads.getInstance().setMediaSourceInfo(mediaSourceInfo)
+      Log.d(NAME, "Received mediaSourceInfo: $jsonString")
+      Tyrads.getInstance().setMediaSourceInfo(mediaSourceInfo)
+    } catch (e: Exception) {
+      Log.e(NAME, "Error setting MediaSourceInfo", e)
+    }
+  }
+  @ReactMethod
+  fun setUserInfo(userInfoMap: ReadableMap) {
+    try {
+      val jsonString = Gson().toJson(userInfoMap.toHashMap())
+      val userInfo = Gson().fromJson(jsonString, TyradsUserInfo::class.java)
+      Tyrads.getInstance().setUserInfo(userInfo)      
+      Log.d(NAME, "Received userInfo: $jsonString")
+      Tyrads.getInstance().setUserInfo(userInfo)
+    } catch (e: Exception) {
+      Log.e(NAME, "Error setting UserInfo", e)
+    }
   }
 
   @ReactMethod
