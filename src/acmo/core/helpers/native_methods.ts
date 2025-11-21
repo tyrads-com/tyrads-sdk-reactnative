@@ -1,5 +1,6 @@
 import { NativeModules, Platform } from "react-native";
 import { AcmoConfig } from "../../../acmo_config";
+import type { TyradsMediaSourceInfo, TyradsUserInfo } from "../types/external_types";
 
 const LINKING_ERROR =
   `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -25,6 +26,15 @@ const TyradsNativeMethods = {
     const version = AcmoConfig.SDK_VERSION;
     TyradsSdk.setSDKVersion(version);
   },
+
+  setMediaSourceInfo: (mediaSourceInfo: TyradsMediaSourceInfo) => {
+    TyradsSdk.setMediaSourceInfo(mediaSourceInfo);
+  },
+
+  setUserInfo: (userInfo: TyradsUserInfo) => {
+    TyradsSdk.setUserInfo(userInfo);
+  },
+
 
   isPrivacyAccepted: async () => {
     try {
