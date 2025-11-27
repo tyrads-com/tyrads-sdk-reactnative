@@ -105,13 +105,16 @@ public class Tyrads : NSObject {
             self.log("iOS version < 14. Advertising ID: \(advertisingId)")
         }
       
-        let engagementId = self.engagementId
-
+        let engagementIDInt: Int? = {
+          guard let engagementId = self.engagementId, !engagementId.isEmpty else { return nil }
+          return Int(engagementId)
+        }()
+      
         var fd: [String: Any?] = [
             "publisherUserId": userId,
             "platform": "iOS",
             "identifierType": identifierType,
-            "engagementId": (engagementId != nil || engagementId != "") ? Int(engagementId!) : nil,
+            "engagementId": engagementIDInt,
             "identifier": advertisingId,
             "deviceData": deviceDetails
         ]
