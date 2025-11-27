@@ -11,7 +11,7 @@ export default function App() {
   const [mediaSource, setMediaSource] = useState('');
   const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
   const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
-  const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
+  const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
   const [userId, setUserId] = useState('user5346');
 
@@ -35,12 +35,10 @@ export default function App() {
   const initialization = async ({
     storedApiKey,
     storedApiSecret,
-    storedEncKey,
     storedUserId,
   }: {
     storedApiKey: string,
     storedApiSecret: string,
-    storedEncKey: string,
     storedUserId: string
   }) => {
     if (!storedApiKey || !storedApiSecret || !storedUserId) {
@@ -51,7 +49,7 @@ export default function App() {
       return;
     }
     try {
-      await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey, engagementId);
+      await Tyrads.init(storedApiKey, storedApiSecret, encKey, engagementId);
       await Tyrads.loginUser(storedUserId);
       setWidgetKey(prevKey => prevKey + 1);
       console.log('Initialized successfully');
@@ -63,15 +61,13 @@ export default function App() {
   const loadStoredCredentials = async () => {
     const storedApiKey = await AsyncStorage.getItem('apiKey') || apiKey;
     const storedApiSecret = await AsyncStorage.getItem('apiSecret') || apiSecret;
-    const storedEncKey = await AsyncStorage.getItem('encKey') || encKey;
     const storedUserId = await AsyncStorage.getItem('userId') || userId;
 
     setApiKey(storedApiKey);
     setApiSecret(storedApiSecret);
-    setEncKey(storedEncKey);
     setUserId(storedUserId);
 
-    return { storedApiKey, storedApiSecret, storedEncKey, storedUserId };
+    return { storedApiKey, storedApiSecret, storedUserId };
   };
 
 
