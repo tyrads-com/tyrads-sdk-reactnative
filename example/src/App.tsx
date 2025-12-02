@@ -4,13 +4,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
 import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
-// import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET, TYRADS_SDK_ENC_KEY } from '@env';
+import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET } from '@env';
 
 
 export default function App() {
   const [mediaSource, setMediaSource] = useState('');
-  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
-  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
+  const [apiKey, setApiKey] = useState(TYRADS_SDK_KEY);
+  const [apiSecret, setApiSecret] = useState(TYRADS_SDK_SECRET);
   const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
   const [userId, setUserId] = useState('user5346');
