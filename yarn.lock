@@ -3360,6 +3360,7 @@ __metadata:
     react: 19.0.0
     react-native: 0.79.2
     react-native-builder-bob: ^0.29.0
+    react-native-linear-gradient: ^2.8.3
     release-it: ^15.0.0
     turbo: ^1.10.7
     typescript: ^5.2.2
@@ -11104,6 +11105,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-linear-gradient@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "react-native-linear-gradient@npm:2.8.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: f980d324e551bbc475c6406bdc5250a08242020cbe653412fa169bbdf51e28a502e225de105b4d696d6a1a1b733d44782469020f4936d8b3ce0e2c78e51cf58f
+  languageName: node
+  linkType: hard
+
 "react-native@npm:0.79.2":
   version: 0.79.2
   resolution: "react-native@npm:0.79.2"
@@ -12945,6 +12956,7 @@ __metadata:
     react-native: 0.79.2
     react-native-builder-bob: ^0.29.0
     react-native-config: ^1.6.1
+    react-native-linear-gradient: ^2.8.3
   languageName: unknown
   linkType: soft
 
