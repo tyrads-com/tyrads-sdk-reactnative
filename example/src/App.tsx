@@ -4,7 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
 import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
-import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET } from '@env';
+import Config from 'react-native-config';
+
+const TYRADS_SDK_KEY = Config.TYRADS_SDK_KEY;
+const TYRADS_SDK_SECRET = Config.TYRADS_SDK_SECRET;
 
 
 export default function App() {
