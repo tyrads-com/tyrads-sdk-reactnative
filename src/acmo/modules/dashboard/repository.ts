@@ -2,17 +2,6 @@ import axios from 'axios';
 import { getData } from '../../core/storage/storage';
 import { acmoLaunchURLForce } from '../../core/helpers/launcher';
 
-interface ApiHeaders {
-  languageCode: string;
-  premiumColor: string;
-  xUserId: string;
-  xApiKey: string;
-  xApiSecret: string;
-  xSdkPlatform: string;
-  xSdkVersion: string;
-  userAgent: string;
-}
-
 export const fetchPremiumOfferDetails = async (
   setPremiumColor: (color: string) => void,
   setCampaigns: (campaigns: Campaign[]) => void,
