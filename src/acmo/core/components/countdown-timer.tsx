@@ -38,7 +38,7 @@ export const CountdownTimer: React.FC<CountdownTimerProps> = ({
     const pad = (num: number) => num.toString().padStart(2, '0');
 
     if (days > 0) {
-      return `${days} d ${pad(hours)} h`;
+      return `${pad(days)} d ${pad(hours)} h`;
     } else {
       return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
     }
