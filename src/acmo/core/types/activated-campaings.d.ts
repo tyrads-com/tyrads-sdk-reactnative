@@ -17,6 +17,7 @@ interface ActivatedCampaign {
   status: string;
   expiredOn: null | string;
   app: App;
+  currency: Currency;
   isRetryDownload: boolean;
   capReached: boolean;
   group: null | string;
@@ -39,6 +40,15 @@ interface App {
   thumbnail: string;
   confidenceScore: number;
   securityLabel: string;
+}
+
+interface Currency {
+  name: string;
+  symbol: string;
+  adUnitName: string;
+  adUnitCurrencyName: string;
+  adUnitCurrencyConversion: number;
+  adUnitCurrencyIcon: string;
 }
 
 interface CampaignEventSummary {
@@ -66,4 +76,9 @@ interface LimitedTimeEvent {
   isLimitedTimeEvent: boolean;
   limitedTimeEventRemainingSeconds: number;
   isTicketSubmitted: boolean;
+  dailyCount: null | number;
+  dailyLimit: null | number;
+  count: null | number;
+  limit: null | number;
 }
+
