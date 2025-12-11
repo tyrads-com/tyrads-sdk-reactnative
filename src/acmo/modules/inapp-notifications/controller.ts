@@ -42,6 +42,34 @@ class InAppNotificationController {
       );
     return allCampaigns;
   }
+
+  public showCountdown(event: LimitedTimeEvent): boolean {
+    const { allowDuplicateEvents, conversionStatus, dailyCount, dailyLimit } = event;
+    const isDailyLimitIncomplete = dailyCount === null || dailyLimit === null || dailyCount < dailyLimit;
+
+    if (!allowDuplicateEvents) {
+      return conversionStatus === null;
+    }
+    if (isDailyLimitIncomplete) {
+      return true;
+    }
+    return false;
+  }
+
+  public getFinalStatusString(event: LimitedTimeEvent): 'Completed' | 'Rejected' | '' {
+    const { allowDuplicateEvents, conversionStatus, dailyCount, dailyLimit } = event;
+    if (!allowDuplicateEvents) {
+      if (conversionStatus === 'approved') return 'Completed';
+      if (conversionStatus === 'rejected') return 'Rejected';
+    }
+
+    const isDailyLimitComplete = dailyCount !== null && dailyLimit !== null && dailyCount === dailyLimit;
+    if (allowDuplicateEvents && isDailyLimitComplete) {
+      return 'Completed';
+    }
+    return '';
+  }
+
 }
 
 export default InAppNotificationController;
