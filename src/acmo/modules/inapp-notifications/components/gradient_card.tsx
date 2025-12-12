@@ -21,7 +21,13 @@ export const CardGradient: React.FC<CardGradientProps> = ({
   return (
     <View style={styles.wrapper}>
       <View style={styles.topLeftIcon}>
-        <Image source={require('../../../../assets/images/coin.png')} />
+        <Image 
+        source={require('../../../../assets/images/coin.png')} 
+        style={{
+          width: 110,
+          height: 110,
+        }}
+        />
       </View>
       <LinearGradient
         colors={gradientColors}
