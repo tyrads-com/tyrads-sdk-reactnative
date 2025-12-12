@@ -7,6 +7,8 @@ import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } 
 import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
 import TyradsNativeMethods from './acmo/core/helpers/native_methods';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types';
+import NetworkCommon from './acmo/core/network/network-common';
+import InAppNotificationController from './acmo/modules/inapp-notifications/controller';
 export type { TyradsMediaSourceInfo, TyradsUserInfo} from './acmo/core/types/external_types'
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
@@ -83,6 +85,8 @@ const Tyrads = {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
       }
+      await NetworkCommon.getInstance().init();
+      await InAppNotificationController.getInstance().init();
       return data;
     } catch (err) {
       return null;
