@@ -5,12 +5,14 @@ import { CardGradient } from "../components/gradient_card";
 import { CountdownTimer } from "../../../core/components/countdown-timer";
 import TyradsNativeMethods from "../../../core/helpers/native_methods";
 import InAppNotificationController from "../controller";
+import NotificationManager from "../notification-manager";
 
 export const CurrencySalesNotif: React.FC = () => {
 
   const [visible, setVisible] = useState(false);
   const [currencySales, setCurrencySales] = useState<CurrencySales | null>(null);
   const controller = InAppNotificationController.getInstance();
+  const notificationManager = NotificationManager.getInstance();
 
   useEffect(() => {
     if (controller.currencySales) {
@@ -19,18 +21,37 @@ export const CurrencySalesNotif: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const unsubscribe = notificationManager.addListener(() => {
+      updateVisibility();
+    });
+    
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (currencySales) {
-      setVisible(true);
+      notificationManager.setCurrencySalesVisible(true);
+      updateVisibility();
+    } else {
+      notificationManager.setCurrencySalesVisible(false);
     }
   }, [currencySales]);
 
+  const updateVisibility = () => {
+    const shouldShow = notificationManager.shouldShowCurrencySales();
+    setVisible(shouldShow);
+  };
+
   const handleClose = () => {
     setVisible(false);
+    notificationManager.setCurrencySalesVisible(false);
   };
 
   const handleButtonPress = () => {
-    TyradsNativeMethods.showOffers();
-    // handleClose();
+    handleClose();
+    setTimeout(() => {  
+      TyradsNativeMethods.showOffers({launchMode: 2});
+    }, 400)
   };
 
   return (
