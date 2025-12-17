@@ -1,7 +1,28 @@
 declare module 'react-native-config' {
   export interface NativeConfig {
-    TYRADS_SDK_KEY: string;
-    TYRADS_SDK_SECRET: string;
+    ANDROID_TYRREWARD_SDK_KEY: string;
+    ANDROID_TYRREWARD_SDK_SECRET: string;
+    ANDROID_BELANDA1_TYRADS_SDK_KEY: string;
+    ANDROID_BELANDA1_TYRADS_SDK_SECRET: string;
+    ANDROID_BELANDA1_TYRADS_SDK_ENC_KEY: string;
+    ANDROID_BELANDA2_TYRADS_SDK_KEY: string;
+    ANDROID_BELANDA2_TYRADS_SDK_SECRET: string;
+    ANDROID_BELANDA2_TYRADS_SDK_ENC_KEY: string;
+    ANDROID_BELANDA3_TYRADS_SDK_KEY: string;
+    ANDROID_BELANDA3_TYRADS_SDK_SECRET: string;
+    ANDROID_BELANDA3_TYRADS_SDK_ENC_KEY: string;
+    IOS_TYRREWARD_SDK_IOS_KEY: string;
+    IOS_TYRREWARD_SDK_IOS_SECRET: string;
+    IOS_TYRREWARD_SDK_IOS_ENC_KEY: string;
+    IOS_BELANDA1_SDK_IOS_KEY: string;
+    IOS_BELANDA1_SDK_IOS_SECRET: string;
+    IOS_BELANDA1_SDK_IOS_ENC_KEY: string;
+    IOS_BELANDA2_SDK_IOS_KEY: string;
+    IOS_BELANDA2_SDK_IOS_SECRET: string;
+    IOS_BELANDA2_SDK_IOS_ENC_KEY: string;
+    IOS_BELANDA3_SDK_IOS_KEY: string;
+    IOS_BELANDA3_SDK_IOS_SECRET: string;
+    IOS_BELANDA3_SDK_IOS_ENC_KEY: string;
   }
   const Config: NativeConfig;
   export default Config;
