@@ -44,10 +44,6 @@
     "react-native-config": {
       "version": "^1.6.1",
       "integrated": true
-    },
-    "react-native-dotenv": {
-      "version": "^3.4.11",
-      "integrated": false
     }
   }
 }
