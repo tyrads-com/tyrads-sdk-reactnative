@@ -5,9 +5,16 @@ import React
 
 
 @objc(TyradsSdk)
-class TyradsSdk: RCTEventEmitter {
+class TyradsSdk: RCTEventEmitter , APNsNotificationListener{
+  
+  private var pushEventSink: RCTResponseSenderBlock?
   
   private var cancellable: AnyCancellable?
+
+  override init() {
+    super.init()
+    APNsNotificationReceiver.shared.setListener(self)
+  }
   
   override func startObserving() {
     cancellable = Tyrads.instance.languagePublisher
@@ -19,10 +26,33 @@ class TyradsSdk: RCTEventEmitter {
   override func stopObserving() {
     cancellable?.cancel()
     cancellable = nil
+    APNsNotificationReceiver.shared.clearAll()
+  }
+  
+  func onNotificationReceived(userInfo: [AnyHashable : Any]) {
+    sendEvent(withName: "PushNotificationEvent", body: [
+          "type": "received",
+          "data": userInfo
+        ])
+  }
+  
+  func onNotificationClicked(identifier: String, userInfo: [AnyHashable : Any]) {
+    sendEvent(withName: "PushNotificationEvent", body: [
+          "type": "clicked",
+          "id": identifier,
+          "data": userInfo
+        ])
+  }
+  
+  func onNotificationDismissed(identifier: String) {
+    sendEvent(withName: "PushNotificationEvent", body: [
+          "type": "dismissed",
+          "id": identifier
+        ])
   }
   
   override func supportedEvents() -> [String]! {
-    return ["LanguageChanged"]
+    return ["LanguageChanged", "PushNotificationEvent"]
   }
   
   @objc
@@ -143,5 +173,20 @@ class TyradsSdk: RCTEventEmitter {
       resolver(result)
     }
   }
+  
+  // APNs
+  @objc(pushRequestPermission:rejecter:)
+    func pushRequestPermission(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+      APNsNotificationManager.shared.requestPermission { success in
+        resolve(success)
+      }
+    }
+    
+    @objc(pushGetApnsToken:rejecter:)
+    func pushGetApnsToken(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+      APNsNotificationManager.shared.getToken { token in
+        resolve(token)
+      }
+    }
 
 }
