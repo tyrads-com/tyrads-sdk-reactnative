@@ -17,6 +17,7 @@ struct AcmoKeyNames {
     static let PLAY_INTEGRITY_TOKEN = "\(PREFIX)play_integrity_token"
     static let USERNAME = "\(PREFIX)username"
     static let FCM_TOKEN = "\(PREFIX)fcm_token"
+    static let APNS_TOKEN = "\(PREFIX)apns_token"
     static let USER_DATA = "\(PREFIX)user_data"
     static let ADVERTISING_ID = "\(PREFIX)advertising_id"
     static let TRACKED_CAMPAIGNS_FOR_USER_ID = "\(PREFIX)tracked_campaigns_for_user_id_"

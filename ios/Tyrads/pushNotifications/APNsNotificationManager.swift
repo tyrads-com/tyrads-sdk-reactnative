@@ -9,59 +9,59 @@ import UIKit
 import UserNotifications
 
 public final class APNsNotificationManager {
-
-    public static let shared = APNsNotificationManager()
-    private init() {}
-
-    private var token: String?
-    private var tokenCallbacks: [(String) -> Void] = []
+  
+  public static let shared = APNsNotificationManager()
+  private init() {}
+  
+  private var token: String?
+  private var tokenCallbacks: [(String) -> Void] = []
+  
+  private let storageKey: String = AcmoKeyNames.APNS_TOKEN
+  
+  public func requestPermission(completion: @escaping (Bool) -> Void) {
+    UNUserNotificationCenter.current()
+      .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+        DispatchQueue.main.async {
+          if granted {
+            UIApplication.shared.registerForRemoteNotifications()
+          }
+          completion(granted)
+        }
+      }
+  }
+  
+  public func hasPermission(completion: @escaping (Bool) -> Void) {
+    UNUserNotificationCenter.current().getNotificationSettings {
+      completion($0.authorizationStatus == .authorized)
+    }
+  }
+  
+  public func onTokenReceived(_ deviceToken: Data) {
+    let hex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+    token = hex
+    UserDefaults.standard.set(hex, forKey: storageKey)
     
-    private let storageKey: String = "tyrads-apn-token"
-
-    public func requestPermission(completion: @escaping (Bool) -> Void) {
-        UNUserNotificationCenter.current()
-            .requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-                DispatchQueue.main.async {
-                    if granted {
-                        UIApplication.shared.registerForRemoteNotifications()
-                    }
-                    completion(granted)
-                }
-            }
+    tokenCallbacks.forEach { $0(hex) }
+    tokenCallbacks.removeAll()
+  }
+  
+  public func getToken(completion: @escaping (String?) -> Void) {
+    if let token = token {
+      completion(token)
+      return
     }
-
-    public func hasPermission(completion: @escaping (Bool) -> Void) {
-        UNUserNotificationCenter.current().getNotificationSettings {
-            completion($0.authorizationStatus == .authorized)
-        }
+    
+    if let stored = UserDefaults.standard.string(forKey: storageKey) {
+      token = stored
+      completion(stored)
+      return
     }
-
-    public func onTokenReceived(_ deviceToken: Data) {
-        let hex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
-        token = hex
-        UserDefaults.standard.set(hex, forKey: storageKey)
-
-        tokenCallbacks.forEach { $0(hex) }
-        tokenCallbacks.removeAll()
-    }
-
-    public func getToken(completion: @escaping (String?) -> Void) {
-        if let token = token {
-            completion(token)
-            return
-        }
-
-        if let stored = UserDefaults.standard.string(forKey: storageKey) {
-            token = stored
-            completion(stored)
-            return
-        }
-
-        tokenCallbacks.append { completion($0) }
-        UIApplication.shared.registerForRemoteNotifications()
-    }
-
-    public func clearAllNotifications() {
-        APNsNotificationReceiver.shared.clearAll()
-    }
+    
+    tokenCallbacks.append { completion($0) }
+    UIApplication.shared.registerForRemoteNotifications()
+  }
+  
+  public func clearAllNotifications() {
+    APNsNotificationReceiver.shared.clearAll()
+  }
 }

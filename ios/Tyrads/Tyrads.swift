@@ -110,15 +110,18 @@ public class Tyrads : NSObject {
           return Int(engagementId)
         }()
       
+        let storedToken = UserDefaults.standard.string(forKey: AcmoKeyNames.APNS_TOKEN)
+      
         var fd: [String: Any?] = [
             "publisherUserId": userId,
             "platform": "iOS",
+            "devicePushToken": storedToken,
             "identifierType": identifierType,
             "engagementId": engagementIDInt,
             "identifier": advertisingId,
             "deviceData": deviceDetails
         ]
-      
+        print("Initial Data: \(fd)")
         if let info = mediaSourceInfo {
             if let sub1 = info.sub1 { fd["sub1"] = sub1 }
             if let sub2 = info.sub2 { fd["sub2"] = sub2 }
