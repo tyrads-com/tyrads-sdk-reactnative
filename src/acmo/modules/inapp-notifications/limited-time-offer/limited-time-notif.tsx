@@ -20,7 +20,7 @@ export const LimitedTimeEventsNotif: React.FC = () => {
 
   useEffect(() => {
     if (controller.limitedTimeEvents) {
-      const limitedTimeEventsArray = Array.from(controller.limitedTimeEvents);
+      const limitedTimeEventsArray = controller.limitedTimeEvents;
       Logger.log('limitedTimeEvents', limitedTimeEventsArray)
       setLimitedTimeEvents(limitedTimeEventsArray);
     }
@@ -58,7 +58,7 @@ export const LimitedTimeEventsNotif: React.FC = () => {
             </View>
         )}
         sliderWidth={(SCREEN_WIDTH * 0.9) - 32}
-        itemWidth={(SCREEN_WIDTH * 0.65)}
+        itemWidth={limitedTimeEvents?.length == 1 ? (SCREEN_WIDTH * 0.82) : (SCREEN_WIDTH * 0.65)}
         loop={false}
         paginationContainerStyle={{
           marginTop: 16,

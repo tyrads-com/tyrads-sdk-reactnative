@@ -12,7 +12,7 @@ class InAppNotificationController {
   }
 
   public currencySales: CurrencySales | null = null;
-  public limitedTimeEvents: Set<ActivatedCampaign> | null = null;
+  public limitedTimeEvents: Array<ActivatedCampaign> | null = null;
 
   public async init() {
     const result = await Promise.all([
@@ -23,12 +23,13 @@ class InAppNotificationController {
     this.currencySales = result[0];
     const activeOffers = result[1]?.data || [];
     const limitedTimeEvents = this.filterLimitedOffersWithEvents(activeOffers);
-    this.limitedTimeEvents = new Set(limitedTimeEvents);
+    this.limitedTimeEvents = limitedTimeEvents;
   }
   private filterLimitedOffersWithEvents(
     activeOffers: ActivatedCampaignsData[]
   ): ActivatedCampaign[] {
     const allCampaigns = activeOffers
+      .filter(group => group.groupName.toLocaleLowerCase() == "hotdeals")
       .flatMap(offer => offer.campaigns)
       .filter(campaign => campaign.limitedTimeEvents.length > 0)
       .filter(campaign =>
@@ -40,7 +41,10 @@ class InAppNotificationController {
           event.conversionStatus?.toLowerCase() !== "approved"
         )
       );
-    return allCampaigns;
+    const uniqueCampaigns = allCampaigns.filter((campaign, index, self) =>
+      index === self.findIndex((c) => c.campaignId === campaign.campaignId)
+    );
+    return uniqueCampaigns;
   }
 
   public showCountdown(event: LimitedTimeEvent): boolean {
