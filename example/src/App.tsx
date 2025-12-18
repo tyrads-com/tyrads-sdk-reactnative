@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text, KeyboardAvoidingView, Platform, Modal, FlatList } from 'react-native';
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
@@ -6,14 +6,10 @@ import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers
 import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
 import Config from 'react-native-config';
 
-const TYRADS_SDK_KEY = Config.TYRADS_SDK_KEY;
-const TYRADS_SDK_SECRET = Config.TYRADS_SDK_SECRET;
-
-
 export default function App() {
   const [mediaSource, setMediaSource] = useState('');
-  const [apiKey, setApiKey] = useState(TYRADS_SDK_KEY);
-  const [apiSecret, setApiSecret] = useState(TYRADS_SDK_SECRET);
+  const [apiKey, setApiKey] = useState('');
+  const [apiSecret, setApiSecret] = useState('');
   const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
   const [userId, setUserId] = useState('user5346');
@@ -22,90 +18,94 @@ export default function App() {
   const [isLoading, setLoading] = useState(false);
   const [widgetKey, setWidgetKey] = useState(0);
 
-  useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(async () => {
-      const creds = await loadStoredCredentials()
-      await initialization(creds);
-      setReady(true);
-    });
+  const [selectedConfig, setSelectedConfig] = useState('belanda1');
+  const isAndroid = Platform.OS === 'android';
 
-    return () => {
-      task.cancel();
+  const configOptions = [
+    { label: 'Tyrreward', value: 'tyrreward' },
+    { label: 'Belanda 1', value: 'belanda1' },
+    { label: 'Belanda 2', value: 'belanda2' },
+    { label: 'Belanda 3', value: 'belanda3' },
+  ];
+
+  const getConfigKeys = async (): Promise<{ apiKey: string; apiSecret: string; encKey: string; }> => {
+    const storedConfig = await AsyncStorage.getItem('selectedConfig');
+    if (storedConfig) {
+      setSelectedConfig(storedConfig);
+    }
+    const platformPrefix = isAndroid ? 'ANDROID_' : 'IOS_';
+    const configPrefix = selectedConfig === 'tyrreward' ? 'TYRREWARD' : `BELANDA${selectedConfig === 'belanda1' ? '1' : selectedConfig === 'belanda2' ? '2' : '3'}_TYRADS`;
+
+    const keyName = `${platformPrefix}${configPrefix}_SDK_KEY`;
+    const secretName = `${platformPrefix}${configPrefix}_SDK_SECRET`;
+    const encName = `${platformPrefix}${configPrefix}_SDK_ENC_KEY`;
+    console.log("Key Name", keyName);
+
+
+    return {
+      apiKey: (Config as any)[keyName] || '',
+      apiSecret: (Config as any)[secretName] || '',
+      encKey: (Config as any)[encName] || ''
     };
-  }, []);
-
-
-  const initialization = async ({
-    storedApiKey,
-    storedApiSecret,
-    storedUserId,
-  }: {
-    storedApiKey: string,
-    storedApiSecret: string,
-    storedUserId: string
-  }) => {
-    if (!storedApiKey || !storedApiSecret || !storedUserId) {
-      Alert.alert(
-        'Missing Fields',
-        'These fields (API Key, Secret, User ID) are required.'
-      );
-      return;
-    }
-    try {
-      await Tyrads.init(storedApiKey, storedApiSecret, encKey, engagementId);
-      await Tyrads.loginUser(storedUserId);
-      setWidgetKey(prevKey => prevKey + 1);
-      console.log('Initialized successfully');
-    } catch (err) {
-      console.log('Initialization error:', err);
-    }
   };
 
-  const loadStoredCredentials = async () => {
-    const storedApiKey = await AsyncStorage.getItem('apiKey') || apiKey;
-    const storedApiSecret = await AsyncStorage.getItem('apiSecret') || apiSecret;
-    const storedUserId = await AsyncStorage.getItem('userId') || userId;
+  useEffect(() => {
+    const syncAndInit = async () => {
+      try {
+        setReady(false);
 
-    setApiKey(storedApiKey);
-    setApiSecret(storedApiSecret);
-    setUserId(storedUserId);
+        const keys = await getConfigKeys();
+        const storedUserId = await AsyncStorage.getItem('userId') || userId;
 
-    return { storedApiKey, storedApiSecret, storedUserId };
-  };
+        setApiKey(keys.apiKey);
+        setApiSecret(keys.apiSecret);
+        setEncKey(keys.encKey);
 
+        if (keys.apiKey && keys.apiSecret) {
+          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId);
+          await Tyrads.loginUser(storedUserId);
 
-  const saveCredentials = async () => {
-    await AsyncStorage.setItem('apiKey', apiKey);
-    await AsyncStorage.setItem('apiSecret', apiSecret);
-    await AsyncStorage.setItem('encKey', encKey);
-    await AsyncStorage.setItem('userId', userId);
-  };
+          setWidgetKey(prev => prev + 1);
+          setReady(true);
+        }
+      } catch (error) {
+        console.error('Initialization error:', error);
+      }
+    };
+
+    const task = InteractionManager.runAfterInteractions(syncAndInit);
+    return () => task.cancel();
+  }, [selectedConfig, isAndroid]);
 
   const handleButtonClick = async () => {
-    console.log('Button Clicked');
-    const task = InteractionManager.runAfterInteractions(async () => {
-      setLoading(true);
-      const prevUserId = await AsyncStorage.getItem('userId');
+    setLoading(true);
+    try {
+      const lastUserId = await AsyncStorage.getItem('userId');
 
-      if (prevUserId !== userId || mediaSource !== '') {
-        console.log('Different userId detected, re-initializing.');
-        await saveCredentials();
+      if (lastUserId !== userId || mediaSource !== '') {
+        console.log('Credentials or User changed. Re-initializing...');
+
         await Tyrads.init(apiKey, apiSecret, encKey, engagementId,
-          (mediaSource != null && mediaSource !== '') ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
+          mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined
         );
         await Tyrads.loginUser(userId);
-        setWidgetKey(prevKey => prevKey + 1);
-      } else {
-        console.log('Same userId detected, skipping re-initialization.');
+        await AsyncStorage.setItem('userId', userId);
+        setWidgetKey(prev => prev + 1);
       }
 
       await Tyrads.showOffers({ launchMode: 2 });
+    } catch (err) {
+      Alert.alert("Error", "Failed to show offers");
+      console.log(err);
+    } finally {
       setLoading(false);
-    });
-    return () => {
-      task.cancel();
-    };
+    }
   };
+
+  const onConfigChange = async (value: string) => {
+    setSelectedConfig(value)
+    await AsyncStorage.setItem('selectedConfig', value);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -125,6 +125,13 @@ export default function App() {
               <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
             )}
             <View style={{ height: 20 }}></View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Select Config:</Text>
+              <Dropdown options={configOptions} selectedValue={selectedConfig} onValueChange={onConfigChange} />
+              <Text style={styles.platformInfo}>
+                Platform: {isAndroid ? 'Android' : 'iOS'} | Config: {selectedConfig.toUpperCase()}
+              </Text>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Media Source in JSON (optional)"
@@ -199,4 +206,76 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
+  inputContainer: { width: '100%', marginBottom: 10 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 5, color: '#333' },
+  dropdownButton: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 20
+  },
+  dropdownList: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    maxHeight: 300,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  item: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  platformInfo: { fontSize: 12, color: '#666', fontStyle: 'italic' },
 });
+
+
+const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value: string, label: string }[], selectedValue: string, onValueChange: (value: string) => void }) => {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <View style={{ marginBottom: 4 }}>
+      <TouchableOpacity
+        style={styles.dropdownButton}
+        onPress={() => setVisible(true)}
+      >
+        <Text>{options.filter((option) => option.value === selectedValue)[0]?.label || "Select an option..."}</Text>
+      </TouchableOpacity>
+
+      <Modal visible={visible} transparent animationType="fade">
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          onPress={() => setVisible(false)}
+        >
+          <View style={styles.dropdownList}>
+            <FlatList
+              data={options}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.item}
+                  onPress={() => {
+                    onValueChange(item.value);
+                    setVisible(false);
+                  }}
+                >
+                  <Text>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
+};
