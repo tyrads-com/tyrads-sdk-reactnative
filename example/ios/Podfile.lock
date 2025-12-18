@@ -1706,6 +1706,30 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNCPicker (2.11.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - SocketRocket (0.7.1)
   - tyrads-sdk (3.3.1):
     - DoubleConversion
@@ -1808,6 +1832,7 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - tyrads-sdk (from `../..`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1961,6 +1986,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCPicker:
+    :path: "../node_modules/@react-native-picker/picker"
   tyrads-sdk:
     :path: "../.."
   Yoga:
@@ -2039,6 +2066,7 @@ SPEC CHECKSUMS:
   ReactCodegen: 041559ba76d00f6680dfa0916b3c791f4babe5ea
   ReactCommon: 1511ef100f1afa4c199fe52fe7a8d2529a41429a
   RNCAsyncStorage: c1dca434eda758348a549efb46822b4091d76804
+  RNCPicker: d957426e631657b70d391c4193db87c91c8406b3
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   tyrads-sdk: 8b93ad35cc930e09c9d92662850bae17a76a54e9
   Yoga: 50518ade05048235d91a78b803336dbb5b159d5d
