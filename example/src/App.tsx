@@ -249,7 +249,10 @@ const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value:
         style={styles.dropdownButton}
         onPress={() => setVisible(true)}
       >
-        <Text>{options.filter((option) => option.value === selectedValue)[0]?.label || "Select an option..."}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={{ color: 'black' }}>{options.filter((option) => option.value === selectedValue)[0]?.label || "Select an option..."}</Text>
+          <Text>{!visible ? '\u25bc' : '\u25b2'}</Text>
+        </View>
       </TouchableOpacity>
 
       <Modal visible={visible} transparent animationType="fade">
