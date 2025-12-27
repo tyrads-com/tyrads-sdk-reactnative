@@ -272,7 +272,7 @@ const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value:
                     setVisible(false);
                   }}
                 >
-                  <Text>{item.label}</Text>
+                  <Text style={{ color: 'black' }}>{item.label}</Text>
                 </TouchableOpacity>
               )}
             />
