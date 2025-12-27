@@ -7,7 +7,7 @@ import { CardGradient } from "../components/gradient_card";
 import { Logger } from "../../../core/helpers/logger";
 import { LimitedTimeOfferCard } from "./components/limited-time-offer-card";
 import SnapCarousel from "../../../core/components/snap-carousel";
-import NotificationManager from "../notification-manager";
+import NotificationManager from "../inapp-notification-manager";
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width
@@ -28,7 +28,7 @@ export const LimitedTimeEventsNotif: React.FC = () => {
 
   useEffect(() => {
     const hasEvents = limitedTimeEvents?.length !== undefined && limitedTimeEvents?.length > 0;
-    
+
     if (hasEvents) {
       notificationManager.setLimitedTimeVisible(true);
       setVisible(true);
@@ -52,10 +52,10 @@ export const LimitedTimeEventsNotif: React.FC = () => {
         renderItem={({ item, index }: { item: ActivatedCampaign; index: number }) => (
           <View key={index} style={{ paddingHorizontal: 6 }}>
 
-          <LimitedTimeOfferCard
-            activatedCampaign={item}
+            <LimitedTimeOfferCard
+              activatedCampaign={item}
             />
-            </View>
+          </View>
         )}
         sliderWidth={(SCREEN_WIDTH * 0.9) - 32}
         itemWidth={limitedTimeEvents?.length == 1 ? (SCREEN_WIDTH * 0.82) : (SCREEN_WIDTH * 0.65)}

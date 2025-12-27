@@ -5,7 +5,7 @@ import { CardGradient } from "../components/gradient_card";
 import { CountdownTimer } from "../../../core/components/countdown-timer";
 import TyradsNativeMethods from "../../../core/helpers/native_methods";
 import InAppNotificationController from "../controller";
-import NotificationManager from "../notification-manager";
+import NotificationManager from "../inapp-notification-manager";
 
 export const CurrencySalesNotif: React.FC = () => {
 

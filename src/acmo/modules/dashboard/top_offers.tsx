@@ -14,9 +14,8 @@ import AcmoOfferCard from './components/offer_card';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
 import TyradsNativeMethods from '../../core/helpers/native_methods';
-import { CurrencySalesNotif } from '../inapp-notifications/currency-sales/currency-sales-notif';
-import { LimitedTimeEventsNotif } from '../inapp-notifications/limited-time-offer/limited-time-notif';
 import SnapCarousel from '../../core/components/snap-carousel';
+import InAppNotificationHost from '../inapp-notifications/inapp-notification-host';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -90,18 +89,22 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
     );
   }
 
+
   if (isLoading) {
     return (
-      <PremiumWidgetsLoading
-        widgetStyle={widgetStyle}
-      />
+      <>
+        <InAppNotificationHost />
+        <PremiumWidgetsLoading
+          widgetStyle={widgetStyle}
+        />
+      </>
     );
   }
 
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <LimitedTimeEventsNotif />
+        <InAppNotificationHost />
         <Text style={styles.errorText}>Error: {error}</Text>
       </View>
     );
@@ -109,16 +112,18 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
 
 
   if (campaigns.length === 0) {
-    return <PremiumEmptyView
-      colorPremium={premiumColor}
-      onContinue={handleShowOffers}
-    />
+    return <>
+      <InAppNotificationHost />
+      <PremiumEmptyView
+        colorPremium={premiumColor}
+        onContinue={handleShowOffers}
+      />
+    </>;
   }
 
   return (
     <CustomCard>
-      <LimitedTimeEventsNotif />
-      <CurrencySalesNotif />
+      <InAppNotificationHost />
       <View style={{ flex: 1 }}>
         <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
