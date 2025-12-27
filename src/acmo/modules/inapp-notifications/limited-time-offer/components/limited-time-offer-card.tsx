@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: '100%',
     maxWidth: '100%',
+    height: 378,
     padding: 16,
     backgroundColor: '#FFF9ED',
     overflow: 'hidden',
