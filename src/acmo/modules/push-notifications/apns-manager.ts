@@ -13,8 +13,8 @@ class ApnsManager {
   private static instance: ApnsManager;
   private tokenFetched: boolean = false;
   private pushEventSubscriptions: any[] = [];
-  
-  private constructor() {}
+
+  private constructor() { }
 
   static getInstance(): ApnsManager {
     if (!ApnsManager.instance) {
@@ -44,42 +44,42 @@ class ApnsManager {
     }
 
     try {
-    const token = await this._fetchTokenWithRetry(3);
-    if (token) {
-      console.log('APNs token:', token);
-      this.tokenFetched = true;
-      this.emit('tokenFetched', token);
-    } else {
-      console.log('APNs token not available after retries');
+      const token = await this._fetchTokenWithRetry(3);
+      if (token) {
+        console.log('APNs token:', token);
+        this.tokenFetched = true;
+        this.emit('tokenFetched', token);
+      } else {
+        console.log('APNs token not available after retries');
+      }
+    } catch (error) {
+      console.log('APNs token fetch failed:', error);
     }
-  } catch (error) {
-    console.log('APNs token fetch failed:', error);
-  }
   }
 
   private async _fetchTokenWithRetry(maxRetries: number): Promise<string | null> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`Fetching APNs token (attempt ${attempt}/${maxRetries})...`);
-      
-      const token = await TyradsNativeMethods.getApnsToken();
-      
-      if (token && typeof token === 'string' && token.length > 0) {
-        return token;
-      }
-      
-      if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    } catch (error) {
-      console.log(`Attempt ${attempt} failed:`, error);
-      if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Fetching APNs token (attempt ${attempt}/${maxRetries})...`);
+
+        const token = await TyradsNativeMethods.getApnsToken();
+
+        if (token && typeof token === 'string' && token.length > 0) {
+          return token;
+        }
+
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      } catch (error) {
+        console.log(`Attempt ${attempt} failed:`, error);
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
       }
     }
+    return null;
   }
-  return null;
-}
 
 
   private async _requestPushPermission(): Promise<void> {
@@ -98,7 +98,7 @@ class ApnsManager {
         this._handlePushEvent(event);
       }
     );
-    
+
     this.pushEventSubscriptions.push(subscription);
   }
 
@@ -118,33 +118,23 @@ class ApnsManager {
 
   private _onNotificationReceived(userInfo: any): void {
     console.log('Notification received:', userInfo);
-    
-    // Add your custom logic here:
-    // - Show local notification
-    // - Update app state
-    // - Trigger custom events
     this.emit('notificationReceived', userInfo);
   }
 
-  /**
-   * Called when a notification is clicked
-   */
-  private _onNotificationClicked(identifier: string, userInfo: any): void {
+  private async _onNotificationClicked(identifier: string, userInfo: any): Promise<void> {
     console.log('Notification clicked:', identifier, userInfo);
-    
-    // Add your custom logic here:
-    // - Navigate to specific screen
-    // - Handle deep linking
-    // - Process notification data
+    const deepLink = userInfo['deepLink']
     this.emit('notificationClicked', { identifier, userInfo });
+    if (deepLink != null && deepLink != '') {
+      await TyradsNativeMethods.showOffers({
+        route: deepLink,
+        launchMode: 2,
+      });
+    }
   }
 
   private _onNotificationDismissed(identifier: string): void {
     console.log('Notification dismissed:', identifier);
-    
-    // Add your custom logic here:
-    // - Clean up resources
-    // - Update UI
     this.emit('notificationDismissed', identifier);
   }
 
