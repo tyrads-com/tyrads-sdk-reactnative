@@ -12,7 +12,7 @@ export default function App() {
   const [apiSecret, setApiSecret] = useState('');
   const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
-  const [userId, setUserId] = useState('user5346');
+  const [userId, setUserId] = useState('');
 
   const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
@@ -55,7 +55,8 @@ export default function App() {
         setReady(false);
 
         const keys = await getConfigKeys();
-        const storedUserId = await AsyncStorage.getItem('userId') || userId;
+        const storedUserId = await AsyncStorage.getItem('userId') || 'user123';
+        setUserId(storedUserId);
 
         setApiKey(keys.apiKey);
         setApiSecret(keys.apiSecret);
