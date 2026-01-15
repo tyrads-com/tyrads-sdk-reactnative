@@ -1,4 +1,6 @@
 import InAppNotificationRepo from "./repository";
+import { getData, saveData } from "../../core/storage/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 class InAppNotificationController {
   private static instance: InAppNotificationController | null = null;
@@ -14,13 +16,56 @@ class InAppNotificationController {
   public currencySales: CurrencySales | null = null;
   public limitedTimeEvents: Array<ActivatedCampaign> | null = null;
 
+  private async getUserId(): Promise<string> {
+    try {
+      const data = await AsyncStorage.getItem('apiHeaders');
+      if (!data) return 'default';
+      const parsed = JSON.parse(data);
+      const headers = typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+      return headers['xUserId'] || 'default';
+    } catch {
+      return 'default';
+    }
+  }
+
+  private async getCurrencySalesKey(): Promise<string> {
+    const userId = await this.getUserId();
+    return `currency_sales_shown_${userId}`;
+  }
+
+  private async getLimitedTimeOffersKey(): Promise<string> {
+    const userId = await this.getUserId();
+    return `limited_time_offers_shown_${userId}`;
+  }
+
+  public async markCurrencySalesAsShown() {
+    const key = await this.getCurrencySalesKey();
+    await saveData(key, true);
+  }
+
+  public async markLimitedTimeOffersAsShown() {
+    const key = await this.getLimitedTimeOffersKey();
+    await saveData(key, true);
+  }
+
   public async init() {
-    const result = await Promise.all([
-      InAppNotificationRepo.getInstance().fetchCurrencySales(),
-      InAppNotificationRepo.getInstance().fetchLimitedTimeOffers(),
+    const [currencySalesShown, limitedTimeOffersShown] = await Promise.all([
+      getData<boolean>(await this.getCurrencySalesKey()),
+      getData<boolean>(await this.getLimitedTimeOffersKey()),
     ]);
 
-    this.currencySales = result[0];
+    const tasks: [Promise<CurrencySales | null>, Promise<ActivatedCampaignsResponse | null>] = [
+      !currencySalesShown
+        ? InAppNotificationRepo.getInstance().fetchCurrencySales()
+        : Promise.resolve(null),
+      !limitedTimeOffersShown
+        ? InAppNotificationRepo.getInstance().fetchLimitedTimeOffers()
+        : Promise.resolve(null),
+    ];
+
+    const result = await Promise.all(tasks);
+
+    this.currencySales = result[0] || null;
     const activeOffers = result[1]?.data || [];
     const limitedTimeEvents = this.filterLimitedOffersWithEvents(activeOffers);
     this.limitedTimeEvents = limitedTimeEvents;

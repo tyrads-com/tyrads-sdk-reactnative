@@ -32,6 +32,7 @@ export const LimitedTimeEventsNotif: React.FC = () => {
     if (hasEvents) {
       notificationManager.setLimitedTimeVisible(true);
       setVisible(true);
+      controller.markLimitedTimeOffersAsShown();
     } else {
       notificationManager.setLimitedTimeVisible(false);
     }

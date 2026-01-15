@@ -24,7 +24,7 @@ export const CurrencySalesNotif: React.FC = () => {
     const unsubscribe = notificationManager.addListener(() => {
       updateVisibility();
     });
-    
+
     return unsubscribe;
   }, []);
 
@@ -40,6 +40,9 @@ export const CurrencySalesNotif: React.FC = () => {
   const updateVisibility = () => {
     const shouldShow = notificationManager.shouldShowCurrencySales();
     setVisible(shouldShow);
+    if (shouldShow) {
+      controller.markCurrencySalesAsShown();
+    }
   };
 
   const handleClose = () => {
@@ -49,8 +52,8 @@ export const CurrencySalesNotif: React.FC = () => {
 
   const handleButtonPress = () => {
     handleClose();
-    setTimeout(() => {  
-      TyradsNativeMethods.showOffers({launchMode: 2});
+    setTimeout(() => {
+      TyradsNativeMethods.showOffers({ launchMode: 2 });
     }, 400)
   };
 
