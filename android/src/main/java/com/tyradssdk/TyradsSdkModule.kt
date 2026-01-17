@@ -7,36 +7,93 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.bridge.Arguments
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.google.gson.Gson
 import com.tyrads.sdk.Tyrads
 import com.tyrads.sdk.TyradsUserInfo
 import com.tyrads.sdk.TyradsMediaSourceInfo
+import com.tyrads.sdk.acmo.modules.push_notifications.FCMNotifications
+import com.tyrads.sdk.acmo.modules.push_notifications.TyradsNotificationListener
 
+import com.facebook.react.bridge.ActivityEventListener
+import android.content.Intent
 
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext) {
+  ReactContextBaseJavaModule(reactContext), ActivityEventListener {
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
   private var languageJob: Job? = null
+  private val gson = Gson()
+
+  private var cachedEvents = mutableListOf<String>()
+  private var isObserving = false
 
   override fun getName(): String {
     return NAME
   }
 
+  init {
+    reactContext.addActivityEventListener(this)
+    setupNotificationListener()
+  }
+
+  override fun onActivityResult(activity: android.app.Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
+    // Not needed
+  }
+
+  override fun onNewIntent(intent: Intent?) {
+    intent?.let {
+      FCMNotifications.getInstance().handleNotificationIntent(it)
+    }
+  }
+
+
+  private fun setupNotificationListener() {
+    FCMNotifications.getInstance().setNotificationListener(object : TyradsNotificationListener {
+      override fun onNotificationReceived(data: Map<String, String>) {
+        val payload = mapOf(
+          "type" to "received",
+          "data" to data
+        )
+        sendEvent("PushNotificationEvent", gson.toJson(payload))
+      }
+
+      override fun onNotificationClicked(data: Map<String, String>) {
+        val payload = mapOf(
+          "type" to "clicked",
+          "data" to data
+        )
+        sendEvent("PushNotificationEvent", gson.toJson(payload))
+      }
+
+      override fun onNotificationDismissed(data: Map<String, String>) {
+        val payload = mapOf(
+          "type" to "dismissed",
+          "data" to data
+        )
+        sendEvent("PushNotificationEvent", gson.toJson(payload))
+      }
+    })
+  }
+
   private fun sendEvent(eventName: String, data: String) {
+    if (!isObserving) {
+        Log.d("TyradsSdkModule", "Not observing, caching event: $eventName")
+        cachedEvents.add(data)
+        return
+    }
+
     val reactContext = reactApplicationContext
-    if (reactContext.hasActiveCatalystInstance()) {
+    val isActive = reactContext.hasActiveCatalystInstance()
+    Log.d("TyradsSdkModule", "sendEvent: $eventName, isActive: $isActive")
+    if (isActive) {
       scope.launch {
         reactContext
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -47,6 +104,15 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun startObserving() {
+    isObserving = true
+    Log.d("TyradsSdkModule", "startObserving: flushing ${cachedEvents.size} events")
+    
+    val eventsToFlush = ArrayList(cachedEvents)
+    cachedEvents.clear()
+    eventsToFlush.forEach { data ->
+        sendEvent("PushNotificationEvent", data)
+    }
+
     if (languageJob?.isActive == true) return
 
     languageJob = scope.launch {
@@ -56,8 +122,10 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
+
   @ReactMethod
   fun stopObserving() {
+    isObserving = false
     languageJob?.cancel()
     languageJob = null
   }
@@ -75,13 +143,12 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
           "languageCode" to lang
         )
 
-        promise.resolve(Gson().toJson(result))
+        promise.resolve(gson.toJson(result))
       } catch (e: Exception) {
         promise.reject("INIT_ERROR", e.message)
       }
     }
   }
-
 
   @ReactMethod
   fun loginUser(userId: String, promise: Promise) {
@@ -90,7 +157,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
         val apiHeaders = Tyrads.getInstance().loginUser(userId)
         Log.i("bmd", "apiHeaders: $apiHeaders")
         if (apiHeaders != null) {
-          val jsonString = Gson().toJson(apiHeaders)
+          val jsonString = gson.toJson(apiHeaders)
           promise.resolve(jsonString)
         } else {
           promise.resolve(null)
@@ -145,23 +212,22 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun setMediaSourceInfo(mediaSourceInfoMap: ReadableMap) {
     try {
-      val jsonString = Gson().toJson(mediaSourceInfoMap.toHashMap())
-      val mediaSourceInfo = Gson().fromJson(jsonString, TyradsMediaSourceInfo::class.java)
-      Tyrads.getInstance().setMediaSourceInfo(mediaSourceInfo)
+      val jsonString = gson.toJson(mediaSourceInfoMap.toHashMap())
+      val mediaSourceInfo = gson.fromJson(jsonString, TyradsMediaSourceInfo::class.java)
       Log.d(NAME, "Received mediaSourceInfo: $jsonString")
       Tyrads.getInstance().setMediaSourceInfo(mediaSourceInfo)
     } catch (e: Exception) {
       Log.e(NAME, "Error setting MediaSourceInfo", e)
     }
   }
+
   @ReactMethod
   fun setUserInfo(userInfoMap: ReadableMap) {
     try {
-      val jsonString = Gson().toJson(userInfoMap.toHashMap())
-      val userInfo = Gson().fromJson(jsonString, TyradsUserInfo::class.java)
-      Tyrads.getInstance().setUserInfo(userInfo)      
+      val jsonString = gson.toJson(userInfoMap.toHashMap())
+      val userInfo = gson.fromJson(jsonString, TyradsUserInfo::class.java)
       Log.d(NAME, "Received userInfo: $jsonString")
-      Tyrads.getInstance().setUserInfo(userInfo)
+      Tyrads.getInstance().setUserInfo(userInfo)      
     } catch (e: Exception) {
       Log.e(NAME, "Error setting UserInfo", e)
     }
