@@ -1,11 +1,14 @@
 package com.tyradssdk
 
 import android.util.Log
+import android.content.Intent
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.Arguments
 import kotlinx.coroutines.CoroutineScope
@@ -21,11 +24,8 @@ import com.tyrads.sdk.TyradsMediaSourceInfo
 import com.tyrads.sdk.acmo.modules.push_notifications.FCMNotifications
 import com.tyrads.sdk.acmo.modules.push_notifications.TyradsNotificationListener
 
-import com.facebook.react.bridge.ActivityEventListener
-import android.content.Intent
-
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
-  ReactContextBaseJavaModule(reactContext), ActivityEventListener {
+  ReactContextBaseJavaModule(reactContext), ActivityEventListener, LifecycleEventListener {
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -34,6 +34,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
 
   private var cachedEvents = mutableListOf<String>()
   private var isObserving = false
+  private var lastHandledIntent: Intent? = null
 
   override fun getName(): String {
     return NAME
@@ -41,8 +42,21 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
 
   init {
     reactContext.addActivityEventListener(this)
+    reactContext.addLifecycleEventListener(this)
     setupNotificationListener()
   }
+
+  override fun onHostResume() {
+      val intent = currentActivity?.intent
+      if (intent != null && intent != lastHandledIntent) {
+          FCMNotifications.getInstance().handleNotificationIntent(intent)
+          lastHandledIntent = intent
+      }
+  }
+
+  override fun onHostPause() {}
+  override fun onHostDestroy() {}
+
 
   override fun onActivityResult(activity: android.app.Activity?, requestCode: Int, resultCode: Int, data: Intent?) {
     // Not needed
@@ -85,14 +99,14 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
 
   private fun sendEvent(eventName: String, data: String) {
     if (!isObserving) {
-        Log.d("TyradsSdkModule", "Not observing, caching event: $eventName")
+        Log.i("TyradsSDK", "JS side not ready. Caching event: $eventName")
         cachedEvents.add(data)
         return
     }
 
     val reactContext = reactApplicationContext
     val isActive = reactContext.hasActiveCatalystInstance()
-    Log.d("TyradsSdkModule", "sendEvent: $eventName, isActive: $isActive")
+    Log.i("TyradsSDK", "Emitting event to JS: $eventName (Bridge Active: $isActive)")
     if (isActive) {
       scope.launch {
         reactContext
