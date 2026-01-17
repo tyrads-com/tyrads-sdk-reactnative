@@ -8,7 +8,8 @@ import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_l
 import TyradsNativeMethods from './acmo/core/helpers/native_methods';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types';
 import { ApnsManager } from './acmo/modules/push-notifications/apns-manager';
-export type { TyradsMediaSourceInfo, TyradsUserInfo} from './acmo/core/types/external_types'
+import { FcmManager } from './acmo/modules/push-notifications/fcm-manager';
+export type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 
 // const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
 
@@ -70,7 +71,12 @@ const Tyrads = {
 
     await saveData("language", languageCode);
     await Localization.getInstance().init(languageCode);
-    ApnsManager.getInstance().init().catch(console.error);
+    if (Platform.OS === 'android') {
+      FcmManager.getInstance().init().catch(console.error);
+    }
+    if (Platform.OS === 'ios') {
+      ApnsManager.getInstance().init().catch(console.error);
+    }
     await updateProviderLanguage(languageCode);
 
     return data;
