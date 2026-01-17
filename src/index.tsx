@@ -59,6 +59,16 @@ const Tyrads = {
       }
     } catch { }
 
+    await saveData("language", languageCode);
+    await Localization.getInstance().init(languageCode);
+
+    if (Platform.OS === 'android') {
+      await FcmManager.getInstance().init().catch(console.error);
+    }
+    if (Platform.OS === 'ios') {
+      await ApnsManager.getInstance().init().catch(console.error);
+    }
+
     TyradsSdk.startObserving();
     languageChangedSubscription?.remove();
     languageChangedSubscription = tyradsEmitter.addListener(
@@ -68,15 +78,6 @@ const Tyrads = {
         await changeProviderLanguage(lang);
       }
     );
-
-    await saveData("language", languageCode);
-    await Localization.getInstance().init(languageCode);
-    if (Platform.OS === 'android') {
-      FcmManager.getInstance().init().catch(console.error);
-    }
-    if (Platform.OS === 'ios') {
-      ApnsManager.getInstance().init().catch(console.error);
-    }
     await updateProviderLanguage(languageCode);
 
     return data;
@@ -90,6 +91,11 @@ const Tyrads = {
       } else if (typeof data === "string") {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
+      }
+      if (Platform.OS === 'android') {
+        FcmManager.getInstance().setLoggedIn(true);
+      } else {
+        ApnsManager.getInstance().setLoggedIn(true);
       }
       return data;
     } catch (err) {
