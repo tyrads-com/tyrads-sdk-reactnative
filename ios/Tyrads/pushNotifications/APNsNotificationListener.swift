@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol APNsNotificationListener {
+@objc public protocol APNsNotificationListener {
     func onNotificationReceived(userInfo: [AnyHashable: Any])
     func onNotificationClicked(identifier: String, userInfo: [AnyHashable: Any])
     func onNotificationDismissed(identifier: String)

@@ -8,10 +8,11 @@
 import UIKit
 import UserNotifications
 
-public final class APNsNotificationManager {
+@objc(APNsNotificationManager)
+public final class APNsNotificationManager: NSObject {
   
-  public static let shared = APNsNotificationManager()
-  private init() {}
+  @objc public static let shared = APNsNotificationManager()
+  private override init() { super.init() }
   
   private var token: String?
   private var tokenCallbacks: [(String) -> Void] = []
@@ -36,7 +37,7 @@ public final class APNsNotificationManager {
     }
   }
   
-  public func onTokenReceived(_ deviceToken: Data) {
+  @objc public func onTokenReceived(_ deviceToken: Data) {
     let hex = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
     token = hex
     UserDefaults.standard.set(hex, forKey: storageKey)

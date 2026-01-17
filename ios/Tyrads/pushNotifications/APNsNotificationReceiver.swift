@@ -8,9 +8,10 @@
 import UserNotifications
 import UIKit
 
-final class APNsNotificationReceiver: NSObject, UNUserNotificationCenterDelegate {
+@objc(APNsNotificationReceiver)
+public final class APNsNotificationReceiver: NSObject, UNUserNotificationCenterDelegate {
 
-    public static let shared = APNsNotificationReceiver()
+    @objc public static let shared = APNsNotificationReceiver()
     private var listener: APNsNotificationListener?
 
     private override init() {
@@ -59,8 +60,7 @@ final class APNsNotificationReceiver: NSObject, UNUserNotificationCenterDelegate
         completionHandler()
     }
     
-    // Silent / background push
-    public func handleSilentNotification(userInfo: [AnyHashable: Any]) {
+    @objc public func handleSilentNotification(userInfo: [AnyHashable: Any]) {
         listener?.onNotificationReceived(userInfo: userInfo)
     }
 
