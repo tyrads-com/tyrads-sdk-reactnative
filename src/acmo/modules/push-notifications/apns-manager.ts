@@ -15,6 +15,8 @@ class ApnsManager {
   private pushEventSubscriptions: any[] = [];
 
   private initialized = false;
+  private isLoggedIn = false;
+  private pendingEvent: { identifier: string; userInfo: any } | null = null;
 
   private constructor() { }
 
@@ -23,6 +25,15 @@ class ApnsManager {
       ApnsManager.instance = new ApnsManager();
     }
     return ApnsManager.instance;
+  }
+
+  setLoggedIn(status: boolean): void {
+    this.isLoggedIn = status;
+    if (this.isLoggedIn && this.pendingEvent) {
+      const { identifier, userInfo } = this.pendingEvent;
+      this.pendingEvent = null;
+      this._onNotificationClicked(identifier, userInfo);
+    }
   }
 
   async init(): Promise<void> {
@@ -132,9 +143,16 @@ class ApnsManager {
   private async _onNotificationClicked(identifier: string, userInfo: any): Promise<void> {
     console.log('Notification clicked:', identifier, userInfo);
     const deepLink = userInfo['deepLink']
+
+    if (!this.isLoggedIn && deepLink) {
+      console.log('Notification clicked (iOS) but user not logged in. Queueing navigation.');
+      this.pendingEvent = { identifier, userInfo };
+      this.emit('notificationClicked', { identifier, userInfo });
+      return;
+    }
+
     this.emit('notificationClicked', { identifier, userInfo });
     if (deepLink != null && deepLink != '') {
-      // Small delay to ensure activity transition is complete
       setTimeout(() => {
         TyradsNativeMethods.showOffers({
           route: deepLink,

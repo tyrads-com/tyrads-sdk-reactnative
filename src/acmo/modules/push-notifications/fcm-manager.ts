@@ -14,6 +14,8 @@ class FcmManager {
   private pushEventSubscriptions: any[] = [];
 
   private initialized = false;
+  private isLoggedIn = false;
+  private pendingEvent: { identifier: string; userInfo: any } | null = null;
 
   private constructor() { }
 
@@ -22,6 +24,15 @@ class FcmManager {
       FcmManager.instance = new FcmManager();
     }
     return FcmManager.instance;
+  }
+
+  setLoggedIn(status: boolean): void {
+    this.isLoggedIn = status;
+    if (this.isLoggedIn && this.pendingEvent) {
+      const { identifier, userInfo } = this.pendingEvent;
+      this.pendingEvent = null;
+      this._onNotificationClicked(identifier, userInfo);
+    }
   }
 
   async init(): Promise<void> {
@@ -76,6 +87,12 @@ class FcmManager {
   private async _onNotificationClicked(identifier: string, userInfo: any): Promise<void> {
     console.log('Notification clicked:', identifier, userInfo);
     const deepLink = userInfo['deepLink']
+
+    if (!this.isLoggedIn && deepLink) {
+      this.pendingEvent = { identifier, userInfo };
+      this.emit('notificationClicked', { identifier, userInfo });
+      return;
+    }
     this.emit('notificationClicked', { identifier, userInfo });
     if (deepLink != null && deepLink != '') {
       setTimeout(() => {
