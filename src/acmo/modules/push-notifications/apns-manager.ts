@@ -14,6 +14,8 @@ class ApnsManager {
   private tokenFetched: boolean = false;
   private pushEventSubscriptions: any[] = [];
 
+  private initialized = false;
+
   private constructor() { }
 
   static getInstance(): ApnsManager {
@@ -29,10 +31,15 @@ class ApnsManager {
       return;
     }
 
+    if (this.initialized) {
+      return;
+    }
+
     try {
       this._requestPushPermission();
       this._fetchTokenSafely();
       this._setupPushEventListeners();
+      this.initialized = true;
     } catch (error) {
       console.error('Failed to initialize APNs manager:', error);
     }
@@ -95,7 +102,8 @@ class ApnsManager {
     const subscription = TyradsNativeMethods.addPushNotificationListener(
       (event: PushNotificationEvent) => {
         console.log('Push event:', event);
-        this._handlePushEvent(event);
+        const eventParsed = typeof event === 'string' ? JSON.parse(event) : event;
+        this._handlePushEvent(eventParsed);
       }
     );
 
@@ -126,10 +134,15 @@ class ApnsManager {
     const deepLink = userInfo['deepLink']
     this.emit('notificationClicked', { identifier, userInfo });
     if (deepLink != null && deepLink != '') {
-      await TyradsNativeMethods.showOffers({
-        route: deepLink,
-        launchMode: 2,
-      });
+      // Small delay to ensure activity transition is complete
+      setTimeout(() => {
+        TyradsNativeMethods.showOffers({
+          route: deepLink,
+          launchMode: 2,
+        }).catch(err => {
+          console.error('Failed to show offers from notification click (iOS):', err);
+        });
+      }, 500);
     }
   }
 
@@ -203,6 +216,7 @@ class ApnsManager {
     });
     this.pushEventSubscriptions = [];
     this.listeners.clear();
+    this.initialized = false;
   }
 
   isTokenFetched(): boolean {
