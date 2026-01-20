@@ -91,6 +91,14 @@ class TyradsSdk: RCTEventEmitter {
       resolve(nil)
     }
   }
+
+  @objc(preloadOffers:resolver:rejecter:)
+  func preloadOffers(_ route: String?, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    Task { @MainActor in
+      Tyrads.instance.preloadOffers(route: route)
+      resolve(nil)
+    }
+  }
   
   @objc(changeLanguage:resolver:rejecter:)
   func changeLanguage(_ lang: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
