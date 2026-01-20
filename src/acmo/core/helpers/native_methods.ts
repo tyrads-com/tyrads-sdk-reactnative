@@ -53,6 +53,15 @@ const TyradsNativeMethods = {
       console.error("Error showing privacy flow:", err);
       return false;
     }
+  },
+
+  preloadOffers: async (route?: string) => {
+    if (Platform.OS !== 'ios') return;
+    try {
+      await TyradsSdk.preloadOffers(route || null);
+    } catch (err) {
+      console.error("Error preloading offers:", err);
+    }
   }
 };
 
