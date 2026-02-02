@@ -38,37 +38,75 @@ class InAppNotificationController {
     return `limited_time_offers_shown_${userId}`;
   }
 
+  private getTodayDateString(): string {
+    return new Date().toDateString();
+  }
+
   public async markCurrencySalesAsShown() {
+    if (!this.currencySales?.name) return;
     const key = await this.getCurrencySalesKey();
-    await saveData(key, true);
+    const shownData = await getData<any>(key) || {};
+    const safeShownData = (typeof shownData === 'object' && shownData !== null) ? shownData : {};
+    safeShownData[this.currencySales.name] = this.getTodayDateString();
+    await saveData(key, safeShownData);
   }
 
   public async markLimitedTimeOffersAsShown() {
+    if (!this.limitedTimeEvents) return;
     const key = await this.getLimitedTimeOffersKey();
-    await saveData(key, true);
+    const shownData = await getData<any>(key) || {};
+    const safeShownData = (typeof shownData === 'object' && shownData !== null) ? shownData : {};
+    const today = this.getTodayDateString();
+    this.limitedTimeEvents.forEach(campaign => {
+      campaign.limitedTimeEvents.forEach(event => {
+        safeShownData[event.id.toString()] = today;
+      });
+    });
+    await saveData(key, safeShownData);
   }
 
   public async init() {
-    const [currencySalesShown, limitedTimeOffersShown] = await Promise.all([
-      getData<boolean>(await this.getCurrencySalesKey()),
-      getData<boolean>(await this.getLimitedTimeOffersKey()),
+    const [currencySalesKey, limitedTimeOffersKey] = await Promise.all([
+      this.getCurrencySalesKey(),
+      this.getLimitedTimeOffersKey(),
     ]);
 
-    const tasks: [Promise<CurrencySales | null>, Promise<ActivatedCampaignsResponse | null>] = [
-      !currencySalesShown
+    const [currencySalesShownData, limitedTimeOffersShownData] = await Promise.all([
+      getData<Record<string, string>>(currencySalesKey),
+      getData<Record<string, string>>(limitedTimeOffersKey),
+    ]);
+
+    const today = this.getTodayDateString();
+
+    const isCurrencyShownToday = currencySalesShownData && Object.values(currencySalesShownData).includes(today);
+    const isLimitedShownToday = limitedTimeOffersShownData && Object.values(limitedTimeOffersShownData).includes(today);
+
+    const [currencySalesResult, limitedTimeOffersResult] = await Promise.all([
+      !isCurrencyShownToday
         ? InAppNotificationRepo.getInstance().fetchCurrencySales()
         : Promise.resolve(null),
-      !limitedTimeOffersShown
+      !isLimitedShownToday
         ? InAppNotificationRepo.getInstance().fetchLimitedTimeOffers()
         : Promise.resolve(null),
-    ];
+    ]);
 
-    const result = await Promise.all(tasks);
+    if (currencySalesResult && currencySalesResult.name) {
+      const hasBeenShownEver = currencySalesShownData && !!currencySalesShownData[currencySalesResult.name];
+      this.currencySales = !hasBeenShownEver ? currencySalesResult : null;
+    } else {
+      this.currencySales = null;
+    }
 
-    this.currencySales = result[0] || null;
-    const activeOffers = result[1]?.data || [];
-    const limitedTimeEvents = this.filterLimitedOffersWithEvents(activeOffers);
-    this.limitedTimeEvents = limitedTimeEvents;
+    const activeOffers = limitedTimeOffersResult?.data || [];
+    const allFilteredOffers = this.filterLimitedOffersWithEvents(activeOffers);
+
+    const hasNewEvent = allFilteredOffers.some(campaign =>
+      campaign.limitedTimeEvents.some(event =>
+        !limitedTimeOffersShownData || !limitedTimeOffersShownData[event.id.toString()]
+      )
+    );
+
+    this.limitedTimeEvents = hasNewEvent ? allFilteredOffers : null;
   }
   private filterLimitedOffersWithEvents(
     activeOffers: ActivatedCampaignsData[]
