@@ -9,8 +9,8 @@ import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
 
 export default function App() {
   const [mediaSource, setMediaSource] = useState('');
-  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
-  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
+  const [apiKey, setApiKey] = useState('e82465b5ddd847b2bfd164b958bf8e7b');
+  const [apiSecret, setApiSecret] = useState('aeec6e8d886eb5d32eb4bd99dc4e5acfc46789f0309a99364e8cda7da9d3bc05fd42f4c4780415855fa68e11a28f15c83fa8c27aea18053ea67395409925c162');
   const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
   const [userId, setUserId] = useState('user5346');
