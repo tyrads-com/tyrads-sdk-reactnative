@@ -117,17 +117,17 @@ const AcmoOfferCard: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    margin: 16,
-    width: "100%"
-  },
-  cardShadow: {
-    borderRadius: 16,
-    backgroundColor: 'white',
+    width: "100%",
+    marginBottom: 16,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.06,
     shadowRadius: 18,
-    elevation: 4,
+  },
+  cardShadow: {
+    borderRadius: 16,
+    backgroundColor: 'white',
+    elevation: 5,
   },
   imageContainer: {
     borderTopLeftRadius: 16,

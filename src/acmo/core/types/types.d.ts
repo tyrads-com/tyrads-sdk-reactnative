@@ -90,3 +90,13 @@ interface CurrencySales {
   dateEnd: null | string,
   remainingTimeSeconds: null | number
 }
+interface ApiHeaders {
+  languageCode: string;
+  premiumColor: string;
+  xUserId: string;
+  xApiKey: string;
+  xApiSecret: string;
+  xSdkPlatform: string;
+  xSdkVersion: string;
+  userAgent: string;
+}

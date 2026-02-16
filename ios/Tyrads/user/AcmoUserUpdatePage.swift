@@ -45,7 +45,7 @@ struct AcmoUsersUpdatePage: View {
                   .stroke(Color(hex: Tyrads.instance.mainColor ?? "#000000"), lineWidth: 2)
               ).padding(.horizontal, 16)
           }
-        }
+        }.padding(.top, 30).padding(.bottom, 20)
         
         ScrollView {
           VStack(spacing: 40) {
@@ -54,7 +54,7 @@ struct AcmoUsersUpdatePage: View {
               .multilineTextAlignment(.center)
               .foregroundColor(Color(hex: Tyrads.instance.mainColor ?? "#000000"))
             Spacer()
-              .frame(height: 20)
+              .frame(height: 15)
             
             VStack(spacing: 25) {
               Text(localization.translate(
@@ -63,7 +63,7 @@ struct AcmoUsersUpdatePage: View {
                 .foregroundColor(Color(hex: Tyrads.instance.mainColor ?? "#000000"))
               
               GenderSelectView(selectedGender: $selectedGender, localization: localization)
-              Spacer().frame(height: 50)
+              Spacer().frame(height: 40)
               
               Text(localization.translate(
                 "data.initialization.userInfo.chooseAge.label"))
@@ -100,7 +100,7 @@ struct AcmoUsersUpdatePage: View {
   }
   func submit() {
     guard let gender = selectedGender, !gender.isEmpty else {
-      errorMessage = "Please select gender to proceed."
+      errorMessage = localization.translate("data.initialization.userInfo.toast.selectAgeGender")
       showError = true
       return
     }

@@ -1,5 +1,6 @@
 export class AcmoConfig {
   public static API_VERSION = "3.0";
+  public static BASE_URL = `https://api.tyrads.com/v${this.API_VERSION}/`;
   public static MAJOR_VERSION = "3";
   public static MINOR_VERSION = "3";
   public static PATCH_VERSION = "1";

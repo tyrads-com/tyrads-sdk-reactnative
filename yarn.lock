@@ -3103,7 +3103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-native-snap-carousel@npm:^3.8.11":
+"@types/react-native-snap-carousel@npm:^3.8.12":
   version: 3.8.12
   resolution: "@types/react-native-snap-carousel@npm:3.8.12"
   dependencies:
@@ -3348,7 +3348,7 @@ __metadata:
     "@types/jest": ^29.5.5
     "@types/numeral": ^2.0.5
     "@types/react": ^19.0.0
-    "@types/react-native-snap-carousel": ^3.8.11
+    "@types/react-native-snap-carousel": ^3.8.12
     axios: ^1.8.1
     commitlint: ^17.0.2
     del-cli: ^5.1.0
@@ -3360,6 +3360,8 @@ __metadata:
     react: 19.0.0
     react-native: 0.79.2
     react-native-builder-bob: ^0.29.0
+    react-native-linear-gradient: ^2.8.3
+    react-native-snap-carousel: ^3.9.1
     release-it: ^15.0.0
     turbo: ^1.10.7
     typescript: ^5.2.2
@@ -3763,7 +3765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"asap@npm:~2.0.6":
+"asap@npm:~2.0.3, asap@npm:~2.0.6":
   version: 2.0.6
   resolution: "asap@npm:2.0.6"
   checksum: b296c92c4b969e973260e47523207cd5769abd27c245a68c26dc7a0fe8053c55bb04360237cb51cab1df52be939da77150ace99ad331fb7fb13b3423ed73ff3d
@@ -4982,6 +4984,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-js@npm:^1.0.0":
+  version: 1.2.7
+  resolution: "core-js@npm:1.2.7"
+  checksum: 0b76371bfa98708351cde580f9287e2360d2209920e738ae950ae74ad08639a2e063541020bf666c28778956fc356ed9fe56d962129c88a87a6a4a0612526c75
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:~1.0.0":
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
@@ -5564,7 +5573,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"encoding@npm:^0.1.13":
+"encoding@npm:^0.1.11, encoding@npm:^0.1.13":
   version: 0.1.13
   resolution: "encoding@npm:0.1.13"
   dependencies:
@@ -6342,6 +6351,21 @@ __metadata:
   dependencies:
     bser: 2.1.1
   checksum: b15a124cef28916fe07b400eb87cbc73ca082c142abf7ca8e8de6af43eca79ca7bd13eb4d4d48240b3bd3136eaac40d16e42d6edf87a8e5d1dd8070626860c78
+  languageName: node
+  linkType: hard
+
+"fbjs@npm:^0.8.4":
+  version: 0.8.18
+  resolution: "fbjs@npm:0.8.18"
+  dependencies:
+    core-js: ^1.0.0
+    isomorphic-fetch: ^2.1.1
+    loose-envify: ^1.0.0
+    object-assign: ^4.1.0
+    promise: ^7.1.1
+    setimmediate: ^1.0.5
+    ua-parser-js: ^0.7.30
+  checksum: 668731b946a765908c9cbe51d5160f973abb78004b3d122587c3e930e3e1ddcc0ce2b17f2a8637dc9d733e149aa580f8d3035a35cc2d3bc78b78f1b19aab90e2
   languageName: node
   linkType: hard
 
@@ -7842,6 +7866,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-stream@npm:^1.0.1":
+  version: 1.1.0
+  resolution: "is-stream@npm:1.1.0"
+  checksum: 063c6bec9d5647aa6d42108d4c59723d2bd4ae42135a2d4db6eadbd49b7ea05b750fd69d279e5c7c45cf9da753ad2c00d8978be354d65aa9f6bb434969c6a2ae
+  languageName: node
+  linkType: hard
+
 "is-stream@npm:^2.0.0":
   version: 2.0.1
   resolution: "is-stream@npm:2.0.1"
@@ -8006,6 +8037,16 @@ __metadata:
   version: 3.1.1
   resolution: "isexe@npm:3.1.1"
   checksum: 7fe1931ee4e88eb5aa524cd3ceb8c882537bc3a81b02e438b240e47012eef49c86904d0f0e593ea7c3a9996d18d0f1f3be8d3eaa92333977b0c3a9d353d5563e
+  languageName: node
+  linkType: hard
+
+"isomorphic-fetch@npm:^2.1.1":
+  version: 2.2.1
+  resolution: "isomorphic-fetch@npm:2.2.1"
+  dependencies:
+    node-fetch: ^1.0.1
+    whatwg-fetch: ">=0.10.0"
+  checksum: bb5daa7c3785d6742f4379a81e55b549a469503f7c9bf9411b48592e86632cf5e8fe8ea878dba185c0f33eb7c510c23abdeb55aebfdf5d3c70f031ced68c5424
   languageName: node
   linkType: hard
 
@@ -10038,6 +10079,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-fetch@npm:^1.0.1":
+  version: 1.7.3
+  resolution: "node-fetch@npm:1.7.3"
+  dependencies:
+    encoding: ^0.1.11
+    is-stream: ^1.0.1
+  checksum: 3bb0528c05d541316ebe52770d71ee25a6dce334df4231fd55df41a644143e07f068637488c18a5b0c43f05041dbd3346752f9e19b50df50569a802484544d5b
+  languageName: node
+  linkType: hard
+
 "node-fetch@npm:^2.6.7":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
@@ -10185,7 +10236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.1.1":
+"object-assign@npm:^4.1.0, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -10855,6 +10906,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise@npm:^7.1.1":
+  version: 7.3.1
+  resolution: "promise@npm:7.3.1"
+  dependencies:
+    asap: ~2.0.3
+  checksum: 475bb069130179fbd27ed2ab45f26d8862376a137a57314cf53310bdd85cc986a826fd585829be97ebc0aaf10e9d8e68be1bfe5a4a0364144b1f9eedfa940cf1
+  languageName: node
+  linkType: hard
+
 "promise@npm:^8.3.0":
   version: 8.3.0
   resolution: "promise@npm:8.3.0"
@@ -10874,7 +10934,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.1, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -11034,6 +11094,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-addons-shallow-compare@npm:15.6.2":
+  version: 15.6.2
+  resolution: "react-addons-shallow-compare@npm:15.6.2"
+  dependencies:
+    fbjs: ^0.8.4
+    object-assign: ^4.1.0
+  checksum: cfe94358c6103f8434b91969a2a1876d3e76df227f0be9bf58c11a1bdec01500475eb09ca7ddd9d98519a14c18f91fbd11127adfdd092c4f3c5b234b638c4802
+  languageName: node
+  linkType: hard
+
 "react-devtools-core@npm:^6.1.1":
   version: 6.1.5
   resolution: "react-devtools-core@npm:6.1.5"
@@ -11087,6 +11157,43 @@ __metadata:
   bin:
     bob: bin/bob
   checksum: 9325ee6b9a41e59e8a0add825318d6c7830b9b2fec1f98c485f722ef60128240146eced878e494c17699cef8ae0cdc92788384f718bcf38078d865969cff6c14
+  languageName: node
+  linkType: hard
+
+"react-native-config@npm:^1.6.1":
+  version: 1.6.1
+  resolution: "react-native-config@npm:1.6.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-windows: ">=0.61"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 356419af35bdc5eed6328c0ada41b49efd5e280d1843ecfb14a37cc37b23c5c28ced038a2ae5ccc9e1d9af324202393f83ad0e1fae4bf0d4ba5798f3c895b8f9
+  languageName: node
+  linkType: hard
+
+"react-native-linear-gradient@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "react-native-linear-gradient@npm:2.8.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: f980d324e551bbc475c6406bdc5250a08242020cbe653412fa169bbdf51e28a502e225de105b4d696d6a1a1b733d44782469020f4936d8b3ce0e2c78e51cf58f
+  languageName: node
+  linkType: hard
+
+"react-native-snap-carousel@npm:^3.9.1":
+  version: 3.9.1
+  resolution: "react-native-snap-carousel@npm:3.9.1"
+  dependencies:
+    prop-types: ^15.6.1
+    react-addons-shallow-compare: 15.6.2
+  peerDependencies:
+    react: ">=15.0.0"
+    react-native: "*"
+  checksum: e71f6887ba8e86b4aea6d6a88c304135a7acbb5ef9173b78018fc0e6d9965da9ec1d7c794db31282dc85892c6ca89f398d07145ab3e7d1e28cf12a09c247bb9d
   languageName: node
   linkType: hard
 
@@ -11858,6 +11965,13 @@ __metadata:
     es-errors: ^1.3.0
     es-object-atoms: ^1.0.0
   checksum: ec27cbbe334598547e99024403e96da32aca3e530583e4dba7f5db1c43cbc4affa9adfbd77c7b2c210b9b8b2e7b2e600bad2a6c44fd62e804d8233f96bbb62f4
+  languageName: node
+  linkType: hard
+
+"setimmediate@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "setimmediate@npm:1.0.5"
+  checksum: c9a6f2c5b51a2dabdc0247db9c46460152ffc62ee139f3157440bd48e7c59425093f42719ac1d7931f054f153e2d26cf37dfeb8da17a794a58198a2705e527fd
   languageName: node
   linkType: hard
 
@@ -12927,11 +13041,24 @@ __metadata:
     "@react-native/babel-preset": 0.79.2
     "@react-native/metro-config": 0.79.2
     "@react-native/typescript-config": 0.79.2
+    "@types/react-native-snap-carousel": ^3.8.12
     react: 19.0.0
     react-native: 0.79.2
     react-native-builder-bob: ^0.29.0
+    react-native-config: ^1.6.1
+    react-native-linear-gradient: ^2.8.3
+    react-native-snap-carousel: ^3.9.1
   languageName: unknown
   linkType: soft
+
+"ua-parser-js@npm:^0.7.30":
+  version: 0.7.41
+  resolution: "ua-parser-js@npm:0.7.41"
+  bin:
+    ua-parser-js: script/cli.js
+  checksum: c14ea0ba52585f0c363375b30d511d972bf1842855b6d6f4a411e6a27c936c7eb1f96e53e2d321fe3c587f0420677dcabd8977622be71da51edc8521e595b9b9
+  languageName: node
+  linkType: hard
 
 "uglify-js@npm:^3.1.4":
   version: 3.19.3
@@ -13213,7 +13340,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatwg-fetch@npm:^3.0.0":
+"whatwg-fetch@npm:>=0.10.0, whatwg-fetch@npm:^3.0.0":
   version: 3.6.20
   resolution: "whatwg-fetch@npm:3.6.20"
   checksum: c58851ea2c4efe5c2235f13450f426824cf0253c1d45da28f45900290ae602a20aff2ab43346f16ec58917d5562e159cd691efa368354b2e82918c2146a519c5

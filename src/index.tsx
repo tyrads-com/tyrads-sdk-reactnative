@@ -7,6 +7,7 @@ import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } 
 import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
 import TyradsNativeMethods from './acmo/core/helpers/native_methods';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types';
+import NetworkCommon from './acmo/core/network/network-common';
 import { ApnsManager } from './acmo/modules/push-notifications/apns-manager';
 import { FcmManager } from './acmo/modules/push-notifications/fcm-manager';
 export type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
@@ -68,7 +69,6 @@ const Tyrads = {
     if (Platform.OS === 'ios') {
       await ApnsManager.getInstance().init().catch(console.error);
     }
-
     TyradsSdk.startObserving();
     languageChangedSubscription?.remove();
     languageChangedSubscription = tyradsEmitter.addListener(
@@ -92,6 +92,7 @@ const Tyrads = {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
       }
+      await NetworkCommon.getInstance().init();
       if (Platform.OS === 'android') {
         FcmManager.getInstance().setLoggedIn(true);
       } else {

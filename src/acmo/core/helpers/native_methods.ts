@@ -29,6 +29,23 @@ export interface PushNotificationEvent {
 export type PushNotificationCallback = (event: PushNotificationEvent) => void;
 
 const TyradsNativeMethods = {
+  showOffers: async ({
+    launchMode = 3,
+    route,
+    campaignID,
+  }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
+    if (Platform.OS === 'ios') {
+      if (campaignID == null) {
+        return await TyradsSdk.showOffers(launchMode, route);
+      }
+      return await TyradsSdk.showOfferDetails(launchMode, route, campaignID);
+    } else {
+      if (campaignID == null) {
+        return await TyradsSdk.showOffers(route);
+      }
+      return await TyradsSdk.showOfferDetails(route, campaignID);
+    }
+  },
 
   setSDKVersion: () => {
     const version = AcmoConfig.SDK_VERSION;
