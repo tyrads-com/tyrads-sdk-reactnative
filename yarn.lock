@@ -11160,17 +11160,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-config@npm:^1.6.1":
-  version: 1.6.1
-  resolution: "react-native-config@npm:1.6.1"
+"react-native-config@npm:1.5.6":
+  version: 1.5.6
+  resolution: "react-native-config@npm:1.5.6"
   peerDependencies:
-    react: "*"
-    react-native: "*"
     react-native-windows: ">=0.61"
   peerDependenciesMeta:
     react-native-windows:
       optional: true
-  checksum: 356419af35bdc5eed6328c0ada41b49efd5e280d1843ecfb14a37cc37b23c5c28ced038a2ae5ccc9e1d9af324202393f83ad0e1fae4bf0d4ba5798f3c895b8f9
+  checksum: a055ed473203b085a76f550b53f16bcd1c0ec89e16ffd2ec926384ac88d23c710d3fd66da264aa1762d594c30046238d3f44f825f1eeb396b3adfb3568b09b1c
   languageName: node
   linkType: hard
 
@@ -13045,7 +13043,7 @@ __metadata:
     react: 19.0.0
     react-native: 0.79.2
     react-native-builder-bob: ^0.29.0
-    react-native-config: ^1.6.1
+    react-native-config: 1.5.6
     react-native-linear-gradient: ^2.8.3
     react-native-snap-carousel: ^3.9.1
   languageName: unknown
