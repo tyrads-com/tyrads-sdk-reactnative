@@ -26,8 +26,6 @@ const TyradsSdk = NativeModules.TyradsSdk
     }
   );
 
-const tyradsEmitter = new NativeEventEmitter(TyradsSdk);
-let languageChangedSubscription: any = null;
 export interface PushNotificationEvent {
   type: 'received' | 'clicked' | 'dismissed';
   id?: string;
@@ -36,14 +34,29 @@ export interface PushNotificationEvent {
 
 export type PushNotificationCallback = (event: PushNotificationEvent) => void;
 
-const TyradsSdkCoreMethods = {
-  init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) => {
-    TyradsSdkCoreMethods.setSDKVersion();
+export class TyradsSdkCore {
+  private static instance: TyradsSdkCore;
+  private tyradsEmitter: NativeEventEmitter;
+  private languageChangedSubscription: any = null;
+
+  private constructor() {
+    this.tyradsEmitter = new NativeEventEmitter(TyradsSdk);
+  }
+
+  public static getInstance(): TyradsSdkCore {
+    if (!TyradsSdkCore.instance) {
+      TyradsSdkCore.instance = new TyradsSdkCore();
+    }
+    return TyradsSdkCore.instance;
+  }
+
+  public async init(apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) {
+    this.setSDKVersion();
     if (mediaSourceInfo) {
-      TyradsSdkCoreMethods.setMediaSourceInfo(mediaSourceInfo);
+      this.setMediaSourceInfo(mediaSourceInfo);
     }
     if (userInfo) {
-      TyradsSdkCoreMethods.setUserInfo(userInfo);
+      this.setUserInfo(userInfo);
     }
     const data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
 
@@ -70,8 +83,8 @@ const TyradsSdkCoreMethods = {
       await ApnsManager.getInstance().init().catch(console.error);
     }
     TyradsSdk.startObserving();
-    languageChangedSubscription?.remove();
-    languageChangedSubscription = tyradsEmitter.addListener(
+    this.languageChangedSubscription?.remove();
+    this.languageChangedSubscription = this.tyradsEmitter.addListener(
       'LanguageChanged',
       async (lang: string) => {
         console.log('LanguageChanged event from Android SDK:', lang);
@@ -81,9 +94,9 @@ const TyradsSdkCoreMethods = {
     await updateProviderLanguage(languageCode);
 
     return data;
-  },
+  }
 
-  loginUser: async (userId: string) => {
+  public async loginUser(userId: string) {
     try {
       const data = await TyradsSdk.loginUser(userId);
       if (typeof data === "object") {
@@ -103,13 +116,13 @@ const TyradsSdkCoreMethods = {
     } catch (err) {
       return null;
     }
-  },
+  }
 
-  showOffers: async ({
+  public async showOffers({
     launchMode = 3,
     route,
     campaignID,
-  }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
+  }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) {
     if (Platform.OS === 'ios') {
       if (campaignID == null) {
         return await TyradsSdk.showOffers(launchMode, route);
@@ -121,17 +134,17 @@ const TyradsSdkCoreMethods = {
       }
       return await TyradsSdk.showOfferDetails(route, campaignID);
     }
-  },
+  }
 
-  topPremiumOffers: ({
+  public topPremiumOffers({
     widgetStyle,
     launchMode = 2,
   }: {
     widgetStyle?: PremiumWidgetStyles;
     launchMode?: number;
-  } = {}) => {
+  } = {}) {
     const handleNavigation = (route?: string, campaignID?: number | null) => {
-      TyradsSdkCoreMethods.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
+      this.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
     };
     return (
       <LocalizationProvider>
@@ -143,36 +156,36 @@ const TyradsSdkCoreMethods = {
         </View>
       </LocalizationProvider>
     );
-  },
+  }
 
-  changeLanguage: async (lang: string) => {
+  public async changeLanguage(lang: string) {
     return await TyradsSdk.changeLanguage(lang);
-  },
+  }
 
-  setSDKVersion: () => {
+  public setSDKVersion() {
     const version = AcmoConfig.SDK_VERSION;
     TyradsSdk.setSDKVersion(version);
-  },
+  }
 
-  setMediaSourceInfo: (mediaSourceInfo: TyradsMediaSourceInfo) => {
+  public setMediaSourceInfo(mediaSourceInfo: TyradsMediaSourceInfo) {
     TyradsSdk.setMediaSourceInfo(mediaSourceInfo);
-  },
+  }
 
-  setUserInfo: (userInfo: TyradsUserInfo) => {
+  public setUserInfo(userInfo: TyradsUserInfo) {
     TyradsSdk.setUserInfo(userInfo);
-  },
+  }
 
 
-  isPrivacyAccepted: async () => {
+  public async isPrivacyAccepted() {
     try {
       return await TyradsSdk.isPrivacyAccepted();
     } catch (err) {
       console.error("Error checking privacy acceptance:", err);
       return false;
     }
-  },
+  }
 
-  checkOnboardingProcess: async () => {
+  public async checkOnboardingProcess() {
     try {
       const result = await TyradsSdk.checkOnboardingProcess();
       return result === true;
@@ -180,9 +193,9 @@ const TyradsSdkCoreMethods = {
       console.error("Error showing privacy flow:", err);
       return false;
     }
-  },
+  }
 
-  requestPushPermission: async (): Promise<boolean> => {
+  public async requestPushPermission(): Promise<boolean> {
     try {
       const granted = await TyradsSdk.pushRequestPermission();
       return granted === true;
@@ -190,9 +203,9 @@ const TyradsSdkCoreMethods = {
       console.error("Error requesting push permission:", err);
       return false;
     }
-  },
+  }
 
-  getApnsToken: async (): Promise<string | null> => {
+  public async getApnsToken(): Promise<string | null> {
     try {
       const token = await TyradsSdk.pushGetApnsToken();
       return token || null;
@@ -200,19 +213,19 @@ const TyradsSdkCoreMethods = {
       console.error("Error getting APNs token:", err);
       return null;
     }
-  },
+  }
 
-  addPushNotificationListener: (callback: PushNotificationCallback) => {
-    return tyradsEmitter.addListener('PushNotificationEvent', callback);
-  },
+  public addPushNotificationListener(callback: PushNotificationCallback) {
+    return this.tyradsEmitter.addListener('PushNotificationEvent', callback);
+  }
 
-  startObserving: () => {
+  public startObserving() {
     TyradsSdk.startObserving();
-  },
+  }
 
-  stopObserving: () => {
+  public stopObserving() {
     TyradsSdk.stopObserving();
-  },
-};
+  }
+}
 
-export default TyradsSdkCoreMethods;
+export default TyradsSdkCore.getInstance();

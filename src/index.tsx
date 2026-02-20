@@ -1,16 +1,16 @@
 import { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 import PremiumWidgetsLoading from './acmo/modules/premium-widgets/components/premium_loading';
-import TyradsSdkCoreMethods from './acmo/core/tyrads-sdk-core';
+import TyradsSdkCore from './acmo/core/tyrads-sdk-core';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 export type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 export { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) => {
-    return await TyradsSdkCoreMethods.init(apiKey, apiSecret, encKey, engagementId, mediaSourceInfo, userInfo);
+    return await TyradsSdkCore.init(apiKey, apiSecret, encKey, engagementId, mediaSourceInfo, userInfo);
   },
   loginUser: async (userId: string) => {
-    return await TyradsSdkCoreMethods.loginUser(userId);
+    return await TyradsSdkCore.loginUser(userId);
   },
 
   showOffers: async ({
@@ -18,7 +18,7 @@ const Tyrads = {
     route,
     campaignID,
   }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
-    return await TyradsSdkCoreMethods.showOffers({ launchMode, route, campaignID });
+    return await TyradsSdkCore.showOffers({ launchMode, route, campaignID });
   },
   topPremiumOffers: ({
     widgetStyle = PremiumWidgetStyles.list,
@@ -27,7 +27,7 @@ const Tyrads = {
     widgetStyle?: PremiumWidgetStyles;
     launchMode?: number;
   } = {}) => {
-    return TyradsSdkCoreMethods.topPremiumOffers({ widgetStyle, launchMode });
+    return TyradsSdkCore.topPremiumOffers({ widgetStyle, launchMode });
   },
   topPremiumOffersLoading: (
     { widgetStyle = PremiumWidgetStyles.list }: {
@@ -41,7 +41,7 @@ const Tyrads = {
     );
   },
   changeLanguage: async (lang: string) => {
-    return await TyradsSdkCoreMethods.changeLanguage(lang);
+    return await TyradsSdkCore.changeLanguage(lang);
   },
 };
 
