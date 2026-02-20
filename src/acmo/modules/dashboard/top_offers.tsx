@@ -13,7 +13,7 @@ import { AcmoOfferListItem } from './components/offer_list_item';
 import AcmoOfferCard from './components/offer_card';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
-import TyradsNativeMethods from '../../core/helpers/native_methods';
+import TyradsSdkCoreMethods from '../../core/tyrads-sdk-core';
 import SnapCarousel from '../../core/components/snap-carousel';
 import InAppNotificationHost from '../inapp-notifications/inapp-notification-host';
 
@@ -64,10 +64,10 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   };
 
   const handleButtonPress = async (campaign: Campaign) => {
-    let isReady = await TyradsNativeMethods.isPrivacyAccepted()
+    let isReady = await TyradsSdkCoreMethods.isPrivacyAccepted()
     if (!isReady) {
       try {
-        const result = await TyradsNativeMethods.checkOnboardingProcess();
+        const result = await TyradsSdkCoreMethods.checkOnboardingProcess();
         console.log("Privacy flow result:", result);
         isReady = result === true;
       } catch (err) {

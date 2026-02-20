@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import TyradsNativeMethods from '../../core/helpers/native_methods';
+import TyradsSdkCoreMethods from '../../core/tyrads-sdk-core';
 
 export interface PushNotificationEvent {
   type: 'received' | 'clicked' | 'dismissed';
@@ -80,7 +80,7 @@ class ApnsManager {
       try {
         console.log(`Fetching APNs token (attempt ${attempt}/${maxRetries})...`);
 
-        const token = await TyradsNativeMethods.getApnsToken();
+        const token = await TyradsSdkCoreMethods.getApnsToken();
 
         if (token && typeof token === 'string' && token.length > 0) {
           return token;
@@ -102,7 +102,7 @@ class ApnsManager {
 
   private async _requestPushPermission(): Promise<void> {
     try {
-      const granted = await TyradsNativeMethods.requestPushPermission();
+      const granted = await TyradsSdkCoreMethods.requestPushPermission();
       console.log('Push permission granted:', granted);
     } catch (error) {
       console.error('Error requesting push permission:', error);
@@ -110,7 +110,7 @@ class ApnsManager {
   }
 
   private _setupPushEventListeners(): void {
-    const subscription = TyradsNativeMethods.addPushNotificationListener(
+    const subscription = TyradsSdkCoreMethods.addPushNotificationListener(
       (event: PushNotificationEvent) => {
         console.log('Push event:', event);
         const eventParsed = typeof event === 'string' ? JSON.parse(event) : event;
@@ -154,7 +154,7 @@ class ApnsManager {
     this.emit('notificationClicked', { identifier, userInfo });
     if (deepLink != null && deepLink != '') {
       setTimeout(() => {
-        TyradsNativeMethods.showOffers({
+        TyradsSdkCoreMethods.showOffers({
           route: deepLink,
           launchMode: 2,
         }).catch(err => {
@@ -203,7 +203,7 @@ class ApnsManager {
 
   async fetchToken(): Promise<string | null> {
     try {
-      const token = await TyradsNativeMethods.getApnsToken();
+      const token = await TyradsSdkCoreMethods.getApnsToken();
       if (token) {
         this.tokenFetched = true;
         console.log('Manually fetched APNs token:', token);
@@ -217,7 +217,7 @@ class ApnsManager {
 
   async requestPermission(): Promise<boolean> {
     try {
-      return await TyradsNativeMethods.requestPushPermission();
+      return await TyradsSdkCoreMethods.requestPushPermission();
     } catch (error) {
       console.error('Error requesting permission:', error);
       return false;
@@ -225,7 +225,7 @@ class ApnsManager {
   }
 
   addPushEventHandler(callback: PushEventCallback): any {
-    return TyradsNativeMethods.addPushNotificationListener(callback);
+    return TyradsSdkCoreMethods.addPushNotificationListener(callback);
   }
 
   dispose(): void {
@@ -245,7 +245,7 @@ class ApnsManager {
     if (!this.tokenFetched) {
       return await this.fetchToken();
     }
-    return await TyradsNativeMethods.getApnsToken();
+    return await TyradsSdkCoreMethods.getApnsToken();
   }
 }
 

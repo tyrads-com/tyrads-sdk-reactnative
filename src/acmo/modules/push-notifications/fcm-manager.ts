@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import TyradsNativeMethods from '../../core/helpers/native_methods';
+import TyradsSdkCoreMethods from '../../core/tyrads-sdk-core';
 
 export interface PushNotificationEvent {
   type: 'received' | 'clicked' | 'dismissed';
@@ -54,7 +54,7 @@ class FcmManager {
   }
 
   private _setupPushEventListeners(): void {
-    const subscription = TyradsNativeMethods.addPushNotificationListener(
+    const subscription = TyradsSdkCoreMethods.addPushNotificationListener(
       (event: PushNotificationEvent) => {
         console.log('Push event:', event);
         const eventParsed = typeof event === 'string' ? JSON.parse(event) : event;
@@ -96,7 +96,7 @@ class FcmManager {
     this.emit('notificationClicked', { identifier, userInfo });
     if (deepLink != null && deepLink != '') {
       setTimeout(() => {
-        TyradsNativeMethods.showOffers({
+        TyradsSdkCoreMethods.showOffers({
           route: deepLink,
           launchMode: 2,
         }).catch(err => {
@@ -144,7 +144,7 @@ class FcmManager {
   }
 
   addPushEventHandler(callback: PushEventCallback): any {
-    return TyradsNativeMethods.addPushNotificationListener(callback);
+    return TyradsSdkCoreMethods.addPushNotificationListener(callback);
   }
 
   dispose(): void {

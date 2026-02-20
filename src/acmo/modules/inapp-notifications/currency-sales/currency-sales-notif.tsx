@@ -3,7 +3,7 @@ import { CardAlert } from "../components/modal-wrapper";
 import { useEffect, useState } from "react";
 import { CardGradient } from "../components/gradient_card";
 import { CountdownTimer } from "../../../core/components/countdown-timer";
-import TyradsNativeMethods from "../../../core/helpers/native_methods";
+import TyradsSdkCoreMethods from "../../../core/tyrads-sdk-core";
 import InAppNotificationController from "../controller";
 import NotificationManager from "../inapp-notification-manager";
 
@@ -53,7 +53,7 @@ export const CurrencySalesNotif: React.FC = () => {
   const handleButtonPress = () => {
     handleClose();
     setTimeout(() => {
-      TyradsNativeMethods.showOffers({ launchMode: 2 });
+      TyradsSdkCoreMethods.showOffers({ launchMode: 2 });
     }, 400)
   };
 
