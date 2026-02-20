@@ -1,8 +1,9 @@
-import { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
-import PremiumWidgetsLoading from './acmo/modules/dashboard/components/premium_loading';
+import { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
+import PremiumWidgetsLoading from './acmo/modules/premium-widgets/components/premium_loading';
 import TyradsSdkCoreMethods from './acmo/core/tyrads-sdk-core';
 import type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 export type { TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
+export { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 
 const Tyrads = {
   init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) => {

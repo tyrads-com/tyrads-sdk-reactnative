@@ -7,7 +7,7 @@ import { ApnsManager } from "../modules/push-notifications/apns-manager";
 import { saveData } from "./storage/storage";
 import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from "../modules/localization/localization_context";
 import Localization from './services/localization_service';
-import TopOffers, { type PremiumWidgetStyles } from "../modules/dashboard/top_offers";
+import TopOffers, { type PremiumWidgetStyles } from "../modules/premium-widgets/top_offers";
 
 const LINKING_ERROR =
   `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +

@@ -2,8 +2,7 @@ import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicato
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
-import Tyrads, { type TyradsMediaSourceInfo } from '../../src/index';
+import Tyrads, { PremiumWidgetStyles, type TyradsMediaSourceInfo } from '../../src/index';
 import Config from 'react-native-config';
 
 export default function App() {
