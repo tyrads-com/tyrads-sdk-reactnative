@@ -50,6 +50,9 @@ export class TyradsSdkCore {
     return TyradsSdkCore.instance;
   }
 
+  public premiumColor: string = "#1C90DF";
+  public mainColor: string = "#02B5BE";
+
   public async init(apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) {
     this.setSDKVersion();
     if (mediaSourceInfo) {
@@ -102,9 +105,13 @@ export class TyradsSdkCore {
       if (typeof data === "object") {
         await saveData('apiHeaders', JSON.stringify(data));
         await saveData('language', data.languageCode);
+        this.premiumColor = data.premiumColor;
+        this.mainColor = data.mainColor;
       } else if (typeof data === "string") {
         await saveData('apiHeaders', data);
         await saveData('language', JSON.parse(data).languageCode);
+        this.premiumColor = JSON.parse(data).premiumColor;
+        this.mainColor = JSON.parse(data).mainColor;
       }
       await NetworkCommon.getInstance().init();
       if (Platform.OS === 'android') {
@@ -114,6 +121,7 @@ export class TyradsSdkCore {
       }
       return data;
     } catch (err) {
+      console.error('Error logging in user:', err);
       return null;
     }
   }
