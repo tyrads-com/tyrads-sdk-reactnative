@@ -3,7 +3,7 @@ import { CardAlert } from "../components/modal-wrapper";
 import { useEffect, useState } from "react";
 import { CardGradient } from "../components/gradient_card";
 import { CountdownTimer } from "../../../core/components/countdown-timer";
-import TyradsSdkCoreMethods from "../../../core/tyrads-sdk-core";
+import TyradsSdkCoreMethods, { TyradsSdkCore } from "../../../core/tyrads-sdk-core";
 import InAppNotificationController from "../controller";
 import NotificationManager from "../inapp-notification-manager";
 
@@ -71,12 +71,12 @@ export const CurrencySalesNotif: React.FC = () => {
           </View>
         }
         <TouchableOpacity
-          style={[styles.outlinedButton, { borderColor: "#02B5BE", backgroundColor: "white" }]}
+          style={[styles.outlinedButton, { borderColor: TyradsSdkCore.getInstance().mainColor || "#02B5BE", backgroundColor: "white" }]}
           onPress={handleButtonPress}
           activeOpacity={0.8}
         >
           <View style={styles.outlinedButtonTextContainer}>
-            <Text style={styles.outlinedButtonText}>Go to Offerwall</Text>
+            <Text style={[styles.outlinedButtonText, { color: TyradsSdkCore.getInstance().mainColor || "#02B5BE" }]}>Go to Offerwall</Text>
           </View>
         </TouchableOpacity>
       </CardGradient>

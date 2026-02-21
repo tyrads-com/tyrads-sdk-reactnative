@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Pressable, StyleSheet, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { TyradsSdkCore } from '../../../core/tyrads-sdk-core';
 
 interface CardGradientProps {
   children?: React.ReactNode;
   onClose: () => void;
-  gradientColors?: string[];
+  gradientColors?: (string | number)[];
   gradientStart?: { x: number; y: number };
   gradientEnd?: { x: number; y: number };
 }
@@ -13,24 +14,24 @@ interface CardGradientProps {
 export const CardGradient: React.FC<CardGradientProps> = ({
   children,
   onClose,
-  gradientColors = ['#ffffff', '#02B5BE'],
+  gradientColors = (['#ffffff', '#02B5BE'] as (string | number)[]),
   gradientStart = { x: 0.5, y: 0.25 },
   gradientEnd = { x: 0.5, y: 1.2 },
 }) => {
-
+  const colors = TyradsSdkCore.getInstance().mainColor ? ['#ffffff', TyradsSdkCore.getInstance().mainColor] : gradientColors;
   return (
     <View style={styles.wrapper}>
       <View style={styles.topLeftIcon}>
-        <Image 
-        source={require('../../../../assets/images/coin.png')} 
-        style={{
-          width: 110,
-          height: 110,
-        }}
+        <Image
+          source={require('../../../../assets/images/coin.png')}
+          style={{
+            width: 110,
+            height: 110,
+          }}
         />
       </View>
       <LinearGradient
-        colors={gradientColors}
+        colors={colors}
         start={gradientStart}
         end={gradientEnd}
         style={styles.gradientCard}

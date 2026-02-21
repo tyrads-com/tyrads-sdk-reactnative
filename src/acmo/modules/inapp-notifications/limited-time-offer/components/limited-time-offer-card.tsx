@@ -5,6 +5,8 @@ import { numeral } from "../../../../core/helpers/numeral"
 import { CountdownTimer } from "../../../../core/components/countdown-timer"
 import InAppNotificationController from "../../controller"
 import { acmoLaunchURL } from "../../../../core/helpers/launcher"
+import { TyradsSdkCore } from "../../../../core/tyrads-sdk-core"
+import { getContrastColor } from "../../../../core/helpers/colors"
 
 export const LimitedTimeOfferCard: React.FC<{ activatedCampaign: ActivatedCampaign | null }> = ({ activatedCampaign }) => {
 
@@ -46,7 +48,7 @@ export const LimitedTimeOfferCard: React.FC<{ activatedCampaign: ActivatedCampai
               <Image style={styles.eventCurrencyIcon}
                 source={{ uri: activatedCampaign?.currency.adUnitCurrencyIcon }}
               />
-              <Text style={[styles.eventPayout, { color: '#02B5BE' }]}>
+              <Text style={[styles.eventPayout, { color: TyradsSdkCore.getInstance().mainColor || '#02B5BE' }]}>
                 {numeral(event.limitedTimeEventRemainingSeconds)}
               </Text>
             </View>
@@ -75,11 +77,11 @@ export const LimitedTimeOfferCard: React.FC<{ activatedCampaign: ActivatedCampai
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled={true}
     />
-    <TouchableOpacity style={[styles.filledButton, { backgroundColor: "#02B5BE", }]}
+    <TouchableOpacity style={[styles.filledButton, { backgroundColor: TyradsSdkCore.getInstance().mainColor || "#02B5BE", }]}
       onPress={() => handleButtonPress(activatedCampaign?.app.previewUrl || '')}
       activeOpacity={0.8}
     >
-      <Text style={styles.btnText}>Play Now</Text>
+      <Text style={[styles.btnText, { color: getContrastColor(TyradsSdkCore.getInstance().mainColor || "white") }]}>Play Now</Text>
     </TouchableOpacity>
   </View>
 }
