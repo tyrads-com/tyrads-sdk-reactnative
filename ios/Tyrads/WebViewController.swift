@@ -6,6 +6,7 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
     var webView: WKWebView!
     var initialURL: URL
     private var hasLoadedWithSkipParameter = false
+    public var onDismiss: (() -> Void)?
   
     private let internalDomains: [String] = ["sdk.tyrads.com", "acmo.in"]
     
@@ -52,6 +53,12 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
 //        webView.load(URLRequest(url: initialURL))
         loadURL()
         log("WebView loaded URL: \(initialURL.absoluteString)")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        log("viewDidDisappear called: WebView controller removed from screen.")
+        self.onDismiss?()
     }
   private func loadURL() {
     var components = URLComponents(url: initialURL, resolvingAgainstBaseURL: false)

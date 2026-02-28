@@ -170,6 +170,15 @@ export class TyradsSdkCore {
     return await TyradsSdk.changeLanguage(lang);
   }
 
+  public async preloadOffers(route?: string) {
+    if (Platform.OS !== 'ios') return;
+    try {
+      await TyradsSdk.preloadOffers(route || null);
+    } catch (err) {
+      console.error("Error preloading offers:", err);
+    }
+  }
+
   public setSDKVersion() {
     const version = AcmoConfig.SDK_VERSION;
     TyradsSdk.setSDKVersion(version);
