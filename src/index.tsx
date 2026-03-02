@@ -43,9 +43,6 @@ const Tyrads = {
   changeLanguage: async (lang: string) => {
     return await TyradsSdkCore.changeLanguage(lang);
   },
-  preloadOffers: async (route?: string) => {
-    return await TyradsSdkCore.preloadOffers(route);
-  },
 };
 
 export default Tyrads;
