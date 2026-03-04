@@ -20,3 +20,7 @@ export interface TyradsUserInfo {
   phoneNumber?: string,
   userGroup?: string
 }
+
+export interface TyradsConfig {
+  skipInitialPages: boolean | false,
+}

@@ -1,6 +1,6 @@
 import { NativeEventEmitter, NativeModules, Platform, View } from "react-native";
 import { AcmoConfig } from "../../acmo_config";
-import type { TyradsMediaSourceInfo, TyradsUserInfo } from "./types/external_types";
+import type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from "./types/external_types";
 import NetworkCommon from "./network/network-common";
 import { FcmManager } from "../modules/push-notifications/fcm-manager";
 import { ApnsManager } from "../modules/push-notifications/apns-manager";
@@ -53,7 +53,15 @@ export class TyradsSdkCore {
   public premiumColor: string = "#1C90DF";
   public mainColor: string = "#02B5BE";
 
-  public async init(apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo,) {
+  public async init(
+    apiKey: string,
+    apiSecret: string,
+    encKey?: string,
+    engagementId?: string,
+    mediaSourceInfo?: TyradsMediaSourceInfo,
+    userInfo?: TyradsUserInfo,
+    config?: TyradsConfig,
+  ) {
     this.setSDKVersion();
     if (mediaSourceInfo) {
       this.setMediaSourceInfo(mediaSourceInfo);
@@ -61,7 +69,12 @@ export class TyradsSdkCore {
     if (userInfo) {
       this.setUserInfo(userInfo);
     }
-    const data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
+    var data;
+    if (Platform.OS === 'ios') {
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
+    } else {
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, config);
+    }
 
     await saveData("credentials", {
       'X-API-Key': apiKey,
