@@ -6,6 +6,8 @@
 //
 import UIKit
 import Foundation
+import Network
+import CoreTelephony
 
 func getDeviceDetails() -> [String: Any] {
   var fd = [String: Any]()
@@ -14,7 +16,7 @@ func getDeviceDetails() -> [String: Any] {
   let bundle = Bundle.main
   let locale = Locale.current
   
-  // Device basic info
+  // device basic info
   fd["deviceId"] = device.identifierForVendor?.uuidString ?? "Unknown"
   fd["device"] = device.model.lowercased().contains("ipad") ? "iPad" : "iPhone"
   fd["deviceName"] = device.name
@@ -23,6 +25,7 @@ func getDeviceDetails() -> [String: Any] {
   fd["baseOs"] = device.systemName
   fd["releaseVersion"] = device.systemVersion
   fd["modelName"] = getModelName()
+  fd["hardware"] = deviceIdentifier()
   
   fd["product"] = "Darwin"
   fd["platform"] = "iOS"
@@ -30,7 +33,7 @@ func getDeviceDetails() -> [String: Any] {
   fd["sdkVersion"] = AcmoConfig.SDK_VERSION
   fd["sdkPlatform"] = AcmoConfig.SDK_PLATFORM
   
-  // App info
+  // app info
   fd["version"] = bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
   fd["build"] = bundle.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
   fd["package"] = bundle.bundleIdentifier ?? "Unknown"
@@ -42,11 +45,128 @@ func getDeviceDetails() -> [String: Any] {
   fd["rooted"] = isJailBroken()
   fd["virtual"] = isRunningOnSimulator()
   
+  // storage info
+  let (totalSpace, freeSpace) = getDiskSpace()
+  fd["totalMemory"] = Double(round(100 * (Double(totalSpace) / 1_000_000_000)) / 100)
+  
+  // network info
+  fd["connectionType"] = getNetworkType()
+
   return fd
+}
+
+func getNetworkType() -> String {
+  let monitor = NWPathMonitor()
+  let semaphore = DispatchSemaphore(value: 0)
+  var networkType = "No Connection"
+  
+  monitor.pathUpdateHandler = { path in
+    if path.status == .satisfied {
+      if path.usesInterfaceType(.wifi) {
+        networkType = "WiFi"
+      } else if path.usesInterfaceType(.cellular) {
+        networkType = getCellularType()
+      } else if path.usesInterfaceType(.wiredEthernet) {
+        networkType = "Ethernet"
+      } else {
+        networkType = "Connected"
+      }
+    } else {
+      networkType = "No Connection"
+    }
+    semaphore.signal()
+  }
+  
+  let queue = DispatchQueue(label: "NetworkMonitor")
+  monitor.start(queue: queue)
+  
+  _ = semaphore.wait(timeout: .now() + 0.1)
+  monitor.cancel()
+  
+  return networkType
+}
+
+func getUptimeMetrics() -> [String: Any] {
+  let uptime = ProcessInfo.processInfo.systemUptime
+  let bootTimeDate = Date(timeIntervalSinceNow: -uptime)
+  
+  let formatter = DateFormatter()
+  formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+  
+  return [
+    "device_uptime_hours": String(format: "%.2f", uptime / 3600),
+    "device_boot_time": formatter.string(from: bootTimeDate)
+  ]
+}
+
+func getCellularType() -> String {
+  let networkInfo = CTTelephonyNetworkInfo()
+  var carrierType = "Cellular"
+  
+  if #available(iOS 14.1, *) {
+    if let radioTechnologies = networkInfo.serviceCurrentRadioAccessTechnology {
+      for (_, technology) in radioTechnologies {
+        switch technology {
+        case CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge, CTRadioAccessTechnologyCDMA1x:
+          carrierType = "2G"
+        case CTRadioAccessTechnologyWCDMA, CTRadioAccessTechnologyHSDPA, CTRadioAccessTechnologyHSUPA, CTRadioAccessTechnologyCDMAEVDORev0, CTRadioAccessTechnologyCDMAEVDORevA, CTRadioAccessTechnologyCDMAEVDORevB, CTRadioAccessTechnologyeHRPD:
+          carrierType = "3G"
+        case CTRadioAccessTechnologyLTE:
+          carrierType = "4G"
+        case CTRadioAccessTechnologyNRNSA, CTRadioAccessTechnologyNR:
+          carrierType = "5G"
+        default:
+          carrierType = "Cellular"
+        }
+      }
+    }
+  } else {
+    let technology = networkInfo.currentRadioAccessTechnology
+    switch technology {
+    case CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge, CTRadioAccessTechnologyCDMA1x:
+      carrierType = "2G"
+    case CTRadioAccessTechnologyWCDMA, CTRadioAccessTechnologyHSDPA, CTRadioAccessTechnologyHSUPA, CTRadioAccessTechnologyCDMAEVDORev0, CTRadioAccessTechnologyCDMAEVDORevA, CTRadioAccessTechnologyCDMAEVDORevB, CTRadioAccessTechnologyeHRPD:
+      carrierType = "3G"
+    case CTRadioAccessTechnologyLTE:
+      carrierType = "4G"
+    default:
+      carrierType = "Cellular"
+    }
+  }
+  return carrierType
+}
+
+func isVpnActive() -> Bool {
+  if let settings = CFNetworkCopySystemProxySettings()?.takeRetainedValue() as? [AnyHashable: Any],
+     let scopes = settings["__SCOPES__"] as? [AnyHashable: Any] {
+    for (key, _) in scopes {
+      if let keyString = key as? String,
+         (keyString.contains("tap") ||
+          keyString.contains("tun") ||
+          keyString.contains("ppp") ||
+          keyString.contains("ipsec") ||
+          keyString.contains("utun")) {
+        return true
+      }
+    }
+  }
+  return false
 }
 
 func isRunningOnSimulator() -> Bool {
   return ProcessInfo().environment["SIMULATOR_DEVICE_NAME"] != nil
+}
+
+func getDiskSpace() -> (total: Int64, free: Int64) {
+  var total: Int64 = 0
+  var free: Int64 = 0
+  do {
+    let attrs = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
+    total = attrs[.systemSize] as? Int64 ?? 0
+    free = attrs[.systemFreeSize] as? Int64 ?? 0
+  } catch {
+  }
+  return (total, free)
 }
 
 func isJailBroken() -> Bool {
