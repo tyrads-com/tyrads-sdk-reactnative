@@ -5,7 +5,6 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
 
     var webView: WKWebView!
     var initialURL: URL
-    private var hasLoadedWithSkipParameter = false
     public var onDismiss: (() -> Void)?
   
     private let internalDomains: [String] = ["sdk.tyrads.com", "acmo.in"]
@@ -61,22 +60,9 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
         self.onDismiss?()
     }
   private func loadURL() {
-    var components = URLComponents(url: initialURL, resolvingAgainstBaseURL: false)
-    let skipUserUpdate = Tyrads.instance.getSkipUserUpdate()
-    let skipValue = skipUserUpdate ? "true" : "false"
-    
-    components?.queryItems?.removeAll { $0.name == "skipUserInfo" }
-    components?.queryItems?.append(URLQueryItem(name: "skipUserInfo", value: skipValue))
-    
-    if let updatedURL = components?.url {
-      log("Loading URL with skipUserInfo=\(skipValue): \(updatedURL.absoluteString)")
-      let request = URLRequest(url: updatedURL)
-      webView.load(request)
-      hasLoadedWithSkipParameter = true
-    } else {
-      log("Failed to create updated URL, loading original")
-      webView.load(URLRequest(url: initialURL))
-    }
+    log("Loading URL: \(initialURL.absoluteString)")
+    let request = URLRequest(url: initialURL)
+    webView.load(request)
   }
 
   public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

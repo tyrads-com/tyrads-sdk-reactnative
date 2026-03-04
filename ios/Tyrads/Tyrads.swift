@@ -212,7 +212,6 @@ public class Tyrads : NSObject {
   
   
   public func getOffersURL(route: String? = nil, campaignID: Int? = nil) -> URL? {
-    let skipUserUpdate = getSkipUserUpdate()
     
     let normalizedRoute = (route?.isEmpty ?? true) ? nil : route
     
@@ -222,8 +221,7 @@ public class Tyrads : NSObject {
     components.queryItems = [
       URLQueryItem(name: "token", value: self.token),
       URLQueryItem(name: "to", value: campaignID != nil ? "\(normalizedRoute ?? "")/\(campaignID!)" : normalizedRoute),
-      URLQueryItem(name: "lang", value: self.currentLanguage),
-      URLQueryItem(name: "skipUserInfo", value: "\(skipUserUpdate)")
+      URLQueryItem(name: "lang", value: self.currentLanguage)
     ]
     return components.url
   }
@@ -237,7 +235,7 @@ public class Tyrads : NSObject {
       self.log("Preload: Skipping specific route \(normalizedRoute!)")
       return
     }
-
+    
     guard !self.token.isEmpty else {
       self.log("Preload failed: token is empty")
       return
@@ -250,8 +248,8 @@ public class Tyrads : NSObject {
     self.log("Preloading default webview for URL: \(url.absoluteString)")
     
     if let existing = self.preloadedWebVC, existing.initialURL.absoluteString == url.absoluteString {
-        self.log("Preload: Already have a matching preloaded VC, skipping recreation.")
-        return
+      self.log("Preload: Already have a matching preloaded VC, skipping recreation.")
+      return
     }
     
     let webVC = AcmoWebViewController(url: url)
@@ -266,120 +264,95 @@ public class Tyrads : NSObject {
       self.log("Failed to create URL for showOffers")
       return
     }
-
-    do {
-      switch launchMode {
-      case 1, 2:
-        DispatchQueue.main.async {
-          guard let rootVC = UIApplication.shared.windows.first?.rootViewController else { return }
+    
+    switch launchMode {
+    case 1, 2:
+      DispatchQueue.main.async {
+        guard let rootVC = UIApplication.shared.windows.first?.rootViewController else { return }
+        
+        let showWebView: () -> Void = {
+          let webVC: AcmoWebViewController
           
-          let showWebView: () -> Void = {
-            let webVC: AcmoWebViewController
-            
-            let isDefault = (route?.isEmpty ?? true) && campaignID == nil
-            
-            let isMatch: Bool = {
-                guard isDefault else { return false }
-                
-                guard let preloaded = self.preloadedWebVC else {
-                    self.log("Preload Check: No preloaded webview found.")
-                    return false
-                }
-                let preloadedURL = preloaded.initialURL
-                
-                if preloadedURL.absoluteString == url.absoluteString { return true }
-                
-                guard let comp1 = URLComponents(url: preloadedURL, resolvingAgainstBaseURL: false),
-                      let comp2 = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
-                
-                let q1 = comp1.queryItems ?? []
-                let q2 = comp2.queryItems ?? []
-                
-                if q1.count != q2.count {
-                    return false
-                }
-                
-                let matchesAll = q1.allSatisfy { item1 in
-                    q2.contains { item2 in item1.name == item2.name && item1.value == item2.value }
-                }
-                
-                return matchesAll && comp1.host == comp2.host && comp1.path == comp2.path
-            }()
-
-            if isMatch, let preloaded = self.preloadedWebVC {
-              self.log("Preload Check: MATCH FOUND. Using shared default webview.")
-              webVC = preloaded
-            } else {
-              self.log("Preload Check: Loading normally. (Req: \(isDefault ? "default" : "specific route"), Preload Available: \(self.preloadedWebVC != nil))")
-              webVC = AcmoWebViewController(url: url)
-            }
-            
-            webVC.onDismiss = {
-                webVC.onDismiss = nil
-            }
-            
-            if webVC.presentingViewController != nil || webVC.isBeingPresented || webVC.isBeingDismissed {
-                self.log("Preload Check: WebView is already busy/showing. Ignoring tap.")
-                return
-            }
-            
-            webVC.modalPresentationStyle = .fullScreen
-            rootVC.present(webVC, animated: true)
-          }
+          let isDefault = (route?.isEmpty ?? true) && campaignID == nil
           
-          let showUserUpdateOrWeb: () -> Void = {
-            if Tyrads.instance.newUser {
-              let userUpdateVC = AcmoUsersUpdateController(onSubmit: {
-                showWebView()
-              })
-              userUpdateVC.isModalInPresentation = false
-              rootVC.present(userUpdateVC, animated: true)
-            } else {
-              showWebView()
+          let isMatch: Bool = {
+            guard isDefault else { return false }
+            
+            guard let preloaded = self.preloadedWebVC else {
+              self.log("Preload Check: No preloaded webview found.")
+              return false
             }
-          }
-          
-          let hasAccepted = Tyrads.instance.isPrivacyAccepted()
-          
-          if launchMode == 1 || launchMode == 2 {
-            if !hasAccepted {
-              let privacyController = AcmoPrivacyPolicyController(onAccept: {
-                showUserUpdateOrWeb()
-              })
-              privacyController.modalPresentationStyle = .fullScreen
-              rootVC.present(privacyController, animated: true)
-            } else {
-              showUserUpdateOrWeb()
+            let preloadedURL = preloaded.initialURL
+            
+            if preloadedURL.absoluteString == url.absoluteString { return true }
+            
+            guard let comp1 = URLComponents(url: preloadedURL, resolvingAgainstBaseURL: false),
+                  let comp2 = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
+            
+            let q1 = comp1.queryItems ?? []
+            let q2 = comp2.queryItems ?? []
+            
+            if q1.count != q2.count {
+              return false
             }
+            
+            let matchesAll = q1.allSatisfy { item1 in
+              q2.contains { item2 in item1.name == item2.name && item1.value == item2.value }
+            }
+            
+            return matchesAll && comp1.host == comp2.host && comp1.path == comp2.path
+          }()
+          
+          if isMatch, let preloaded = self.preloadedWebVC {
+            self.log("Preload Check: MATCH FOUND. Using shared default webview.")
+            webVC = preloaded
           } else {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            self.log("Preload Check: Loading normally. (Req: \(isDefault ? "default" : "specific route"), Preload Available: \(self.preloadedWebVC != nil))")
+            webVC = AcmoWebViewController(url: url)
           }
+          
+          webVC.onDismiss = {
+            webVC.onDismiss = nil
+          }
+          
+          if webVC.presentingViewController != nil || webVC.isBeingPresented || webVC.isBeingDismissed {
+            self.log("Preload Check: WebView is already busy/showing. Ignoring tap.")
+            return
+          }
+          
+          webVC.modalPresentationStyle = .fullScreen
+          rootVC.present(webVC, animated: true)
         }
-      case 3:
-        DispatchQueue.main.async {
-          UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        }
-      default:
-        DispatchQueue.main.async {
+        
+        let hasAccepted = Tyrads.instance.isPrivacyAccepted()
+        
+        if launchMode == 1 || launchMode == 2 {
+          if !hasAccepted {
+            let privacyController = AcmoPrivacyPolicyController(onAccept: {
+              showWebView()
+            })
+            privacyController.modalPresentationStyle = .fullScreen
+            rootVC.present(privacyController, animated: true)
+          } else {
+            showWebView()
+          }
+        } else {
           UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
       }
-    } catch {
-      print("An error occurred: \(error)")
+    case 3:
+      DispatchQueue.main.async {
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
+    default:
+      DispatchQueue.main.async {
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+      }
     }
   }
   
   public func setNewUser(_ newValue: Bool){
     self.newUser = newValue
-  }
-  
-  public func setSkipUserUpdate(_ newValue: Bool){
-    let key = "\(AcmoKeyNames.SKIP_FOR_USER_ID)\(self.publisherUserID)"
-    UserDefaults.standard.set(newValue, forKey: key)
-  }
-  public func getSkipUserUpdate() -> Bool{
-    let key = "\(AcmoKeyNames.SKIP_FOR_USER_ID)\(self.publisherUserID)"
-    return (UserDefaults.standard.bool(forKey: key) || newUser == false)
   }
   
   public func setSDKVersion(_ sdkVersion: String) {
@@ -421,39 +394,21 @@ public class Tyrads : NSObject {
           continuation.resume(returning: true)
         }
         
-        let showUserUpdate: () -> Void = {
-          let userUpdateVC = AcmoUsersUpdateController(onSubmit: {
-            rootVC.dismiss(animated: true) {
-              print("User Update submitted, view dismissed.")
-              finishFlow()
-            }
-          })
-          userUpdateVC.isModalInPresentation = false
-          rootVC.present(userUpdateVC, animated: true)
-        }
-        
         let hasAcceptedPrivacy = self.isPrivacyAccepted()
-        let isNewUser = Tyrads.instance.newUser
         
-        print("showPrivacyFlowAndDismissOnComplete: Privacy Accepted: \(hasAcceptedPrivacy), New User: \(isNewUser)")
+        print("showPrivacyFlowAndDismissOnComplete: Privacy Accepted: \(hasAcceptedPrivacy)")
         
         if !hasAcceptedPrivacy {
           let privacyController = AcmoPrivacyPolicyController(onAccept: {
-            if isNewUser {
-              showUserUpdate()
-            } else {
-              rootVC.dismiss(animated: true) {
-                print("Privacy accepted, user is not new, view dismissed.")
-                finishFlow()
-              }
+            rootVC.dismiss(animated: true) {
+              print("Privacy accepted, view dismissed.")
+              finishFlow()
             }
           })
           privacyController.modalPresentationStyle = .fullScreen
           rootVC.present(privacyController, animated: true)
-        } else if isNewUser {
-          showUserUpdate()
         } else {
-          print("Privacy accepted and user not new. No flow presented.")
+          print("Privacy accepted. No flow presented.")
           finishFlow()
         }
       }
