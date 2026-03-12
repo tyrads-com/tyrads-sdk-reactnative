@@ -2,7 +2,7 @@ import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicato
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import Tyrads, { PremiumWidgetStyles, type TyradsMediaSourceInfo } from '../../src/index';
+import Tyrads, { PremiumWidgetStyles, type TyradsMediaSourceInfo, type TyradsConfig } from '../../src/index';
 import Config from 'react-native-config';
 
 export default function App() {
@@ -16,6 +16,9 @@ export default function App() {
   const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [widgetKey, setWidgetKey] = useState(0);
+  const [showInitialPages, setShowInitialPages] = useState(false);
+  const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
+
 
   const [selectedConfig, setSelectedConfig] = useState('belanda1');
   const isAndroid = Platform.OS === 'android';
@@ -75,22 +78,27 @@ export default function App() {
 
     const task = InteractionManager.runAfterInteractions(syncAndInit);
     return () => task.cancel();
-  }, [selectedConfig, isAndroid]);
+  }, [selectedConfig, isAndroid, showInitialPages]);
 
   const handleButtonClick = async () => {
     setLoading(true);
     try {
       const lastUserId = await AsyncStorage.getItem('userId');
 
-      if (lastUserId !== userId || mediaSource !== '') {
+      if (lastUserId !== userId || mediaSource !== '' || lastShowInitialPages !== showInitialPages) {
         console.log('Credentials or User changed. Re-initializing...');
 
         await Tyrads.init(apiKey, apiSecret, encKey, engagementId,
-          mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined
+          mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
+          undefined,
+          {
+            skipInitialPages: !showInitialPages
+          } as TyradsConfig,
         );
         await Tyrads.loginUser(userId);
         await AsyncStorage.setItem('userId', userId);
         setWidgetKey(prev => prev + 1);
+        setLastShowInitialPages(showInitialPages);
       }
 
       await Tyrads.showOffers({ launchMode: 2 });
@@ -132,6 +140,15 @@ export default function App() {
                 Platform: {isAndroid ? 'Android' : 'iOS'} | Config: {selectedConfig.toUpperCase()}
               </Text>
             </View>
+            {Platform.OS === 'android' && <Dropdown
+              options={[
+                { value: true, label: 'Show Initial Pages' },
+                { value: false, label: 'Hide Initial Pages' },
+              ]}
+              selectedValue={showInitialPages}
+              onValueChange={setShowInitialPages}
+            />}
+            <View style={{ height: 8 }}></View>
             <TextInput
               style={styles.input}
               placeholder="Media Source in JSON (optional)"
@@ -240,11 +257,11 @@ const styles = StyleSheet.create({
 });
 
 
-const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value: string, label: string }[], selectedValue: string, onValueChange: (value: string) => void }) => {
+const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value: any, label: string }[], selectedValue: any, onValueChange: (value: any) => void }) => {
   const [visible, setVisible] = useState(false);
 
   return (
-    <View style={{ marginBottom: 4 }}>
+    <View style={{ marginBottom: 4, width: '100%' }}>
       <TouchableOpacity
         style={styles.dropdownButton}
         onPress={() => setVisible(true)}

@@ -23,6 +23,7 @@ import com.tyrads.sdk.TyradsUserInfo
 import com.tyrads.sdk.TyradsMediaSourceInfo
 import com.tyrads.sdk.acmo.modules.push_notifications.FCMNotifications
 import com.tyrads.sdk.acmo.modules.push_notifications.TyradsNotificationListener
+import com.tyrads.sdk.acmo.modules.input_models.TyradsConfig
 
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), ActivityEventListener, LifecycleEventListener {
