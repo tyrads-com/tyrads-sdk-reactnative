@@ -77,18 +77,18 @@ export const AcmoOfferListItem: React.FC<Props> = ({
           <View style={styles.payoutRow}>
             {currencySales && (
               <Text style={styles.strikeText}>
-                {numeral(offer.campaignPayout.totalPlayablePayoutConverted)}
+                {numeral(Object.values(offer.payoutSummary)[0]?.totalPlayablePayoutConverted || 0)}
               </Text>
             )}
 
             <Image
-              source={{ uri: offer.currency.adUnitCurrencyIcon }}
+              source={{ uri: (Object.values(offer.availableCurrencies)[0] as AvailableCurrency)?.currencyIcon || '' }}
               style={styles.currencyIcon}
             />
 
             <Text style={styles.payoutText}>
               {numeral(
-                offer.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier
+                ((Object.values(offer.payoutSummary)[0] as PayoutSummary)?.totalPlayablePayoutConverted || 0) * bonusMultiplier
               )}
             </Text>
           </View>

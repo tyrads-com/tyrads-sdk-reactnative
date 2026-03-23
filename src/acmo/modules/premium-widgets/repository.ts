@@ -40,11 +40,14 @@ export const fetchPremiumOfferDetails = async (
 
     const hotOffers = campaignsRes.data.data
       .sort((a, b) => {
-        if (a.premium && !b.premium) return -1;
-        if (!a.premium && b.premium) return 1;
-        return b.sortingScore - a.sortingScore;
+        if (a.campaignPremium && !b.campaignPremium) return -1;
+        if (!a.campaignPremium && b.campaignPremium) return 1;
+        return 0;
       })
-      .filter(item => item.campaignPayout.totalPlayablePayoutConverted > 0)
+      .filter(item => {
+        const payouts = Object.values(item.payoutSummary);
+        return payouts.some(p => p.totalPlayablePayoutConverted > 0);
+      })
       .slice(0, 5);
     // const currency: CurrencySales = {
     //   "name": "Ramadhan Karem",
@@ -109,8 +112,8 @@ const track = async (activity: string) => {
 export const openOffer = async (campaign: Campaign) => {
   const campaignId = campaign.campaignId;
   const clickUrl = campaign.tracking.clickUrl;
-  const isRetryDownload = campaign.isRetryDownload;
-  const isInstalled = campaign.isInstalled;
+  const isRetryDownload = campaign.validity.isRetryDownload;
+  const isInstalled = campaign.validity.isInstalled;
   const previewUrl = campaign.app.previewUrl;
   const s2sClickUrl = campaign.tracking.s2sClickUrl;
 
@@ -131,7 +134,7 @@ export const openOffer = async (campaign: Campaign) => {
   };
 
   try {
-    var url = clickUrl;
+    let url: string = clickUrl || "";
     if (isInstalled) {
       url = previewUrl;
     } else {

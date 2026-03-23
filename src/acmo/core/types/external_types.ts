@@ -18,7 +18,9 @@ export interface TyradsMediaSourceInfo {
 export interface TyradsUserInfo {
   email?: string,
   phoneNumber?: string,
-  userGroup?: string
+  userGroup?: string,
+  age?: number,
+  gender?: number,
 }
 
 export interface TyradsConfig {
