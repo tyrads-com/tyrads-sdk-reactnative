@@ -181,11 +181,11 @@ public class Tyrads : NSObject {
     }
     
     self.loginData = acmoInitModel
-    self.publisherUserID = acmoInitModel.data.user.publisherUserId
+    self.publisherUserID = acmoInitModel.data.accountInfo.publisherUserId
     self.newUser = acmoInitModel.data.newRegisteredUser
     self.token = acmoInitModel.data.token
     self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
-    self.mainColor = acmoInitModel.data.publisherApp.mainColor
+    self.mainColor = acmoInitModel.data.appInfo.mainColor
     
     let headers = await ApiHeaders(
       xApiKey: self.apiKey,
@@ -195,9 +195,9 @@ public class Tyrads : NSObject {
       xSdkVersion: AcmoConfig.SDK_VERSION,
       userAgent: UIDevice.current.systemName + "/" + UIDevice.current.systemVersion,
       languageCode: self.currentLanguage,
-      premiumColor: acmoInitModel.data.publisherApp.premiumColor,
-      headerColor: acmoInitModel.data.publisherApp.headerColor,
-      mainColor: acmoInitModel.data.publisherApp.mainColor,
+      premiumColor: acmoInitModel.data.appInfo.premiumColor,
+      headerColor: acmoInitModel.data.appInfo.headerColor,
+      mainColor: acmoInitModel.data.appInfo.mainColor,
       privacyAccepted: hasAccepted
     )
     
