@@ -9,8 +9,6 @@ export type HttpError = {
 };
 
 class HttpClient {
-  private api = NetworkCommon.getInstance().getAxios();
-
   private handleError(error: any): HttpError {
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
@@ -18,35 +16,36 @@ class HttpClient {
 
       if (!error.response) {
         return {
-          type: "network",
-          message: "Network error or no response from server"
+          type: 'network',
+          message: 'Network error or no response from server',
         };
       }
 
-      if (error.code === "ECONNABORTED") {
+      if (error.code === 'ECONNABORTED') {
         return {
-          type: "timeout",
-          message: "Request timed out"
+          type: 'timeout',
+          message: 'Request timed out',
         };
       }
 
       return {
-        type: "server",
+        type: 'server',
         status,
         data,
-        message: error.message
+        message: error.message,
       };
     }
 
     return {
-      type: "unknown",
-      message: String(error)
+      type: 'unknown',
+      message: String(error),
     };
   }
 
   async get(url: string, params?: any) {
+    const api = NetworkCommon.getInstance().getAxios();
     try {
-      const response = await this.api.get(url, {
+      const response = await api.get(url, {
         params: params ?? {},
       });
       return { status: response.status, data: response.data };
@@ -56,8 +55,9 @@ class HttpClient {
   }
 
   async post(url: string, data?: any, config?: any) {
+    const api = NetworkCommon.getInstance().getAxios();
     try {
-      const response = await this.api.post(url, data, config);
+      const response = await api.post(url, data, config);
       return { status: response.status, data: response.data };
     } catch (error) {
       throw this.handleError(error);
@@ -65,8 +65,9 @@ class HttpClient {
   }
 
   async put(url: string, data?: any, config?: any) {
+    const api = NetworkCommon.getInstance().getAxios();
     try {
-      const response = await this.api.put(url, data, config);
+      const response = await api.put(url, data, config);
       return { status: response.status, data: response.data };
     } catch (error) {
       throw this.handleError(error);
@@ -74,8 +75,9 @@ class HttpClient {
   }
 
   async delete(url: string, config?: any) {
+    const api = NetworkCommon.getInstance().getAxios();
     try {
-      const response = await this.api.delete(url, config);
+      const response = await api.delete(url, config);
       return { status: response.status, data: response.data };
     } catch (error) {
       throw this.handleError(error);

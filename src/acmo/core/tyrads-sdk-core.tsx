@@ -49,9 +49,15 @@ export class TyradsSdkCore {
     }
     return TyradsSdkCore.instance;
   }
+  public userId: string = "";
+  public apiKey: string = "";
+  public apiSecret: string = "";
+  public encKey?: string = "";
+  public engagementId?: string = "";
 
-  public premiumColor: string = "#1C90DF";
-  public mainColor: string = "#02B5BE";
+  public premiumColor?: string;
+  public mainColor?: string;
+  public currentLanguage: string = "en";
 
   public async init(
     apiKey: string,
@@ -76,21 +82,20 @@ export class TyradsSdkCore {
       data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, config);
     }
 
-    await saveData("credentials", {
-      'X-API-Key': apiKey,
-      'X-API-Secret': apiSecret
-    });
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    this.encKey = encKey;
+    this.engagementId = engagementId;
 
-    let languageCode = "en";
     try {
       const parsed = typeof data === "string" ? JSON.parse(data) : data;
       if (parsed?.languageCode) {
-        languageCode = parsed.languageCode;
+        this.currentLanguage = parsed.languageCode;
       }
     } catch { }
 
-    await saveData("language", languageCode);
-    await Localization.getInstance().init(languageCode);
+    await Localization.getInstance().init(this.currentLanguage);
+    await NetworkCommon.getInstance().init();
 
     if (Platform.OS === 'android') {
       await FcmManager.getInstance().init().catch(console.error);
@@ -107,7 +112,7 @@ export class TyradsSdkCore {
         await changeProviderLanguage(lang);
       }
     );
-    await updateProviderLanguage(languageCode);
+    await updateProviderLanguage(this.currentLanguage);
 
     return data;
   }
@@ -116,13 +121,15 @@ export class TyradsSdkCore {
     try {
       const data = await TyradsSdk.loginUser(userId);
       if (typeof data === "object") {
-        await saveData('apiHeaders', JSON.stringify(data));
-        await saveData('language', data.languageCode);
+        await saveData('xUserId', data.xUserId);
+        this.userId = data.xUserId;
+        this.currentLanguage = data.currentLanguage;
         this.premiumColor = data.premiumColor;
         this.mainColor = data.mainColor;
       } else if (typeof data === "string") {
-        await saveData('apiHeaders', data);
-        await saveData('language', JSON.parse(data).languageCode);
+        await saveData('xUserId', JSON.parse(data).xUserId);
+        this.userId = JSON.parse(data).xUserId;
+        this.currentLanguage = JSON.parse(data).languageCode;
         this.premiumColor = JSON.parse(data).premiumColor;
         this.mainColor = JSON.parse(data).mainColor;
       }

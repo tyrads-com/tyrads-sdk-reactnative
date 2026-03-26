@@ -1,7 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { type AxiosInstance, AxiosError } from 'axios';
 import { AcmoConfig } from '../../../acmo_config';
 import { Logger } from '../helpers/logger';
+import TyradsSdkCore from '../tyrads-sdk-core';
+import { getData } from '../storage/storage';
 
 const BASE_URL = AcmoConfig.BASE_URL;
 
@@ -19,39 +20,36 @@ class NetworkCommon {
     return NetworkCommon.instance;
   }
 
-  private async getStoredHeaders(): Promise<Record<string, string>> {
-    try {
-      const data = await AsyncStorage.getItem('apiHeaders');
-      if (!data) throw new Error('apiHeaders data not found.');
-      let parsed = JSON.parse(data);
-
-      if (typeof parsed === 'string') {
-        parsed = JSON.parse(parsed);
-      }
-
-      return parsed;
-    } catch (e) {
-      Logger.error('[NetworkCommon] Failed to read stored headers', e);
-      return {};
-    }
-  }
-
   public async init(): Promise<void> {
-    if (this.axiosInstance) return;
+    const savedUserId = await getData<string>("xUserId");
+    const userId = savedUserId;
+    const apiKey = TyradsSdkCore.apiKey;
+    const apiSecret = TyradsSdkCore.apiSecret;
+    const sdkPlatform = AcmoConfig.SDK_PLATFORM;
+    const sdkVersion = AcmoConfig.SDK_VERSION;
 
-    const savedHeaders = await this.getStoredHeaders();
+    if (this.axiosInstance) {
+      const headers = this.axiosInstance.defaults.headers;
+      headers.common['X-API-Key'] = apiKey;
+      headers.common['X-API-Secret'] = apiSecret;
+      headers.common['X-User-ID'] = userId;
+      headers.common['X-SDK-Platform'] = sdkPlatform;
+      headers.common['X-SDK-Version'] = sdkVersion;
+      return;
+    }
+
     this.axiosInstance = axios.create({
       baseURL: BASE_URL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        "X-API-Key": savedHeaders['xApiKey'],
-        'X-API-Secret': savedHeaders['xApiSecret'],
-        'X-User-ID': savedHeaders['xUserId'],
-        'X-SDK-Platform': savedHeaders['xSdkPlatform'],
-        'X-SDK-Version': savedHeaders['xSdkVersion'],
-      }
+        'X-API-Key': apiKey,
+        'X-API-Secret': apiSecret,
+        'X-User-ID': userId,
+        'X-SDK-Platform': sdkPlatform,
+        'X-SDK-Version': sdkVersion,
+      },
     });
 
     this.addInterceptors();
