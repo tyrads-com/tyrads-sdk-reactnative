@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { fetchPremiumOfferDetails, openOffer } from './repository';
+import controller from './controller';
 import PremiumHeaderSection from './components/premium_header';
 import CustomCard from './components/custom_card';
 import ActiveOffersButton from './components/active_offers_button';
@@ -13,7 +13,7 @@ import { AcmoOfferListItem } from './components/offer_list_item';
 import AcmoOfferCard from './components/offer_card';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
-import TyradsSdkCoreMethods from '../../core/tyrads-sdk-core';
+import TyradsSdkCore from '../../core/tyrads-sdk-core';
 import SnapCarousel from '../../core/components/snap-carousel';
 import InAppNotificationHost from '../inapp-notifications/inapp-notification-host';
 
@@ -40,16 +40,24 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   const [activeCount, setActiveCount] = useState<number>(0);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchPremiumOfferDetails(
-      setPremiumColor,
-      setCampaigns,
-      setCurrencySale,
-      setActiveCount,
-      setError,
-      setIsLoading,
-    );
+  const fetchPremiumOffers = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await controller.getPremiums();
+      setCampaigns(data.campaigns);
+      setCurrencySale(data.currencySales);
+      setPremiumColor(TyradsSdkCore.premiumColor || '#1C90DF');
+      setActiveCount(data.summary);
+    } catch (e: any) {
+      setError(e.message || 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchPremiumOffers();
   }, []);
 
   const handleShowOffers = () => {
@@ -64,10 +72,10 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   };
 
   const handleButtonPress = async (campaign: Campaign) => {
-    let isReady = await TyradsSdkCoreMethods.isPrivacyAccepted()
+    let isReady = await TyradsSdkCore.isPrivacyAccepted()
     if (!isReady) {
       try {
-        const result = await TyradsSdkCoreMethods.checkOnboardingProcess();
+        const result = await TyradsSdkCore.checkOnboardingProcess();
         console.log("Privacy flow result:", result);
         isReady = result === true;
       } catch (err) {
@@ -78,15 +86,8 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
     if (!isReady) {
       return
     }
-    await openOffer(campaign);
-    await fetchPremiumOfferDetails(
-      setPremiumColor,
-      setCampaigns,
-      setCurrencySale,
-      setActiveCount,
-      setError,
-      setIsLoading,
-    );
+    await controller.openOffer(campaign);
+    await fetchPremiumOffers();
   }
 
 
