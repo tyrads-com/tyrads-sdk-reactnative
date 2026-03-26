@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { type AxiosInstance } from 'axios';
+import TyradsSdkCore from '../tyrads-sdk-core';
+import { AcmoConfig } from '../../../acmo_config';
 
-const BASE_URL = 'https://api.tyrads.com/v3.0/';
+const BASE_URL = `https://api.tyrads.com/v${AcmoConfig.API_VERSION}/`;
 
 interface TranslationResponse {
   data: Array<{
@@ -31,23 +33,14 @@ class LocalizationService {
     return LocalizationService.instance;
   }
 
-  private static async getHeadersFromStorage(): Promise<Record<string, string>> {
-    try {
-      const data = await AsyncStorage.getItem('credentials');
-      return data ? JSON.parse(data) : {};
-    } catch (error) {
-      console.error('Failed to retrieve headers from AsyncStorage', error);
-      return {};
-    }
-  }
-
 
   public async init(locale: string): Promise<void> {
     if (this.axios) {
       return;
     }
 
-    const headers = await LocalizationService.getHeadersFromStorage();
+    const apiKey = TyradsSdkCore.apiKey;
+    const apiSecret = TyradsSdkCore.apiSecret;
 
     this.axios = axios.create({
       baseURL: BASE_URL,
@@ -55,8 +48,8 @@ class LocalizationService {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        "X-API-Key": headers["X-API-Key"],
-        "X-API-Secret": headers["X-API-Secret"],
+        "X-API-Key": apiKey,
+        "X-API-Secret": apiSecret,
       }
     });
 
