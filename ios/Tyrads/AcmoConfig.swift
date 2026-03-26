@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 struct AcmoConfig {
-    static let API_VERSION = "3.0"
+    static let API_VERSION = "4.0"
     static let BUILD_VERSION = "0"
     static let ACMO_VERSION = "4"
     static var SDK_VERSION = "3.2.1-\(BUILD_VERSION)"

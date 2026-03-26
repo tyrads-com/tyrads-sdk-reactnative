@@ -175,9 +175,12 @@ public class Tyrads : NSObject {
     let responseString = String(data: data, encoding: .utf8)
     self.log("Received response: \(responseString ?? "nil")")
     
-    guard let acmoInitModel = try? JSONDecoder().decode(AcmoInitModel.self, from: data) else {
-      self.log("Failed to decode response")
-      throw NSError(domain: "TyradsSdk", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to decode response"])
+    let acmoInitModel: AcmoInitModel
+    do {
+      acmoInitModel = try JSONDecoder().decode(AcmoInitModel.self, from: data)
+    } catch {
+      self.log("Failed to decode response: \(error)")
+      throw NSError(domain: "TyradsSdk", code: 2, userInfo: [NSLocalizedDescriptionKey: "Failed to decode response: \(error) \nResponse: \(responseString)\nRequestHeaders: \(request.allHTTPHeaderFields ?? [:])"])
     }
     
     self.loginData = acmoInitModel
@@ -217,7 +220,7 @@ public class Tyrads : NSObject {
     
     var components = URLComponents()
     components.scheme = "https"
-    components.host = "sdk.tyrads.com"
+    components.host = "v4.sdk.tyrads.com"
     components.queryItems = [
       URLQueryItem(name: "token", value: self.token),
       URLQueryItem(name: "to", value: campaignID != nil ? "\(normalizedRoute ?? "")/\(campaignID!)" : normalizedRoute),

@@ -10,7 +10,7 @@ import Foundation
 struct AcmoInitModel: Codable {
     let code: Int
     let message: String
-    let timestamp: Int
+    let timestamp: Int64
     let responseTime: Double
     let data: InitData
 }
