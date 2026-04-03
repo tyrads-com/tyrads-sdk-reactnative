@@ -11,6 +11,7 @@ export default function App() {
   const [apiSecret, setApiSecret] = useState('');
   const [encKey, setEncKey] = useState('');
   const [engagementId, setEngagementId] = useState('');
+  const [placementId, setPlacementId] = useState('');
   const [userId, setUserId] = useState('');
 
   const [isReady, setReady] = useState(false);
@@ -35,8 +36,9 @@ export default function App() {
     if (storedConfig) {
       setSelectedConfig(storedConfig);
     }
+    const currentConfig = storedConfig || selectedConfig;
     const platformPrefix = isAndroid ? 'ANDROID_' : 'IOS_';
-    const configPrefix = selectedConfig === 'tyrreward' ? 'TYRREWARD' : `BELANDA${selectedConfig === 'belanda1' ? '1' : selectedConfig === 'belanda2' ? '2' : '3'}_TYRADS`;
+    const configPrefix = currentConfig === 'tyrreward' ? 'TYRREWARD' : `BELANDA${currentConfig === 'belanda1' ? '1' : currentConfig === 'belanda2' ? '2' : '3'}_TYRADS`;
 
     const keyName = `${platformPrefix}${configPrefix}_SDK_KEY`;
     const secretName = `${platformPrefix}${configPrefix}_SDK_SECRET`;
@@ -65,7 +67,7 @@ export default function App() {
         setEncKey(keys.encKey);
 
         if (keys.apiKey && keys.apiSecret) {
-          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId);
+          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId, placementId);
           await Tyrads.loginUser(storedUserId);
 
           setWidgetKey(prev => prev + 1);
@@ -88,7 +90,7 @@ export default function App() {
       if (lastUserId !== userId || mediaSource !== '' || lastShowInitialPages !== showInitialPages) {
         console.log('Credentials or User changed. Re-initializing...');
 
-        await Tyrads.init(apiKey, apiSecret, encKey, engagementId,
+        await Tyrads.init(apiKey, apiSecret, encKey, engagementId, placementId,
           mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
           undefined,
           {
@@ -178,6 +180,12 @@ export default function App() {
               placeholder="Engagement ID (optional)"
               value={engagementId}
               onChangeText={setEngagementId}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Placement ID (optional)"
+              value={placementId}
+              onChangeText={setPlacementId}
             />
             <TextInput
               style={styles.input}
