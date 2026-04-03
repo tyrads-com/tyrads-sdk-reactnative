@@ -56,11 +56,11 @@ class TyradsSdk: RCTEventEmitter , APNsNotificationListener{
   }
   
   @objc
-  func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil, engagementId: String? = nil, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+  func `init`(_ apiKey: String, secretKey: String, encKey: String? = nil, engagementId: String? = nil, placementId: String? = nil, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     NSLog("TyradsModule: init called with apiKey: \(apiKey) and secretKey: \(secretKey)")
     Task {
       do{
-        let locale = await Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey, encKey: encKey, engagementId: engagementId)
+        let locale = await Tyrads.instance.configure(apiKey: apiKey, secretKey: secretKey, encKey: encKey, engagementId: engagementId, placementId: placementId)
         let result: [String: Any] = [
           "success": true,
           "languageCode": locale

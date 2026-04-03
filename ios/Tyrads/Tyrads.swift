@@ -15,6 +15,7 @@ public class Tyrads : NSObject {
   internal var apiSecret: String = ""
   internal var encKey: String?
   internal var engagementId: String?
+  internal var placementId: String?
   internal var publisherUserID: String = ""
   internal var mainColor: String?
   private var token: String = ""
@@ -64,11 +65,12 @@ public class Tyrads : NSObject {
   /// - Parameters:
   ///   - apiKey: The API key provided by Tyrads.
   ///   - secretKey: The secret key provided by Tyrads.
-  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, engagementId: String? = nil, debugMode: Bool = false) async -> String {
+  @objc public func configure( apiKey: String, secretKey: String, encKey: String? = nil, engagementId: String? = nil, placementId: String? = nil, debugMode: Bool = false) async -> String {
     self.apiKey = apiKey
     self.apiSecret = secretKey
     self.encKey = encKey
     self.engagementId = engagementId
+    self.placementId = placementId
     self._isSecure = (encKey != nil)
     self.debugMode = debugMode
     
@@ -111,6 +113,11 @@ public class Tyrads : NSObject {
       guard let engagementId = self.engagementId, !engagementId.isEmpty else { return nil }
       return Int(engagementId)
     }()
+
+    let placementIDInt: Int? = {
+      guard let placementId = self.placementId, !placementId.isEmpty else { return nil }
+      return Int(placementId)
+    }()
     
     let storedToken = UserDefaults.standard.string(forKey: AcmoKeyNames.APNS_TOKEN)
     
@@ -120,6 +127,7 @@ public class Tyrads : NSObject {
       "devicePushToken": storedToken,
       "identifierType": identifierType,
       "engagementId": engagementIDInt,
+      "placementId": placementIDInt,
       "identifier": advertisingId,
       "deviceData": deviceDetails
     ]
@@ -226,6 +234,9 @@ public class Tyrads : NSObject {
       URLQueryItem(name: "to", value: campaignID != nil ? "\(normalizedRoute ?? "")/\(campaignID!)" : normalizedRoute),
       URLQueryItem(name: "lang", value: self.currentLanguage)
     ]
+    if let placementId = self.placementId {
+      components.queryItems?.append(URLQueryItem(name: "placementId", value: placementId))
+    }
     return components.url
   }
   

@@ -8,6 +8,7 @@ RCT_EXTERN_METHOD(init:(NSString *)apiKey
                   secretKey:(NSString *)secretKey
                   encKey:(NSString * _Nullable)encKey
                   engagementId:(NSString * _Nullable)engagementId
+                  placementId:(NSString * _Nullable)placementId
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 // RCT_EXTERN_METHOD(loginUser:(NSString *)userId)
