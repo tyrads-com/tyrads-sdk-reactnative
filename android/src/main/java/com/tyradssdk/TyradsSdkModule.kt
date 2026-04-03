@@ -146,7 +146,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun init(apiKey: String, apiSecret: String, encKey: String?, engagementId: String?, config: ReadableMap?, promise: Promise) {
+  fun init(apiKey: String, apiSecret: String, encKey: String?, engagementId: String?, placementId: String?, config: ReadableMap?, promise: Promise) {
     Tyrads.getInstance().tyradScope.launch {
       try {
         val configData = if (config != null) {
@@ -155,7 +155,7 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
             } else {
                 TyradsConfig() 
             } 
-        Tyrads.getInstance().init(reactApplicationContext, apiKey, apiSecret, encKey, engagementId, configData)
+        Tyrads.getInstance().init(reactApplicationContext, apiKey, apiSecret, encKey, engagementId, placementId, configData)
 
         val lang = Tyrads.getInstance().currentLanguageCode.value
 
