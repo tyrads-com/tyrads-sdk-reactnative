@@ -6,8 +6,8 @@ export type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from './acmo
 export { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 
 const Tyrads = {
-  init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo, config?: TyradsConfig) => {
-    return await TyradsSdkCore.init(apiKey, apiSecret, encKey, engagementId, mediaSourceInfo, userInfo, config);
+  init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, placementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo, config?: TyradsConfig) => {
+    return await TyradsSdkCore.init(apiKey, apiSecret, encKey, engagementId, placementId, mediaSourceInfo, userInfo, config);
   },
 
   loginUser: async (userId: string) => {

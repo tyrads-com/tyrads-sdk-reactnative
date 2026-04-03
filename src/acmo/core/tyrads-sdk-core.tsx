@@ -54,6 +54,7 @@ export class TyradsSdkCore {
   public apiSecret: string = "";
   public encKey?: string = "";
   public engagementId?: string = "";
+  public placementId?: string = "";
 
   public premiumColor?: string;
   public mainColor?: string;
@@ -64,6 +65,7 @@ export class TyradsSdkCore {
     apiSecret: string,
     encKey?: string,
     engagementId?: string,
+    placementId?: string,
     mediaSourceInfo?: TyradsMediaSourceInfo,
     userInfo?: TyradsUserInfo,
     config?: TyradsConfig,
@@ -77,15 +79,16 @@ export class TyradsSdkCore {
     }
     var data;
     if (Platform.OS === 'ios') {
-      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId);
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId);
     } else {
-      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, config);
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId, config);
     }
 
     this.apiKey = apiKey;
     this.apiSecret = apiSecret;
     this.encKey = encKey;
     this.engagementId = engagementId;
+    this.placementId = placementId;
 
     try {
       const parsed = typeof data === "string" ? JSON.parse(data) : data;
