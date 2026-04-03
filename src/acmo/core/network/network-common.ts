@@ -21,22 +21,7 @@ class NetworkCommon {
   }
 
   public async init(): Promise<void> {
-    const savedUserId = await getData<string>("xUserId");
-    const userId = savedUserId;
-    const apiKey = TyradsSdkCore.apiKey;
-    const apiSecret = TyradsSdkCore.apiSecret;
-    const sdkPlatform = AcmoConfig.SDK_PLATFORM;
-    const sdkVersion = AcmoConfig.SDK_VERSION;
-
-    if (this.axiosInstance) {
-      const headers = this.axiosInstance.defaults.headers;
-      headers.common['X-API-Key'] = apiKey;
-      headers.common['X-API-Secret'] = apiSecret;
-      headers.common['X-User-ID'] = userId;
-      headers.common['X-SDK-Platform'] = sdkPlatform;
-      headers.common['X-SDK-Version'] = sdkVersion;
-      return;
-    }
+    if (this.axiosInstance) return;
 
     this.axiosInstance = axios.create({
       baseURL: BASE_URL,
@@ -44,11 +29,6 @@ class NetworkCommon {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        'X-API-Key': apiKey,
-        'X-API-Secret': apiSecret,
-        'X-User-ID': userId,
-        'X-SDK-Platform': sdkPlatform,
-        'X-SDK-Version': sdkVersion,
       },
     });
 
@@ -71,7 +51,25 @@ class NetworkCommon {
     if (!this.axiosInstance) return;
 
     this.axiosInstance.interceptors.request.use(
-      (config) => {
+      async (config) => {
+        // Dynamically fetch values for each request
+        const apiKey = TyradsSdkCore.apiKey;
+        const apiSecret = TyradsSdkCore.apiSecret;
+        const sdkPlatform = AcmoConfig.SDK_PLATFORM;
+        const sdkVersion = AcmoConfig.SDK_VERSION;
+
+        // Try to get userId from core memory first, then storage
+        let userId = TyradsSdkCore.userId;
+        if (!userId) {
+          userId = (await getData<string>('xUserId')) || '';
+        }
+
+        config.headers['X-API-Key'] = apiKey;
+        config.headers['X-API-Secret'] = apiSecret;
+        config.headers['X-User-ID'] = userId;
+        config.headers['X-SDK-Platform'] = sdkPlatform;
+        config.headers['X-SDK-Version'] = sdkVersion;
+
         if (__DEV__) {
           this.logSafe('HTTP REQUEST', {
             timestamp: new Date().toISOString(),
