@@ -19,6 +19,7 @@ export default function App() {
   const [widgetKey, setWidgetKey] = useState(0);
   const [showInitialPages, setShowInitialPages] = useState(false);
   const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
+  const [lastPlacementId, setLastPlacementId] = useState(placementId);
 
 
   const [selectedConfig, setSelectedConfig] = useState('belanda1');
@@ -87,7 +88,9 @@ export default function App() {
     try {
       const lastUserId = await AsyncStorage.getItem('userId');
 
-      if (lastUserId !== userId || mediaSource !== '' || lastShowInitialPages !== showInitialPages) {
+      if (lastUserId !== userId || mediaSource !== ''
+        || lastShowInitialPages !== showInitialPages
+        || placementId !== lastPlacementId) {
         console.log('Credentials or User changed. Re-initializing...');
 
         await Tyrads.init(apiKey, apiSecret, encKey, engagementId, placementId,
@@ -101,6 +104,7 @@ export default function App() {
         await AsyncStorage.setItem('userId', userId);
         setWidgetKey(prev => prev + 1);
         setLastShowInitialPages(showInitialPages);
+        setLastPlacementId(placementId)
       }
 
       await Tyrads.showOffers({ launchMode: 2 });
