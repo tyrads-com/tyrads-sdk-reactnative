@@ -14,13 +14,17 @@ export default function App() {
   const [placementId, setPlacementId] = useState('');
   const [userId, setUserId] = useState('');
 
+  const [gender, setGender] = useState<number | undefined>(undefined);
+  const [age, setAge] = useState<number | undefined>(undefined);
+
   const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [widgetKey, setWidgetKey] = useState(0);
   const [showInitialPages, setShowInitialPages] = useState(false);
   const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
   const [lastPlacementId, setLastPlacementId] = useState(placementId);
-
+  const [lastGender, setLastGender] = useState<number | undefined>(undefined);
+  const [lastAge, setLastAge] = useState<number | undefined>(undefined);
 
   const [selectedConfig, setSelectedConfig] = useState('belanda1');
   const isAndroid = Platform.OS === 'android';
@@ -30,6 +34,17 @@ export default function App() {
     { label: 'Belanda 1', value: 'belanda1' },
     { label: 'Belanda 2', value: 'belanda2' },
     { label: 'Belanda 3', value: 'belanda3' },
+  ];
+
+  const genderOptions = [
+    { label: 'Select Gender', value: undefined },
+    { label: 'Male', value: 1 },
+    { label: 'Female', value: 2 },
+  ];
+
+  const ageOptions = [
+    { label: 'Select Age', value: undefined },
+    ...Array.from({ length: 100 - 18 + 1 }, (_, i) => ({ label: `${i + 18}`, value: i + 18 }))
   ];
 
   const getConfigKeys = async (): Promise<{ apiKey: string; apiSecret: string; encKey: string; }> => {
@@ -68,7 +83,7 @@ export default function App() {
         setEncKey(keys.encKey);
 
         if (keys.apiKey && keys.apiSecret) {
-          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId, placementId);
+          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId, placementId, undefined, { age, gender });
           await Tyrads.loginUser(storedUserId);
 
           setWidgetKey(prev => prev + 1);
@@ -90,12 +105,14 @@ export default function App() {
 
       if (lastUserId !== userId || mediaSource !== ''
         || lastShowInitialPages !== showInitialPages
-        || placementId !== lastPlacementId) {
+        || placementId !== lastPlacementId
+        || gender !== lastGender
+        || age !== lastAge) {
         console.log('Credentials or User changed. Re-initializing...');
 
         await Tyrads.init(apiKey, apiSecret, encKey, engagementId, placementId,
           mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
-          undefined,
+          { age, gender },
           {
             skipInitialPages: !showInitialPages
           } as TyradsConfig,
@@ -104,7 +121,9 @@ export default function App() {
         await AsyncStorage.setItem('userId', userId);
         setWidgetKey(prev => prev + 1);
         setLastShowInitialPages(showInitialPages);
-        setLastPlacementId(placementId)
+        setLastPlacementId(placementId);
+        setLastGender(gender);
+        setLastAge(age);
       }
 
       await Tyrads.showOffers({ launchMode: 2 });
@@ -155,6 +174,18 @@ export default function App() {
               onValueChange={setShowInitialPages}
             />}
             <View style={{ height: 8 }}></View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', zIndex: 100, width: '100%', marginBottom: 10 }}>
+              <View style={{ flex: 1, marginRight: 5 }}>
+                <Text style={styles.label}>Gender:</Text>
+                <Dropdown options={genderOptions} selectedValue={gender} onValueChange={setGender} />
+              </View>
+              <View style={{ flex: 1, marginLeft: 5 }}>
+                <Text style={styles.label}>Age:</Text>
+                <Dropdown options={ageOptions} selectedValue={age} onValueChange={setAge} />
+              </View>
+            </View>
+
             <TextInput
               style={styles.input}
               placeholder="Media Source in JSON (optional)"
