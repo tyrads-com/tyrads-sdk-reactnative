@@ -7,7 +7,11 @@ import TyradsSdkCoreMethods, { TyradsSdkCore } from "../../../core/tyrads-sdk-co
 import InAppNotificationController from "../controller";
 import NotificationManager from "../inapp-notification-manager";
 
-export const CurrencySalesNotif: React.FC = () => {
+interface InAppNotifProps {
+  useModal?: boolean;
+}
+
+export const CurrencySalesNotif: React.FC<InAppNotifProps> = ({ useModal = true }) => {
 
   const [visible, setVisible] = useState(false);
   const [currencySales, setCurrencySales] = useState<CurrencySales | null>(null);
@@ -15,9 +19,17 @@ export const CurrencySalesNotif: React.FC = () => {
   const notificationManager = NotificationManager.getInstance();
 
   useEffect(() => {
-    if (controller.currencySales) {
-      setCurrencySales(controller.currencySales);
-    }
+    const updateFromController = () => {
+      if (controller.currencySales) {
+        setCurrencySales(controller.currencySales);
+      } else {
+        setCurrencySales(null);
+      }
+    };
+
+    updateFromController();
+    const unsubscribe = controller.addListener(updateFromController);
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -48,6 +60,9 @@ export const CurrencySalesNotif: React.FC = () => {
   const handleClose = () => {
     setVisible(false);
     notificationManager.setCurrencySalesVisible(false);
+    if (!useModal) {
+      TyradsSdkCoreMethods.dismissInAppNotification();
+    }
   };
 
   const handleButtonPress = () => {
@@ -58,7 +73,7 @@ export const CurrencySalesNotif: React.FC = () => {
   };
 
   return (
-    <CardAlert visible={visible} onClose={handleClose}>
+    <CardAlert visible={visible} onClose={handleClose} useModal={useModal}>
       <CardGradient onClose={handleClose}>
         <Text style={styles.title}>{"Bonus Rewards \nUnlocked!"}</Text>
         <View style={styles.horizontalLine} />

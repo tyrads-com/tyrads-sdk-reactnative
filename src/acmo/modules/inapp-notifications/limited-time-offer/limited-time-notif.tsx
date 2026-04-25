@@ -8,10 +8,15 @@ import { Logger } from "../../../core/helpers/logger";
 import { LimitedTimeOfferCard } from "./components/limited-time-offer-card";
 import SnapCarousel from "../../../core/components/snap-carousel";
 import NotificationManager from "../inapp-notification-manager";
+import TyradsSdkCoreMethods from "../../../core/tyrads-sdk-core";
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width
-export const LimitedTimeEventsNotif: React.FC = () => {
+interface InAppNotifProps {
+  useModal?: boolean;
+}
+
+export const LimitedTimeEventsNotif: React.FC<InAppNotifProps> = ({ useModal = true }) => {
 
   const [visible, setVisible] = useState(false);
   const [limitedTimeEvents, setLimitedTimeEvents] = useState<ActivatedCampaign[] | null>([]);
@@ -19,11 +24,19 @@ export const LimitedTimeEventsNotif: React.FC = () => {
   const notificationManager = NotificationManager.getInstance();
 
   useEffect(() => {
-    if (controller.limitedTimeEvents) {
-      const limitedTimeEventsArray = controller.limitedTimeEvents;
-      Logger.log('limitedTimeEvents', limitedTimeEventsArray)
-      setLimitedTimeEvents(limitedTimeEventsArray);
-    }
+    const updateFromController = () => {
+      if (controller.limitedTimeEvents) {
+        const limitedTimeEventsArray = controller.limitedTimeEvents;
+        Logger.log('limitedTimeEvents', limitedTimeEventsArray)
+        setLimitedTimeEvents(limitedTimeEventsArray);
+      } else {
+        setLimitedTimeEvents(null);
+      }
+    };
+
+    updateFromController();
+    const unsubscribe = controller.addListener(updateFromController);
+    return unsubscribe;
   }, []);
 
   useEffect(() => {
@@ -41,35 +54,40 @@ export const LimitedTimeEventsNotif: React.FC = () => {
   const handleClose = () => {
     setVisible(false);
     notificationManager.setLimitedTimeVisible(false);
+    if (!useModal) {
+      TyradsSdkCoreMethods.dismissInAppNotification();
+    }
   };
 
-  return <CardAlert visible={visible} onClose={handleClose}>
-    <CardGradient onClose={handleClose}>
-      <Text style={styles.title}>{"Limited Time Offer"}</Text>
-      <View style={styles.horizontalLine} />
-      <Text style={styles.text}>Limited time offer unlocked! Play now and claim extra rewards!</Text>
-      <SnapCarousel
-        data={limitedTimeEvents!}
-        renderItem={({ item, index }: { item: ActivatedCampaign; index: number }) => (
-          <View key={index} style={{ paddingHorizontal: 6 }}>
+  return (
+    <CardAlert visible={visible} onClose={handleClose} useModal={useModal}>
+      <CardGradient onClose={handleClose}>
+        <Text style={styles.title}>{"Limited Time Offer"}</Text>
+        <View style={styles.horizontalLine} />
+        <Text style={styles.text}>Limited time offer unlocked! Play now and claim extra rewards!</Text>
+        <SnapCarousel
+          data={limitedTimeEvents!}
+          renderItem={({ item, index }: { item: ActivatedCampaign; index: number }) => (
+            <View key={index} style={{ paddingHorizontal: 6 }}>
 
-            <LimitedTimeOfferCard
-              activatedCampaign={item}
-            />
-          </View>
-        )}
-        sliderWidth={(SCREEN_WIDTH * 0.9) - 32}
-        itemWidth={limitedTimeEvents?.length == 1 ? (SCREEN_WIDTH * 0.82) : (SCREEN_WIDTH * 0.65)}
-        loop={false}
-        paginationContainerStyle={{
-          marginTop: 16,
-          paddingVertical: 0,
-        }}
-        autoplay
-      />
-    </CardGradient>
-  </CardAlert>
-}
+              <LimitedTimeOfferCard
+                activatedCampaign={item}
+              />
+            </View>
+          )}
+          sliderWidth={(SCREEN_WIDTH * 0.9) - 32}
+          itemWidth={limitedTimeEvents?.length == 1 ? (SCREEN_WIDTH * 0.82) : (SCREEN_WIDTH * 0.65)}
+          loop={false}
+          paginationContainerStyle={{
+            marginTop: 16,
+            paddingVertical: 0,
+          }}
+          autoplay
+        />
+      </CardGradient>
+    </CardAlert>
+  );
+};
 
 
 const styles = StyleSheet.create({

@@ -15,9 +15,24 @@ class InAppNotificationController {
 
   public currencySales: CurrencySales | null = null;
   public limitedTimeEvents: Array<ActivatedCampaign> | null = null;
+  private listeners: Array<() => void> = [];
+
+  public addListener(listener: () => void): () => void {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  private notifyListeners() {
+    this.listeners.forEach(l => l());
+  }
 
   private async getUserId(): Promise<string> {
     try {
+      const userId = await getData<string>('xUserId');
+      if (userId) return userId;
+
       const data = await AsyncStorage.getItem('apiHeaders');
       if (!data) return 'default';
       const parsed = JSON.parse(data);
@@ -107,6 +122,8 @@ class InAppNotificationController {
     );
 
     this.limitedTimeEvents = hasNewEvent ? allFilteredOffers : null;
+    this.notifyListeners();
+    return !!(this.currencySales || this.limitedTimeEvents);
   }
   private filterLimitedOffersWithEvents(
     activeOffers: ActivatedCampaignsData[]

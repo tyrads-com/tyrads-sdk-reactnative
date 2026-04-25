@@ -5,13 +5,28 @@ interface CardAlertProps {
   visible: boolean;
   onClose: () => void;
   children?: React.ReactNode;
+  useModal?: boolean;
 }
 
 export const CardAlert: React.FC<CardAlertProps> = ({
   visible,
   onClose,
   children,
+  useModal = true,
 }) => {
+  const content = (
+    <View style={styles.fullscreen}>
+      <Pressable style={styles.overlay} onPress={onClose} />
+      <View style={styles.card}>
+        {children}
+      </View>
+    </View>
+  );
+
+  if (!useModal) {
+    return visible ? content : null;
+  }
+
   return (
     <Modal
       animationType="fade"
@@ -19,13 +34,7 @@ export const CardAlert: React.FC<CardAlertProps> = ({
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.fullscreen}>
-        <Pressable style={styles.overlay} onPress={onClose} />
-
-        <View style={styles.card}>
-          {children}
-        </View>
-      </View>
+      {content}
     </Modal>
   );
 };

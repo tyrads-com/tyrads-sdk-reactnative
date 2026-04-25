@@ -4,18 +4,27 @@ import { LimitedTimeEventsNotif } from "./limited-time-offer/limited-time-notif"
 import { useEffect } from "react";
 import InAppNotificationController from "./controller";
 
-const InAppNotificationHost: React.FC = () => {
+import TyradsSdkCoreMethods from "../../core/tyrads-sdk-core";
+
+interface InAppNotificationHostProps {
+  useModal?: boolean;
+  style?: any;
+}
+
+const InAppNotificationHost: React.FC<InAppNotificationHostProps> = ({ useModal = true, style }) => {
   useEffect(() => {
-    const initializeInAppNotifications =  async () => {
-      await InAppNotificationController.getInstance().init();
+    const initializeInAppNotifications = async () => {
+      if (TyradsSdkCoreMethods.apiKey) {
+        await InAppNotificationController.getInstance().init();
+      }
     }
     initializeInAppNotifications();
   }, [])
-  
+
   return (
-    <View>
-      <CurrencySalesNotif />
-      <LimitedTimeEventsNotif />
+    <View style={style}>
+      <CurrencySalesNotif useModal={useModal} />
+      <LimitedTimeEventsNotif useModal={useModal} />
     </View>
   );
 }
