@@ -7,7 +7,16 @@ import React
 @objc(TyradsSdk)
 class TyradsSdk: RCTEventEmitter , APNsNotificationListener{
   
+  class PassthroughRootView: RCTRootView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+      return super.hitTest(point, with: event)
+    }
+  }
+  
   private var pushEventSink: RCTResponseSenderBlock?
+  private var notificationViewController: UIViewController? = nil
+  private var notificationView: UIView? = nil
+  private var notificationWindow: UIWindow? = nil
   
   private var cancellable: AnyCancellable?
 
@@ -190,11 +199,66 @@ class TyradsSdk: RCTEventEmitter , APNsNotificationListener{
       }
     }
     
-    @objc(pushGetApnsToken:rejecter:)
-    func pushGetApnsToken(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-      APNsNotificationManager.shared.getToken { token in
-        resolve(token)
-      }
+  @objc(pushGetApnsToken:rejecter:)
+  func pushGetApnsToken(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    APNsNotificationManager.shared.getToken { token in
+      resolve(token)
     }
+  }
+
+  @objc
+  func showInAppNotification() {
+    print("TyradsSdk: showInAppNotification called")
+    DispatchQueue.main.async {
+      guard let bridge = self.bridge else { 
+        print("TyradsSdk: ERROR - Bridge not available")
+        return 
+      }
+      print("TyradsSdk: Bridge bundle URL: \(bridge.bundleURL?.absoluteString ?? "nil")")
+      self.notificationView?.removeFromSuperview()
+      self.notificationView = nil
+      self.notificationWindow?.isHidden = true
+      self.notificationWindow = nil
+
+      let frame = UIScreen.main.bounds
+      let window: UIWindow
+      if #available(iOS 13.0, *), let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+          window = UIWindow(windowScene: windowScene)
+      } else {
+          window = UIWindow(frame: frame)
+      }
+      window.windowLevel = .alert + 1
+      window.frame = frame
+      window.backgroundColor = .clear
+      
+      let rootView = PassthroughRootView(
+        bridge: bridge,
+        moduleName: "TyradsSdkExample",
+        initialProperties: nil
+      )
+      
+      rootView.backgroundColor = .yellow
+      rootView.frame = frame
+      let vc = UIViewController()
+      vc.view = rootView
+      window.rootViewController = vc
+      
+      self.notificationView = rootView
+      self.notificationWindow = window
+      window.isHidden = false
+      print("TyradsSdk: Notification window is now visible (isHidden = false)")
+    }
+  }
+
+  @objc
+  func dismissInAppNotification() {
+    print("TyradsSdk: dismissInAppNotification called")
+    DispatchQueue.main.async {
+      self.notificationView?.removeFromSuperview()
+      self.notificationView = nil
+      self.notificationWindow?.isHidden = true
+      self.notificationWindow = nil
+    }
+  }
 
 }

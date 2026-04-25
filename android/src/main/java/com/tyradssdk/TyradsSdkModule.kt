@@ -24,9 +24,19 @@ import com.tyrads.sdk.TyradsMediaSourceInfo
 import com.tyrads.sdk.acmo.modules.push_notifications.FCMNotifications
 import com.tyrads.sdk.acmo.modules.push_notifications.TyradsNotificationListener
 import com.tyrads.sdk.acmo.modules.input_models.TyradsConfig
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.Window
+import android.view.WindowManager
+import com.facebook.react.ReactRootView
+import com.facebook.react.ReactInstanceManager
+import com.facebook.react.ReactApplication
 
 class TyradsSdkModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), ActivityEventListener, LifecycleEventListener {
+
+  private var notificationDialog: Dialog? = null
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
   private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -275,6 +285,51 @@ class TyradsSdkModule(reactContext: ReactApplicationContext) :
       } catch (e: Exception) {
         promise.reject("ONBOARDING_PROCESS_ERROR", e.message)
       }
+    }
+  }
+
+  @ReactMethod
+  fun showInAppNotification() {
+    coroutineScope.launch {
+      val activity = currentActivity ?: return@launch
+      val dialog = Dialog(activity)
+      notificationDialog = dialog
+      dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+      val reactRootView = ReactRootView(activity)
+      val reactInstanceManager: ReactInstanceManager? = try {
+          (activity.application as? ReactApplication)?.reactNativeHost?.reactInstanceManager
+      } catch (e: Exception) {
+          null
+      }
+
+      if (reactInstanceManager == null) {
+          Log.e("TyradsSdk", "Could not get ReactInstanceManager")
+          return@launch
+      }
+
+      reactRootView.startReactApplication(
+        reactInstanceManager,
+        "TyradsInAppNotification",
+        null
+      )
+      dialog.setContentView(reactRootView)
+      dialog.window?.let { window ->
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window.setLayout(
+          WindowManager.LayoutParams.MATCH_PARENT,
+          WindowManager.LayoutParams.MATCH_PARENT
+        )
+      }
+      
+      dialog.show()
+    }
+  }
+
+  @ReactMethod
+  fun dismissInAppNotification() {
+    coroutineScope.launch {
+      notificationDialog?.dismiss()
+      notificationDialog = null
     }
   }
 

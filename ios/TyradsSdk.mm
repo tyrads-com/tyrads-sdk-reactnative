@@ -43,4 +43,7 @@ RCT_EXTERN_METHOD(pushRequestPermission:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(pushGetApnsToken:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(showInAppNotification)
+RCT_EXTERN_METHOD(dismissInAppNotification)
+
 @end
