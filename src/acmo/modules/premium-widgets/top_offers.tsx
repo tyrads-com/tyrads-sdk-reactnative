@@ -15,7 +15,6 @@ import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
 import TyradsSdkCore from '../../core/tyrads-sdk-core';
 import SnapCarousel from '../../core/components/snap-carousel';
-import InAppNotificationHost from '../inapp-notifications/inapp-notification-host';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -94,7 +93,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   if (isLoading) {
     return (
       <>
-        <InAppNotificationHost />
         <PremiumWidgetsLoading
           widgetStyle={widgetStyle}
         />
@@ -105,7 +103,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <InAppNotificationHost />
         <Text style={styles.errorText}>Error: {error}</Text>
       </View>
     );
@@ -114,7 +111,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
 
   if (campaigns.length === 0) {
     return <>
-      <InAppNotificationHost />
       <PremiumEmptyView
         colorPremium={premiumColor}
         onContinue={handleShowOffers}
@@ -124,7 +120,6 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
 
   return (
     <CustomCard>
-      <InAppNotificationHost />
       <View style={{ flex: 1 }}>
         <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
