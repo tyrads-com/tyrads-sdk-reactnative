@@ -1,7 +1,14 @@
+import { AppRegistry } from 'react-native';
+import TyradsSdkCore from './acmo/core/tyrads-sdk-core';
+import TyradsGlobalHost from './acmo/modules/inapp-notifications/tyrads-global-host';
 import { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 import PremiumWidgetsLoading from './acmo/modules/premium-widgets/components/premium_loading';
-import TyradsSdkCore from './acmo/core/tyrads-sdk-core';
 import type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
+
+AppRegistry.setWrapperComponentProvider(() => (props) => (
+  <TyradsGlobalHost {...props} />
+));
+
 export type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 export { PremiumWidgetStyles } from './acmo/modules/premium-widgets/top_offers';
 
@@ -48,5 +55,6 @@ const Tyrads = {
     return await TyradsSdkCore.changeLanguage(lang);
   },
 };
+
 
 export default Tyrads;

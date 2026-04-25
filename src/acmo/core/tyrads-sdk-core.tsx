@@ -8,6 +8,7 @@ import { saveData } from "./storage/storage";
 import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from "../modules/localization/localization_context";
 import Localization from './services/localization_service';
 import TopOffers, { type PremiumWidgetStyles } from "../modules/premium-widgets/top_offers";
+import InAppNotificationController from "../modules/inapp-notifications/controller";
 
 const LINKING_ERROR =
   `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +
@@ -142,6 +143,9 @@ export class TyradsSdkCore {
       } else {
         ApnsManager.getInstance().setLoggedIn(true);
       }
+
+      InAppNotificationController.getInstance().init().catch(err => console.error("In-app notification init error:", err));
+
       return data;
     } catch (err) {
       console.error('Error logging in user:', err);
@@ -265,6 +269,10 @@ export class TyradsSdkCore {
 
   public stopObserving() {
     TyradsSdk.stopObserving();
+  }
+
+  public dismissInAppNotification() {
+    TyradsSdk.dismissInAppNotification();
   }
 }
 
