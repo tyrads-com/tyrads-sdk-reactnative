@@ -27,7 +27,7 @@ interface PremiumWidgetProps {
 }
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
+const PremiumOffersWidget: React.FC<PremiumWidgetProps> = ({
   widgetStyle = PremiumWidgetStyles.list,
   onNavigate
 }) => {
@@ -215,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PremiumWidgets;
+export default PremiumOffersWidget;

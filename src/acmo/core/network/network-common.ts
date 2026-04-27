@@ -52,13 +52,11 @@ class NetworkCommon {
 
     this.axiosInstance.interceptors.request.use(
       async (config) => {
-        // Dynamically fetch values for each request
         const apiKey = TyradsSdkCore.apiKey;
         const apiSecret = TyradsSdkCore.apiSecret;
         const sdkPlatform = AcmoConfig.SDK_PLATFORM;
         const sdkVersion = AcmoConfig.SDK_VERSION;
 
-        // Try to get userId from core memory first, then storage
         let userId = TyradsSdkCore.userId;
         if (!userId) {
           userId = (await getData<string>('xUserId')) || '';

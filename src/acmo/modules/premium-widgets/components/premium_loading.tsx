@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Shimmer from './custom_shimmer';
-import { PremiumWidgetStyles } from '../top_offers';
+import { PremiumWidgetStyles } from '../premium_offers_widget';
 import CustomCard from './custom_card';
 
 interface PremiumWidgetsLoadingProps {
