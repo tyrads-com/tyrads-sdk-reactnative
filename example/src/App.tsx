@@ -2,7 +2,7 @@ import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicato
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import Tyrads, { PremiumWidgetStyles, type TyradsMediaSourceInfo, type TyradsConfig } from '../../src/index';
+import Tyrads, { PremiumOffersWidget, PremiumOffersWidgetLoading, PremiumWidgetStyles, type TyradsMediaSourceInfo, type TyradsConfig } from '../../src/index';
 import Config from 'react-native-config';
 
 export default function App() {
@@ -23,6 +23,7 @@ export default function App() {
   const [showInitialPages, setShowInitialPages] = useState(false);
   const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
   const [lastPlacementId, setLastPlacementId] = useState(placementId);
+  const [lastEngagementId, setLastEngagementId] = useState(placementId);
   const [lastGender, setLastGender] = useState<number | undefined>(undefined);
   const [lastAge, setLastAge] = useState<number | undefined>(undefined);
 
@@ -106,6 +107,7 @@ export default function App() {
       if (lastUserId !== userId || mediaSource !== ''
         || lastShowInitialPages !== showInitialPages
         || placementId !== lastPlacementId
+        || engagementId !== lastEngagementId
         || gender !== lastGender
         || age !== lastAge) {
         console.log('Credentials or User changed. Re-initializing...');
@@ -122,6 +124,7 @@ export default function App() {
         setWidgetKey(prev => prev + 1);
         setLastShowInitialPages(showInitialPages);
         setLastPlacementId(placementId);
+        setLastEngagementId(engagementId);
         setLastGender(gender);
         setLastAge(age);
       }
@@ -153,9 +156,9 @@ export default function App() {
         >
           <View style={styles.container}>
             {isReady ? (
-              <Tyrads.topPremiumOffers key={widgetKey} widgetStyle={PremiumWidgetStyles.list} />
+              <PremiumOffersWidget key={widgetKey} widgetStyle={PremiumWidgetStyles.list} />
             ) : (
-              <Tyrads.topPremiumOffersLoading widgetStyle={PremiumWidgetStyles.list} />
+              <PremiumOffersWidgetLoading widgetStyle={PremiumWidgetStyles.list} />
             )}
             <View style={{ height: 20 }}></View>
             <View style={styles.inputContainer}>
