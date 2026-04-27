@@ -1,13 +1,12 @@
-import { NativeEventEmitter, NativeModules, Platform, View } from "react-native";
+import { NativeEventEmitter, NativeModules, Platform } from "react-native";
 import { AcmoConfig } from "../../acmo_config";
 import type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from "./types/external_types";
 import NetworkCommon from "./network/network-common";
 import { FcmManager } from "../modules/push-notifications/fcm-manager";
 import { ApnsManager } from "../modules/push-notifications/apns-manager";
 import { saveData } from "./storage/storage";
-import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from "../modules/localization/localization_context";
+import { changeProviderLanguage, updateProviderLanguage } from "../modules/localization/localization_context";
 import Localization from './services/localization_service';
-import TopOffers, { type PremiumWidgetStyles } from "../modules/premium-widgets/top_offers";
 import InAppNotificationController from "../modules/inapp-notifications/controller";
 
 const LINKING_ERROR =
@@ -169,28 +168,6 @@ export class TyradsSdkCore {
       }
       return await TyradsSdk.showOfferDetails(route, campaignID);
     }
-  }
-
-  public topPremiumOffers({
-    widgetStyle,
-    launchMode = 2,
-  }: {
-    widgetStyle?: PremiumWidgetStyles;
-    launchMode?: number;
-  } = {}) {
-    const handleNavigation = (route?: string, campaignID?: number | null) => {
-      this.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
-    };
-    return (
-      <LocalizationProvider>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <TopOffers
-            widgetStyle={widgetStyle}
-            onNavigate={handleNavigation}
-          />
-        </View>
-      </LocalizationProvider>
-    );
   }
 
   public async changeLanguage(lang: string) {
