@@ -31,10 +31,6 @@ class PremiumWidgetsRepository {
         if (!a.campaignPremium && b.campaignPremium) return 1;
         return 0;
       })
-      .filter(item => {
-        const payouts = Object.values(item.payoutSummary);
-        return payouts.some(p => p.totalPlayablePayoutConverted > 0);
-      })
       .slice(0, 5);
 
     return hotOffers as Campaign[];

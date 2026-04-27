@@ -29,25 +29,13 @@ class InAppNotificationRepo {
     }
   }
   async fetchCurrencySales(): Promise<CurrencySales | null> {
-
-    const mockData: CurrencySales = {
-      "name": "Ramadhan Karemm3",
-      "multiplier": 1.97,
-      "bannerUrl": "",
-      "dateStart": "2025-11-01T00:00:00.000Z",
-      "dateEnd": "2025-11-31T23:59:59.000Z",
-      "remainingTimeSeconds": 86300
-    };
-
-
     try {
       const { status, data } = await http.get(
         AcmoAPIEndpoints.ENGAGEMENT,
       );
       Logger.log(status, data)
       if (status === 200) {
-        // return data.data.CurrencySales as CurrencySales;
-        return mockData;
+        return data.data.CurrencySales as CurrencySales;
       }
       return null
     } catch (err) {
