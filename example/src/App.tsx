@@ -20,7 +20,7 @@ export default function App() {
   const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [widgetKey, setWidgetKey] = useState(0);
-  const [showInitialPages, setShowInitialPages] = useState(false);
+  const [showInitialPages, setShowInitialPages] = useState(true);
   const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
   const [lastPlacementId, setLastPlacementId] = useState(placementId);
   const [lastEngagementId, setLastEngagementId] = useState(placementId);
@@ -326,7 +326,12 @@ const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value:
           <View style={styles.dropdownList}>
             <FlatList
               data={options}
-              keyExtractor={(item) => item.value}
+              keyExtractor={(item, index) => {
+                if (item.value === undefined || item.value === null) {
+                  return `option_${index}`;
+                }
+                return String(item.value);
+              }}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.item}
