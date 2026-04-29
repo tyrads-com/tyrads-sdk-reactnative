@@ -14,14 +14,27 @@ yarn add @tyrads.com/tyrads-sdk
 
 
 ```js
-import Tyrads from '@tyrads.com/tyrads-sdk';
+import Tyrads, { PremiumOffersWidget, PremiumWidgetStyles } from '@tyrads.com/tyrads-sdk';
 
-// ...
+// 1. Initialize the SDK
+// Tyrads.init(apiKey, apiSecret, encKey?, engagementId?, placementId?, mediaSourceInfo?, userInfo?, config?)
+await Tyrads.init('YOUR_API_KEY', 'YOUR_API_SECRET');
 
+// 2. Login User
+await Tyrads.loginUser('user123');
 
-    Tyrads.init('', '');
-    Tyrads.loginUser('');
-    Tyrads.showOffers();
+// 3. Show Offerwall
+await Tyrads.showOffers();
+```
+
+### Premium Offers Widget (v4+)
+You can render premium offers natively inside your app views using the provided React components:
+
+```jsx
+import { PremiumOffersWidget, PremiumOffersWidgetLoading, PremiumWidgetStyles } from '@tyrads.com/tyrads-sdk';
+
+// Inside your screen/component:
+<PremiumOffersWidget widgetStyle={PremiumWidgetStyles.list} />
 ```
 
 
@@ -47,7 +60,7 @@ Available launch modes:
 
 // Note: The launchMode parameter is optional, if not specified the default would be opening the Offerwall in an external browser (Safari)
 
-Tyrads.showOffers({ launchMode: 3 });// provide launchMode: 2 to open the Offerwall in a webkit view that is embedded in the app
+await Tyrads.showOffers({ launchMode: 3 });// provide launchMode: 2 to open the Offerwall in a webkit view that is embedded in the app
 
 ```
 </details>
@@ -61,7 +74,7 @@ Tyrads.showOffers({ launchMode: 3 });// provide launchMode: 2 to open the Offerw
 
 </br>
 
-##### Min SDK version required: v1.1.6
+##### Min SDK version required: v4.0.0-beta.0
 
 </br>
 
@@ -70,25 +83,25 @@ The Tyrads SDK supports deeplinking to specific sections of the offerwall. When 
 Available routes and their usage:
 - `offers` - opens the Campaigns Page
 - `active-offers` - opens the Activated Campaigns Page
-- `offer-details` - opens the Campaign Details Page (requires campaignID)
-- `support` - opens the Campaign Tickets Page (requires campaignID)
+- `offers` with campaignID - opens the Campaign Details Page (requires campaignID)
+- `support` with campaignID - opens the Campaign Tickets Page (requires campaignID)
 
 ```js
 
 // Default route (Campaigns Page)
-Tyrads.showOffers();
+await Tyrads.showOffers();
 
 // Explicitly specifying the Campaigns Page
-Tyrads.showOffers({ route: "offers" });
+await Tyrads.showOffers({ route: "offers" });
 
 // Activated Campaigns Page
-Tyrads.showOffers({ route: "active-offers" });
+await Tyrads.showOffers({ route: "active-offers" });
 
 // Campaign Details Page (requires campaignID)
-Tyrads.showOffers({ route: "offer-details", campaignID: "your_campaign_id_here" });
+await Tyrads.showOffers({ route: "offers", campaignID: "your_campaign_id_here" });
 
 // Campaign Tickets Page (requires campaignID)
-Tyrads.showOffers({ route: "support", campaignID: "your_campaign_id_here" });
+await Tyrads.showOffers({ route: "support", campaignID: "your_campaign_id_here" });
 
 ```
 </details>
