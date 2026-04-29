@@ -5,27 +5,40 @@ interface ActivatedCampaignsResponse {
 
 interface ActivatedCampaignsData {
   groupName: string;
+  availableCurrencies: { [key: string]: AvailableCurrency };
   campaigns: ActivatedCampaign[];
+}
+
+interface AvailableCurrency {
+  currencyId: number;
+  currencyIcon: string;
+  currencyName: string;
 }
 
 interface ActivatedCampaign {
   campaignId: number;
   campaignName: string;
   campaignDescription: null | string;
-  createdOn: string;
-  sortingScore: number;
-  status: string;
-  expiredOn: null | string;
+  campaignType: string;
+  campaignPremium: boolean;
+  validity: {
+    isRetryDownload: boolean;
+    isActivated: boolean;
+    isOldUser: boolean;
+    activeCurrencyId: number;
+    expiredOn: string | null;
+    expiredInSeconds: number | null;
+    isInstalled: boolean;
+    capReached: boolean;
+  };
+  availableCurrencies: { [key: string]: AvailableCurrency };
   app: App;
-  currency: Currency;
-  isRetryDownload: boolean;
-  capReached: boolean;
+  campaignStatus: string;
   group: null | string;
-  premium: boolean;
-  isOldUser: boolean;
-  isInstalled: boolean;
-  campaignEventSummary: CampaignEventSummary;
+  stage: null | string;
+  eventSummary: CampaignEventSummary;
   limitedTimeEvents: LimitedTimeEvent[];
+  shorterMaxTimeEvents: any[];
 }
 
 interface App {
@@ -38,36 +51,25 @@ interface App {
   storeCategory: string;
   previewUrl: string;
   thumbnail: string;
-  confidenceScore: number;
-  securityLabel: string;
-}
-
-interface Currency {
-  name: string;
-  symbol: string;
-  adUnitName: string;
-  adUnitCurrencyName: string;
-  adUnitCurrencyConversion: number;
-  adUnitCurrencyIcon: string;
 }
 
 interface CampaignEventSummary {
   playableEventCountAvailable: number;
   playableEventCountCompleted: number;
   playableEventCountTotal: number;
+  microchargeEventCountAvailable: number;
+  microchargeEventCountCompleted: number;
+  microchargeEventCountTotal: number;
 }
 
 interface LimitedTimeEvent {
-  id: number;
+  appEventId: number;
   conversionStatus: null | string;
   identifier: string;
   eventName: string;
   eventDescription: null | string;
   eventCategory: string;
-  payoutAmount: number;
-  payoutAmountConverted: number;
-  payoutTypeId: number;
-  payoutType: string;
+  payoutInfo: { [key: string]: PayoutInfo };
   allowDuplicateEvents: boolean;
   maxTime: number;
   maxTimeMetric: null | string;
@@ -76,9 +78,24 @@ interface LimitedTimeEvent {
   isLimitedTimeEvent: boolean;
   limitedTimeEventRemainingSeconds: number;
   isTicketSubmitted: boolean;
-  dailyCount: null | number;
+  ticketStatus: null | string;
+  lockEventRule: null | string;
+  hideEventRule: null | string;
+  shorterMaxTimeRule: null | string;
+  specialCompletionReason: null | string;
+  dailyCount: number;
   dailyLimit: null | number;
-  count: null | number;
+  count: number;
   limit: null | number;
+  totalDailyUniqueCount: number;
+  totalDailyUniqueLimit: null | number;
+  dailyUniqueTodayExist: boolean;
 }
 
+interface PayoutInfo {
+  currencyId: number;
+  currencyName: string;
+  currencyIcon: string;
+  currencyConversionRate: number;
+  payoutAmountConverted: number;
+}

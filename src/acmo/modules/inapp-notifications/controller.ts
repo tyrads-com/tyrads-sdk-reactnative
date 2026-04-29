@@ -74,7 +74,7 @@ class InAppNotificationController {
     const today = this.getTodayDateString();
     this.limitedTimeEvents.forEach(campaign => {
       campaign.limitedTimeEvents.forEach(event => {
-        safeShownData[event.id.toString()] = today;
+        safeShownData[event.appEventId.toString()] = today;
       });
     });
     await saveData(key, safeShownData);
@@ -117,7 +117,7 @@ class InAppNotificationController {
 
     const hasNewEvent = allFilteredOffers.some(campaign =>
       campaign.limitedTimeEvents.some(event =>
-        !limitedTimeOffersShownData || !limitedTimeOffersShownData[event.id.toString()]
+        !limitedTimeOffersShownData || !limitedTimeOffersShownData[event.appEventId.toString()]
       )
     );
 
@@ -129,12 +129,12 @@ class InAppNotificationController {
     activeOffers: ActivatedCampaignsData[]
   ): ActivatedCampaign[] {
     const allCampaigns = activeOffers
-      .filter(group => group.groupName.toLocaleLowerCase() == "hotdeals")
+      .filter(group => group.groupName?.toLowerCase() == "hotdeals")
       .flatMap(offer => offer.campaigns)
       .filter(campaign => campaign.limitedTimeEvents.length > 0)
       .filter(campaign =>
-        campaign.status.toLowerCase() !== 'suspended' &&
-        campaign.isInstalled
+        campaign.campaignStatus?.toLowerCase() !== 'suspended' &&
+        campaign.validity?.isInstalled
       )
       .filter(campaign =>
         campaign.limitedTimeEvents.some(event =>

@@ -46,7 +46,7 @@ export const LimitedTimeOfferCard: React.FC<{ activatedCampaign: ActivatedCampai
             </Text>
             <View style={styles.eventPayoutRow}>
               <Image style={styles.eventCurrencyIcon}
-                source={{ uri: activatedCampaign?.currency.adUnitCurrencyIcon }}
+                source={{ uri: activatedCampaign?.availableCurrencies[0]?.currencyIcon }}
               />
               <Text style={[styles.eventPayout, { color: TyradsSdkCore.getInstance().mainColor || '#02B5BE' }]}>
                 {numeral(event.limitedTimeEventRemainingSeconds)}

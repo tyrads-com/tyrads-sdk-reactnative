@@ -76,7 +76,7 @@ export default function App() {
         setReady(false);
 
         const keys = await getConfigKeys();
-        const storedUserId = await AsyncStorage.getItem('userId') || 'user123';
+        const storedUserId = await AsyncStorage.getItem('userId') || 'test_rn125';
         setUserId(storedUserId);
 
         setApiKey(keys.apiKey);
