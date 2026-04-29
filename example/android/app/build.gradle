@@ -80,8 +80,8 @@ android {
         applicationId "tyradssdk.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 18
-        versionName "4.4"
+        versionCode 19
+        versionName "4.5"
     }
     signingConfigs {
         debug {
