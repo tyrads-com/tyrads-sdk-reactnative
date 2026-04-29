@@ -153,6 +153,8 @@ public class Tyrads : NSObject {
       if let email = info.email { fd["email"] = email }
       if let phoneNumber = info.phoneNumber { fd["phoneNumber"] = phoneNumber }
       if let userGroup = info.userGroup { fd["userGroup"] = userGroup }
+      if let age = info.age { fd["age"] = age }
+      if let gender = info.gender { fd["gender"] = gender }
     }
     
     self.log("Initializing with data: \(fd)")
