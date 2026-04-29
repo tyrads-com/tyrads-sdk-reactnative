@@ -52,11 +52,13 @@ const SnapCarousel: React.FC<SnapCarouselProps> = ({
 
   const sidePadding = (sliderWidth - itemWidth) / 2;
 
+  const safeData = data || [];
+
   return (
     <View style={[containerStyle]}>
       <Carousel
         ref={carouselRef}
-        data={data}
+        data={safeData}
         renderItem={renderItem}
         sliderWidth={sliderWidth}
         itemWidth={itemWidth}
@@ -78,7 +80,7 @@ const SnapCarousel: React.FC<SnapCarouselProps> = ({
 
       {showPagination && (
         <Pagination
-          dotsLength={data.length}
+          dotsLength={safeData.length}
           activeDotIndex={activeIndex}
           dotStyle={[styles.dot, dotStyle]}
           inactiveDotOpacity={0.3}

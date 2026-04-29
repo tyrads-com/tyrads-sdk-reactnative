@@ -121,7 +121,11 @@ class InAppNotificationController {
       )
     );
 
-    this.limitedTimeEvents = hasNewEvent ? allFilteredOffers : null;
+    if (hasNewEvent) {
+      this.limitedTimeEvents = allFilteredOffers;
+    } else if (!this.limitedTimeEvents) {
+      this.limitedTimeEvents = null;
+    }
     this.notifyListeners();
     return !!(this.currencySales || this.limitedTimeEvents);
   }
