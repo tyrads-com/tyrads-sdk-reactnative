@@ -18,7 +18,8 @@ export const CardGradient: React.FC<CardGradientProps> = ({
   gradientStart = { x: 0.5, y: 0.25 },
   gradientEnd = { x: 0.5, y: 1.2 },
 }) => {
-  const colors = TyradsSdkCore.getInstance().mainColor ? ['#ffffff', TyradsSdkCore.getInstance().mainColor] : gradientColors;
+  const mainColor = TyradsSdkCore.getInstance().mainColor;
+  const colors = mainColor ? (['#ffffff', mainColor] as string[]) : gradientColors;
   return (
     <View style={styles.wrapper}>
       <View style={styles.topLeftIcon}>
