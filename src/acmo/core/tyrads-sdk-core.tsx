@@ -70,18 +70,19 @@ export class TyradsSdkCore {
     userInfo?: TyradsUserInfo,
     config?: TyradsConfig,
   ) {
+    var data;
+    if (Platform.OS === 'ios') {
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId);
+    } else {
+      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId, config);
+    }
+
     this.setSDKVersion();
     if (mediaSourceInfo) {
       this.setMediaSourceInfo(mediaSourceInfo);
     }
     if (userInfo) {
       this.setUserInfo(userInfo);
-    }
-    var data;
-    if (Platform.OS === 'ios') {
-      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId);
-    } else {
-      data = await TyradsSdk.init(apiKey, apiSecret, encKey, engagementId, placementId, config);
     }
 
     this.apiKey = apiKey;
@@ -106,6 +107,8 @@ export class TyradsSdkCore {
     if (Platform.OS === 'ios') {
       await ApnsManager.getInstance().init().catch(console.error);
     }
+    await updateProviderLanguage(this.currentLanguage);
+
     TyradsSdk.startObserving();
     this.languageChangedSubscription?.remove();
     this.languageChangedSubscription = this.tyradsEmitter.addListener(
@@ -115,7 +118,6 @@ export class TyradsSdkCore {
         await changeProviderLanguage(lang);
       }
     );
-    await updateProviderLanguage(this.currentLanguage);
 
     return data;
   }
