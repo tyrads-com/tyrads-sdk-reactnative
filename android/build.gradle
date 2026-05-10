@@ -112,6 +112,6 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation 'com.google.code.gson:gson:+'
 
-  implementation 'com.github.tyrads-com:tyrads-sdk-android:849733b56b'
+  implementation 'com.github.tyrads-com:tyrads-sdk-android:22b7882c30'
 }
 
