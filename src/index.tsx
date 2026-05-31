@@ -1,81 +1,23 @@
-import { NativeEventEmitter, NativeModules, Platform, View, } from 'react-native';
+import { AppRegistry } from 'react-native';
+import TyradsSdkCore from './acmo/core/tyrads-sdk-core';
+import TyradsGlobalHost from './acmo/modules/inapp-notifications/tyrads-global-host';
+import type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
 
-import TopOffers, { PremiumWidgetStyles } from './acmo/modules/dashboard/top_offers';
-import { saveData } from './acmo/core/storage/storage';
-import Localization from './acmo/core/services/localization_service';
-import { changeProviderLanguage, LocalizationProvider, updateProviderLanguage } from './acmo/modules/localization/localization_context';
+AppRegistry.setWrapperComponentProvider(() => (props) => (
+  <TyradsGlobalHost {...props} />
+));
 
-// const TyradsSdkComposeView = requireNativeComponent('TyradsSdkComposeView');
-
-
-const LINKING_ERROR =
-  `The package 'tyrads-sdk' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const TyradsSdk = NativeModules.TyradsSdk
-  ? NativeModules.TyradsSdk
-  : new Proxy(
-    {},
-    {
-      get() {
-        throw new Error(LINKING_ERROR);
-      },
-    }
-  );
-
-const tyradsEmitter = new NativeEventEmitter(TyradsSdk);
-
-let languageChangedSubscription: any = null;
+export type { TyradsConfig, TyradsMediaSourceInfo, TyradsUserInfo } from './acmo/core/types/external_types'
+export { PremiumWidgetStyles } from './acmo/modules/premium-widgets/premium_offers_widget';
+export { PremiumOffersWidget, PremiumOffersWidgetLoading } from './acmo/modules/premium-widgets/premium_offers_widget_wrapper';
 
 const Tyrads = {
-  init: async (apiKey: string, apiSecret: string, encKey?: string) => {
-    const data = await TyradsSdk.init(apiKey, apiSecret, encKey);
-
-    await saveData("credentials", {
-      'X-API-Key': apiKey,
-      'X-API-Secret': apiSecret
-    });
-
-    let languageCode = "en";
-    try {
-      const parsed = typeof data === "string" ? JSON.parse(data) : data;
-      if (parsed?.languageCode) {
-        languageCode = parsed.languageCode;
-      }
-    } catch { }
-
-    TyradsSdk.startObserving();
-    languageChangedSubscription?.remove();
-    languageChangedSubscription = tyradsEmitter.addListener(
-      'LanguageChanged',
-      async (lang: string) => {
-        console.log('LanguageChanged event from Android SDK:', lang);
-        await changeProviderLanguage(lang);
-      }
-    );
-
-    await saveData("language", languageCode);
-    await Localization.getInstance().init(languageCode);
-    await updateProviderLanguage(languageCode);
-
-    return data;
+  init: async (apiKey: string, apiSecret: string, encKey?: string, engagementId?: string, placementId?: string, mediaSourceInfo?: TyradsMediaSourceInfo, userInfo?: TyradsUserInfo, config?: TyradsConfig) => {
+    return await TyradsSdkCore.init(apiKey, apiSecret, encKey, engagementId, placementId, mediaSourceInfo, userInfo, config);
   },
+
   loginUser: async (userId: string) => {
-    try {
-      const data = await TyradsSdk.loginUser(userId);
-      if (typeof data === "object") {
-        await saveData('apiHeaders', JSON.stringify(data));
-        await saveData('language', data.languageCode);
-      } else if (typeof data === "string") {
-        await saveData('apiHeaders', data);
-        await saveData('language', JSON.parse(data).languageCode);
-      }
-      return data;
-    } catch (err) {
-      return null;
-    }
+    return await TyradsSdkCore.loginUser(userId);
   },
 
   showOffers: async ({
@@ -83,43 +25,14 @@ const Tyrads = {
     route,
     campaignID,
   }: { launchMode?: number; route?: string; campaignID?: number | null } = {}) => {
-    if (Platform.OS === 'ios') {
-      if (campaignID == null) {
-        return await TyradsSdk.showOffers(launchMode, route);
-      }
-      return await TyradsSdk.showOfferDetails(launchMode, route, campaignID);
-    } else {
-      if (campaignID == null) {
-        return await TyradsSdk.showOffers(route);
-      }
-      return await TyradsSdk.showOfferDetails(route, campaignID);
-    }
-  },
-  topPremiumOffers: ({
-    widgetStyle,
-    launchMode = 2,
-  }: {
-    widgetStyle?: PremiumWidgetStyles;
-    launchMode?: number;
-  } = {}) => {
-    const handleNavigation = (route?: string, campaignID?: number | null) => {
-      Tyrads.showOffers({ route: route, campaignID: campaignID, launchMode: launchMode });
-    };
-    return (
-      <LocalizationProvider>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <TopOffers
-            widgetStyle={widgetStyle}
-            onNavigate={handleNavigation}
-          />
-        </View>
-      </LocalizationProvider>
-    );
-  },
-  changeLanguage: async (lang: string) => {
-    return await TyradsSdk.changeLanguage(lang);
+    return await TyradsSdkCore.showOffers({ launchMode, route, campaignID });
   },
 
+
+  changeLanguage: async (lang: string) => {
+    return await TyradsSdkCore.changeLanguage(lang);
+  },
 };
+
 
 export default Tyrads;

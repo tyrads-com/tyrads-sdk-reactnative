@@ -1,0 +1,10 @@
+export class AcmoConfig {
+  public static API_VERSION = "4.0";
+  public static BASE_URL = `https://api.tyrads.com/v${this.API_VERSION}/`;
+  public static MAJOR_VERSION = "4";
+  public static MINOR_VERSION = "0";
+  public static PATCH_VERSION = "0";
+  public static BUILD_VERSION = "1";
+  public static SDK_PLATFORM = "React Native";
+  public static SDK_VERSION = `${this.MAJOR_VERSION}.${this.MINOR_VERSION}.${this.PATCH_VERSION}-${this.BUILD_VERSION}`;
+}

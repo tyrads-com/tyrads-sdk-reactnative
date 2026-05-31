@@ -5,6 +5,7 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
 
     var webView: WKWebView!
     var initialURL: URL
+    public var onDismiss: (() -> Void)?
   
     private let internalDomains: [String] = ["sdk.tyrads.com", "acmo.in"]
     
@@ -48,11 +49,23 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
             webView.isInspectable = true
         }
         
-        webView.load(URLRequest(url: initialURL))
+//        webView.load(URLRequest(url: initialURL))
+        loadURL()
         log("WebView loaded URL: \(initialURL.absoluteString)")
     }
 
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        log("viewDidDisappear called: WebView controller removed from screen.")
+        self.onDismiss?()
+    }
+  private func loadURL() {
+    log("Loading URL: \(initialURL.absoluteString)")
+    let request = URLRequest(url: initialURL)
+    webView.load(request)
+  }
+
+  public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == "clickHandler",
               let messageDict = message.body as? [String: Any] else {
             log("Received unknown message or invalid format.")
@@ -74,7 +87,9 @@ class AcmoWebViewController: UIViewController, WKNavigationDelegate, WKScriptMes
             case "changeLanguage":
                 if let langCode = messageDict["value"] as? String {
                     log("Action: changeLanguage received. Language Code: \(langCode)")
-                  Tyrads.instance.changeLanguage(langCode)
+                  Task{
+                    await Tyrads.instance.changeLanguage(langCode)
+                  }
 //                  let value = UserDefaults.standard.string(forKey: "locale")
                 }
                 

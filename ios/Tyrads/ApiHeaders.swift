@@ -9,4 +9,5 @@ public struct ApiHeaders {
     let premiumColor: String
     let headerColor: String
     let mainColor: String
+    let privacyAccepted: Bool
 }

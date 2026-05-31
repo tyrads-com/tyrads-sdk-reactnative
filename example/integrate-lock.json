@@ -1,0 +1,49 @@
+{
+  "lockfileVersion": 1,
+  "packages": {
+    "@babel/core": {
+      "version": "^7.20.0",
+      "integrated": false
+    },
+    "@babel/preset-env": {
+      "version": "^7.20.0",
+      "integrated": false
+    },
+    "@babel/runtime": {
+      "version": "^7.20.0",
+      "integrated": false
+    },
+    "@react-native-async-storage/async-storage": {
+      "version": "^2.0.0",
+      "integrated": false
+    },
+    "@react-native/babel-preset": {
+      "version": "0.79.2",
+      "integrated": false
+    },
+    "@react-native/metro-config": {
+      "version": "0.79.2",
+      "integrated": false
+    },
+    "@react-native/typescript-config": {
+      "version": "0.79.2",
+      "integrated": false
+    },
+    "react": {
+      "version": "19.0.0",
+      "integrated": false
+    },
+    "react-native": {
+      "version": "0.79.2",
+      "integrated": false
+    },
+    "react-native-builder-bob": {
+      "version": "^0.29.0",
+      "integrated": false
+    },
+    "react-native-config": {
+      "version": "^1.6.1",
+      "integrated": true
+    }
+  }
+}

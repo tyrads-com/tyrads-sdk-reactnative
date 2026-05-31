@@ -3,16 +3,18 @@ import {
   View,
   Text,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
-import { fetchPremiumOfferDetails, openOffer } from './repository';
+import controller from './controller';
 import PremiumHeaderSection from './components/premium_header';
 import CustomCard from './components/custom_card';
 import ActiveOffersButton from './components/active_offers_button';
 import { AcmoOfferListItem } from './components/offer_list_item';
 import AcmoOfferCard from './components/offer_card';
-import AcmoScrollPager from './components/custom_scroller';
 import PremiumEmptyView from './components/premium_empty_widget';
 import PremiumWidgetsLoading from './components/premium_loading';
+import TyradsSdkCore from '../../core/tyrads-sdk-core';
+import SnapCarousel from '../../core/components/snap-carousel';
 
 export const enum PremiumWidgetStyles {
   list,
@@ -24,7 +26,8 @@ interface PremiumWidgetProps {
   onNavigate: (route?: string, campaignID?: number) => void;
 }
 
-const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const PremiumOffersWidget: React.FC<PremiumWidgetProps> = ({
   widgetStyle = PremiumWidgetStyles.list,
   onNavigate
 }) => {
@@ -36,16 +39,24 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   const [activeCount, setActiveCount] = useState<number>(0);
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    fetchPremiumOfferDetails(
-      setPremiumColor,
-      setCampaigns,
-      setCurrencySale,
-      setActiveCount,
-      setError,
-      setIsLoading
-    );
+  const fetchPremiumOffers = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await controller.getPremiums();
+      setCampaigns(data.campaigns);
+      setCurrencySale(data.currencySales);
+      setPremiumColor(TyradsSdkCore.premiumColor || '#1C90DF');
+      setActiveCount(data.summary);
+    } catch (e: any) {
+      setError(e.message || 'Something went wrong');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchPremiumOffers();
   }, []);
 
   const handleShowOffers = () => {
@@ -60,22 +71,32 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
   };
 
   const handleButtonPress = async (campaign: Campaign) => {
-    await openOffer(campaign);
-    await fetchPremiumOfferDetails(
-      setPremiumColor,
-      setCampaigns,
-      setCurrencySale,
-      setActiveCount,
-      setError,
-      setIsLoading
-    );
+    let isReady = await TyradsSdkCore.isPrivacyAccepted()
+    if (!isReady) {
+      try {
+        const result = await TyradsSdkCore.checkOnboardingProcess();
+        console.log("Privacy flow result:", result);
+        isReady = result === true;
+      } catch (err) {
+        console.error("Privacy flow error:", err);
+        isReady = false;
+      }
+    }
+    if (!isReady) {
+      return
+    }
+    await controller.openOffer(campaign);
+    await fetchPremiumOffers();
   }
+
 
   if (isLoading) {
     return (
-      <PremiumWidgetsLoading
-        widgetStyle={widgetStyle}
-      />
+      <>
+        <PremiumWidgetsLoading
+          widgetStyle={widgetStyle}
+        />
+      </>
     );
   }
 
@@ -89,14 +110,16 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
 
 
   if (campaigns.length === 0) {
-    return <PremiumEmptyView
-      colorPremium={premiumColor}
-      onContinue={handleShowOffers}
-    />
+    return <>
+      <PremiumEmptyView
+        colorPremium={premiumColor}
+        onContinue={handleShowOffers}
+      />
+    </>;
   }
 
   return (
-    <CustomCard style={{ flexDirection: 'row' }}>
+    <CustomCard>
       <View style={{ flex: 1 }}>
         <PremiumHeaderSection premiumColor={premiumColor} onShowOffers={handleShowOffers} />
         <View style={styles.headerSpacer} />
@@ -120,19 +143,33 @@ const PremiumWidgets: React.FC<PremiumWidgetProps> = ({
               );
             case PremiumWidgetStyles.sliderCards:
               return (
-                <AcmoScrollPager
-                  totalPages={campaigns.length}
-                  activeIndicatorColor={premiumColor}
-                  content={(index) => (
-                    <AcmoOfferCard
-                      item={campaigns[index]!}
-                      onButtonClick={async () => handleButtonPress(campaigns[index]!)}
-                      currencySaleModel={currencySale}
-                      premiumColor={premiumColor}
-                      isLoading={false}
-                      onTap={async () => handleCampaignPress && handleCampaignPress(campaigns[index]!.campaignId)}
-                    />
+                <SnapCarousel
+                  data={campaigns}
+                  renderItem={({ item, index }) => (
+                    <View style={{ paddingHorizontal: 16 }}>
+                      <AcmoOfferCard
+                        item={item}
+                        onButtonClick={async () => handleButtonPress(campaigns[index]!)}
+                        currencySaleModel={currencySale}
+                        premiumColor={premiumColor}
+                        isLoading={false}
+                        onTap={async () => handleCampaignPress && handleCampaignPress(campaigns[index]!.campaignId)}
+                      />
+                    </View>
                   )}
+                  sliderWidth={SCREEN_WIDTH - 40}
+                  itemWidth={SCREEN_WIDTH - 40}
+                  dotStyle={{
+                    marginVertical: 0,
+                    backgroundColor: premiumColor || "#000"
+                  }}
+                  paginationContainerStyle={{
+                    marginBottom: 16,
+                    marginTop: 8,
+                    paddingVertical: 0,
+                  }}
+                  loop
+                  autoplay
                 />
               );
             default:
@@ -178,4 +215,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PremiumWidgets;
+export default PremiumOffersWidget;

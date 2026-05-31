@@ -19,6 +19,9 @@ interface PagerProps {
   indicatorStyle?: StyleProp<ViewStyle>;
   activeIndicatorColor?: string;
   inactiveIndicatorColor?: string;
+  inactiveOpacity?: number;
+  inactiveScaleFactor?: number;
+  autoPlay?: boolean;
 }
 
 const AcmoScrollPager: React.FC<PagerProps> = ({
@@ -31,6 +34,9 @@ const AcmoScrollPager: React.FC<PagerProps> = ({
   indicatorStyle,
   activeIndicatorColor = 'red',
   inactiveIndicatorColor = 'lightgray',
+  inactiveOpacity = 0.3,
+  inactiveScaleFactor = 0.8,
+  autoPlay = true,
 }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<React.RefObject<typeof Animated.ScrollView> | any>(null);
@@ -50,19 +56,20 @@ const AcmoScrollPager: React.FC<PagerProps> = ({
     const itemWidth = containerWidth * viewportFraction;
     const offset = itemWidth + spacing;
 
-    intervalRef.current = setInterval(() => {
-      const next = (currentPage + 1) % totalPages;
-      setCurrentPage(next);
-      scrollViewRef.current.scrollTo({
-        x: next * offset,
-        animated: true,
-      });
-    }, delayInMillis);
-
+    if (autoPlay) {
+      intervalRef.current = setInterval(() => {
+        const next = (currentPage + 1) % totalPages;
+        setCurrentPage(next);
+        scrollViewRef.current.scrollTo({
+          x: next * offset,
+          animated: true,
+        });
+      }, delayInMillis);
+    }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [containerWidth, currentPage, delayInMillis, totalPages, viewportFraction, spacing]);
+  }, [containerWidth, currentPage, delayInMillis, totalPages, viewportFraction, spacing, autoPlay]);
 
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
@@ -87,6 +94,12 @@ const AcmoScrollPager: React.FC<PagerProps> = ({
             {
               backgroundColor:
                 i === currentPage ? activeIndicatorColor : inactiveIndicatorColor,
+              opacity: i === currentPage ? 1 : inactiveOpacity,
+              transform: [
+                {
+                  scale: i === currentPage ? scaleFactor : inactiveScaleFactor,
+                },
+              ],
             },
           ]}
         />
@@ -162,3 +175,4 @@ const styles = StyleSheet.create({
 });
 
 export default AcmoScrollPager;
+

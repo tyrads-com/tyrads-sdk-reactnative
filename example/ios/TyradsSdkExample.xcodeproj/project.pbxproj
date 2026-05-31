@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* TyradsSdkExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* TyradsSdkExampleTests.m */; };
+		138163F081C656D9886C3E61 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2A6B7D70B7ECAA3E98C09031 /* libPods-TyradsSdkExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B0EE161F73189F534CBE3ED /* libPods-TyradsSdkExample.a */; };
+		5577820D01F14B05A502F50C /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 376728201745419FB02BE47E /* Config.xcconfig */; };
 		671BBE5CF86E58809FE546AC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C57E9E60434B503BB594FB2A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		BC3CB8417010C5ACEC030AEB /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DD006B14E5E77D19EA8EF52 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */; };
+		BE9DA710052A757FC87F2FB7 /* Pods_TyradsSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,13 +39,15 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = TyradsSdkExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = TyradsSdkExample/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = TyradsSdkExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		4DD006B14E5E77D19EA8EF52 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TyradsSdkExample-TyradsSdkExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		376728201745419FB02BE47E /* Config.xcconfig */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		4E7AA7C02B94EE4747C19081 /* Pods-TyradsSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample.release.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample.release.xcconfig"; sourceTree = "<group>"; };
+		523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TyradsSdkExample_TyradsSdkExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TyradsSdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TyradsSdkExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8B0EE161F73189F534CBE3ED /* libPods-TyradsSdkExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TyradsSdkExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		987FF27F603E94831D2D3C95 /* Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		B1E2C038308E9A62E81EAF7B /* Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C57E9E60434B503BB594FB2A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = TyradsSdkExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DFB8377B2EA25B74004371D8 /* TyradsSdkExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TyradsSdkExample.entitlements; path = TyradsSdkExample/TyradsSdkExample.entitlements; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F20934B3D47C82FB60B12DB9 /* Pods-TyradsSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC3CB8417010C5ACEC030AEB /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a in Frameworks */,
+				138163F081C656D9886C3E61 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A6B7D70B7ECAA3E98C09031 /* libPods-TyradsSdkExample.a in Frameworks */,
+				BE9DA710052A757FC87F2FB7 /* Pods_TyradsSdkExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,6 +92,7 @@
 		13B07FAE1A68108700A75B9A /* TyradsSdkExample */ = {
 			isa = PBXGroup;
 			children = (
+				DFB8377B2EA25B74004371D8 /* TyradsSdkExample.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -105,8 +109,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				8B0EE161F73189F534CBE3ED /* libPods-TyradsSdkExample.a */,
-				4DD006B14E5E77D19EA8EF52 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */,
+				7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */,
+				523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -121,6 +125,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				376728201745419FB02BE47E /* Config.xcconfig */,
 				13B07FAE1A68108700A75B9A /* TyradsSdkExample */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* TyradsSdkExampleTests */,
@@ -164,8 +169,8 @@
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				57E768FB3FBA0D6EFA4C5513 /* [CP] Embed Pods Frameworks */,
 				D7E29CC51FB799AA17232549 /* [CP] Copy Pods Resources */,
+				40D29D08BD8E9E7513560C3C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -186,8 +191,8 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				26796A68518B7C452359339B /* [CP] Embed Pods Frameworks */,
 				99272AA3019047B765ABFBAA /* [CP] Copy Pods Resources */,
+				200CFC2B386ADC87AAC7335A /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -246,6 +251,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5577820D01F14B05A502F50C /* Config.xcconfig in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				671BBE5CF86E58809FE546AC /* PrivacyInfo.xcprivacy in Resources */,
@@ -271,6 +277,27 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
+		200CFC2B386ADC87AAC7335A /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		206C2E86C35DD923F53EC07C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,23 +318,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		26796A68518B7C452359339B /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		2B76AF7A16360A39DC604C97 /* [CP] Check Pods Manifest.lock */ = {
@@ -332,7 +342,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		57E768FB3FBA0D6EFA4C5513 /* [CP] Embed Pods Frameworks */ = {
+		40D29D08BD8E9E7513560C3C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -340,9 +350,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -357,9 +371,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -374,9 +392,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -471,8 +493,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4CXUGC85TS;
+				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 19;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TyradsSdkExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN SDK iFame";
@@ -481,7 +506,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 4.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -489,6 +514,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnsdk.example;
 				PRODUCT_NAME = TyradsSdkExample;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "React Native SDK";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -501,8 +528,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4CXUGC85TS;
+				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 19;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				INFOPLIST_FILE = TyradsSdkExample/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "RN SDK iFame";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
@@ -510,7 +540,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 4.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -518,6 +548,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.rnsdk.example;
 				PRODUCT_NAME = TyradsSdkExample;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "React Native SDK";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -525,6 +557,7 @@
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 376728201745419FB02BE47E /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "";
@@ -607,18 +640,17 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				USE_HERMES = true;
 			};
 			name = Debug;
 		};
 		83CBBA211A601CBA00E9B192 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 376728201745419FB02BE47E /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CC = "";
@@ -693,10 +725,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

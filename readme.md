@@ -1,205 +1,110 @@
-# Integrating Tyrads SDK with React Native
+# tyrads-sdk
 
-This guide explains how to integrate the Tyrads SDK into your React Native project, allowing you to show offers in your app.
+Tyrads SDK for React Native 
 
-## Prerequisites
+## Installation
 
-- React Native project set up
-- Android development environment configured
-
-## Integration Steps
-
-### 1. Add Tyrads SDK to your project
-In the project's root `build.gradle` file, add the JitPack repository:
-
-```
-allprojects {
-    repositories {
-        // ... other repositories
-        maven { url 'https://jitpack.io' }
-    }
-}
-
+```sh
+npm install @tyrads.com/tyrads-sdk
+# or
+yarn add @tyrads.com/tyrads-sdk
 ```
 
-Add the Tyrads SDK to your `app/build.gradle` file:
+## Usage
 
-```gradle
-dependencies {
-    implementation 'com.tyrads:tyrads-sdk:<VERSION>'
-}
+
+```js
+import Tyrads, { PremiumOffersWidget, PremiumWidgetStyles } from '@tyrads.com/tyrads-sdk';
+
+// 1. Initialize the SDK
+// Tyrads.init(apiKey, apiSecret, encKey?, engagementId?, placementId?, mediaSourceInfo?, userInfo?, config?)
+await Tyrads.init('YOUR_API_KEY', 'YOUR_API_SECRET');
+
+// 2. Login User
+await Tyrads.loginUser('user123');
+
+// 3. Show Offerwall
+await Tyrads.showOffers();
 ```
 
-## 2. Create a Native Module
-Create a new Java class in your Android project:
+### Premium Offers Widget (v4+)
+You can render premium offers natively inside your app views using the provided React components:
 
-```
-// TyradsModule.java
-package com.your.package.name;
+```jsx
+import { PremiumOffersWidget, PremiumOffersWidgetLoading, PremiumWidgetStyles } from '@tyrads.com/tyrads-sdk';
 
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.tyrads.sdk.Tyrads;
-
-public class TyradsModule extends ReactContextBaseJavaModule {
-    public TyradsModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-    }
-
-    @Override
-    public String getName() {
-        return "TyradsModule";
-    }
-
-    @ReactMethod
-    public void init(String apiKey, String apiSecret) {
-        Tyrads.init(getReactApplicationContext(), apiKey, apiSecret);
-    }
-
-    @ReactMethod
-    public void loginUser(String userId) {
-        Tyrads.loginUser(userId);
-    }
-
-    @ReactMethod
-    public void showOffers() {
-        Tyrads.showOffers(getCurrentActivity());
-    }
-}
-
+// Inside your screen/component:
+<PremiumOffersWidget widgetStyle={PremiumWidgetStyles.list} />
 ```
 
-## 3. Create a Package for the Native Module
+
+</br>
+<details>
+<summary><strong>Launch Mode</strong></summary>
+
+
+</br>
+
+##### Min SDK version required: v1.1.6
+##### Works only for iOS 
+
+</br>
+
+Tyrads SDK provides the ability to open the Offerwall in a webkit view that is embedded in the app to provide a seamless user experience. Also, it provides the ability to open the Offerwall in an external browser (Safari) if Apple's app store policy does not approve the in-app rewards system for the app.
+
+Available launch modes:
+- `launchMode: 3` - opens the Offerwall in an external browser (Safari)
+- `launchMode: 2` - opens the Offerwall in a webkit view that is embedded in the app
+
+```js
+
+// Note: The launchMode parameter is optional, if not specified the default would be opening the Offerwall in an external browser (Safari)
+
+await Tyrads.showOffers({ launchMode: 3 });// provide launchMode: 2 to open the Offerwall in a webkit view that is embedded in the app
 
 ```
-// TyradsPackage.java
-package com.your.package.name;
+</details>
 
-import com.facebook.react.ReactPackage;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-public class TyradsPackage implements ReactPackage {
-    @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
-    }
+</br>
+<details>
+<summary><strong>Deeplinking Routes</strong></summary>
 
-    @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        List<NativeModule> modules = new ArrayList<>();
-        modules.add(new TyradsModule(reactContext));
-        return modules;
-    }
-}
 
-```
+</br>
 
-## 4. Register the Package
-In your `MainApplication.java` file:
-```
-@Override
-protected List<ReactPackage> getPackages() {
-    List<ReactPackage> packages = new PackageList(this).getPackages();
-    packages.add(new TyradsPackage()); // Add this line
-    return packages;
-}
+##### Min SDK version required: v4.0.0-beta.0
 
-```
+</br>
 
-## 5. Create a JavaScript wrapper
-Create a file named Tyrads.js in your React Native project:
+The Tyrads SDK supports deeplinking to specific sections of the offerwall. When initializing or interacting with the SDK, you can specify a route to open a particular page. For campaign-specific routes, you'll need to provide the campaignID as well.
+
+Available routes and their usage:
+- `offers` - opens the Campaigns Page
+- `active-offers` - opens the Activated Campaigns Page
+- `offers` with campaignID - opens the Campaign Details Page (requires campaignID)
+- `support` with campaignID - opens the Campaign Tickets Page (requires campaignID)
+
+```js
+
+// Default route (Campaigns Page)
+await Tyrads.showOffers();
+
+// Explicitly specifying the Campaigns Page
+await Tyrads.showOffers({ route: "offers" });
+
+// Activated Campaigns Page
+await Tyrads.showOffers({ route: "active-offers" });
+
+// Campaign Details Page (requires campaignID)
+await Tyrads.showOffers({ route: "offers", campaignID: "your_campaign_id_here" });
+
+// Campaign Tickets Page (requires campaignID)
+await Tyrads.showOffers({ route: "support", campaignID: "your_campaign_id_here" });
 
 ```
-// Tyrads.js
-import { NativeModules } from 'react-native';
+</details>
 
-const { TyradsModule } = NativeModules;
+</br></br>
 
-export default {
-  init: (apiKey, apiSecret) => TyradsModule.init(apiKey, apiSecret),
-  loginUser: (userId) => TyradsModule.loginUser(userId),
-  showOffers: () => TyradsModule.showOffers(),
-};
-
-```
-
-## 6. Use the Tyrads SDK in your app
-
-```
-import React from 'react';
-import { Button, SafeAreaView, StatusBar, StyleSheet, Text, View, useColorScheme } from 'react-native';
-import Tyrads from './Tyrads';
-import { TYR_SDK_API_KEY, TYR_SDK_API_SECRET } from '@env';
-
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const initializeAndShowOffers = () => {
-    Tyrads.init(TYR_SDK_API_KEY, TYR_SDK_API_SECRET);
-    Tyrads.loginUser('1234'); //user_id
-    Tyrads.showOffers();
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <View style={styles.content}>
-        <Text style={styles.title}>Tyrads SDK Demo</Text>
-        <Button title="Show Offers" onPress={initializeAndShowOffers} />
-      </View>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-});
-
-export default App;
-
-```
-
-## 7. Set up environment variables (Optional):
-- Install react-native-dotenv:
- `npm install react-native-dotenv`
-- Create a .env file in your project root:
- ```
- TYR_SDK_API_KEY=your_api_key_here
- TYR_SDK_API_SECRET=your_api_secret_here
- ```
- - Update your `babel.config.js`:
- ```
- module.exports = {
-  presets: ['module:@react-native/babel-preset'],
-  plugins: [
-    [
-      'module:react-native-dotenv',
-      {
-        envName: 'APP_ENV',
-        moduleName: '@env',
-        path: '.env',
-        allowUndefined: true,
-      },
-    ],
-  ],
-};
- ```

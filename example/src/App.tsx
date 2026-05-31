@@ -1,144 +1,254 @@
-import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TextInput, SafeAreaView, ScrollView, ActivityIndicator, InteractionManager, Alert, TouchableOpacity, Text, KeyboardAvoidingView, Platform, Modal, FlatList } from 'react-native';
 // import Tyrads from '@tyrads.com/tyrads-sdk';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import { PremiumWidgetStyles } from '../../src/acmo/modules/dashboard/top_offers';
-import Tyrads from '../../src/index';
-// import { TYRADS_SDK_KEY, TYRADS_SDK_SECRET, TYRADS_SDK_ENC_KEY } from '@env';
-
+import Tyrads, { PremiumOffersWidget, PremiumOffersWidgetLoading, PremiumWidgetStyles, type TyradsMediaSourceInfo, type TyradsConfig } from '../../src/index';
+import Config from 'react-native-config';
 
 export default function App() {
-  const [apiKey, setApiKey] = useState('4f0eaa99e38e49b8b52804116e638a41');
-  const [apiSecret, setApiSecret] = useState('cd3c34a52a3b75a3fdd928774615d4e142dd2e6a8ce9da14df4205c7cc812ce81d3656e3dc2c0c58ed05c75c57f87a3431fed62725bb0286f9461521b6c9997a');
-  const [encKey, setEncKey] = useState('dKWuxV#Ab9pBXNvg3UFrQPmk8aCn5SDL');
-  const [userId, setUserId] = useState('user9780');
+  const [mediaSource, setMediaSource] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [apiSecret, setApiSecret] = useState('');
+  const [encKey, setEncKey] = useState('');
+  const [engagementId, setEngagementId] = useState('');
+  const [placementId, setPlacementId] = useState('');
+  const [userId, setUserId] = useState('');
 
-  const [isPremiumLoading, setPremiumLoading] = useState(true);
+  const [gender, setGender] = useState<number | undefined>(undefined);
+  const [age, setAge] = useState<number | undefined>(undefined);
+
+  const [isReady, setReady] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [widgetKey, setWidgetKey] = useState(0);
+  const [showInitialPages, setShowInitialPages] = useState(true);
+  const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
+  const [lastPlacementId, setLastPlacementId] = useState(placementId);
+  const [lastEngagementId, setLastEngagementId] = useState(placementId);
+  const [lastGender, setLastGender] = useState<number | undefined>(undefined);
+  const [lastAge, setLastAge] = useState<number | undefined>(undefined);
+
+  const [selectedConfig, setSelectedConfig] = useState('belanda1');
+  const isAndroid = Platform.OS === 'android';
+
+  const configOptions = [
+    { label: 'Tyrreward', value: 'tyrreward' },
+    { label: 'Belanda 1', value: 'belanda1' },
+    { label: 'Belanda 2', value: 'belanda2' },
+    { label: 'Belanda 3', value: 'belanda3' },
+  ];
+
+  const genderOptions = [
+    { label: 'Select Gender', value: undefined },
+    { label: 'Male', value: 1 },
+    { label: 'Female', value: 2 },
+  ];
+
+  const ageOptions = [
+    { label: 'Select Age', value: undefined },
+    ...Array.from({ length: 100 - 18 + 1 }, (_, i) => ({ label: `${i + 18}`, value: i + 18 }))
+  ];
+
+  const getConfigKeys = async (): Promise<{ apiKey: string; apiSecret: string; encKey: string; }> => {
+    const storedConfig = await AsyncStorage.getItem('selectedConfig');
+    if (storedConfig) {
+      setSelectedConfig(storedConfig);
+    }
+    const currentConfig = storedConfig || selectedConfig;
+    const platformPrefix = isAndroid ? 'ANDROID_' : 'IOS_';
+    const configPrefix = currentConfig === 'tyrreward' ? 'TYRREWARD' : `BELANDA${currentConfig === 'belanda1' ? '1' : currentConfig === 'belanda2' ? '2' : '3'}_TYRADS`;
+
+    const keyName = `${platformPrefix}${configPrefix}_SDK_KEY`;
+    const secretName = `${platformPrefix}${configPrefix}_SDK_SECRET`;
+    const encName = `${platformPrefix}${configPrefix}_SDK_ENC_KEY`;
+    console.log("Key Name", keyName);
+
+
+    return {
+      apiKey: (Config as any)[keyName] || '',
+      apiSecret: (Config as any)[secretName] || '',
+      encKey: (Config as any)[encName] || ''
+    };
+  };
 
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(async () => {
-      const creds = await loadStoredCredentials()
-      await initialization(creds);
-    });
+    const syncAndInit = async () => {
+      try {
+        setReady(false);
 
-    return () => {
-      task.cancel();
+        const keys = await getConfigKeys();
+        const storedUserId = await AsyncStorage.getItem('userId') || 'test_rn125';
+        setUserId(storedUserId);
+
+        setApiKey(keys.apiKey);
+        setApiSecret(keys.apiSecret);
+        setEncKey(keys.encKey);
+
+        if (keys.apiKey && keys.apiSecret) {
+          await Tyrads.init(keys.apiKey, keys.apiSecret, keys.encKey, engagementId, placementId, undefined, { age, gender });
+          await Tyrads.loginUser(storedUserId);
+
+          setWidgetKey(prev => prev + 1);
+          setReady(true);
+        }
+      } catch (error) {
+        console.error('Initialization error:', error);
+      }
     };
-  }, []);
 
-
-  const initialization = async ({
-    storedApiKey,
-    storedApiSecret,
-    storedEncKey,
-    storedUserId,
-  }: {
-    storedApiKey: string,
-    storedApiSecret: string,
-    storedEncKey: string,
-    storedUserId: string
-  }) => {
-    if (!storedApiKey || !storedApiSecret || !storedUserId) {
-      Alert.alert(
-        'Missing Fields',
-        'These fields (API Key, Secret, User ID) are required.'
-      );
-      return;
-    }
-    try {
-      await Tyrads.init(storedApiKey, storedApiSecret, storedEncKey);
-      await Tyrads.loginUser(storedUserId);
-      console.log('Initialized successfully');
-    } catch (err) {
-      console.log('Initialization error:', err);
-    } 
-  };
-
-  const loadStoredCredentials = async () => {
-    const storedApiKey = await AsyncStorage.getItem('apiKey') || apiKey;
-    const storedApiSecret = await AsyncStorage.getItem('apiSecret') || apiSecret;
-    const storedEncKey = await AsyncStorage.getItem('encKey') || encKey;
-    const storedUserId = await AsyncStorage.getItem('userId') || userId;
-
-    setApiKey(storedApiKey);
-    setApiSecret(storedApiSecret);
-    setEncKey(storedEncKey);
-    setUserId(storedUserId);
-
-    return { storedApiKey, storedApiSecret, storedEncKey, storedUserId };
-  };
-
-
-  const saveCredentials = async () => {
-    await AsyncStorage.setItem('apiKey', apiKey);
-    await AsyncStorage.setItem('apiSecret', apiSecret);
-    await AsyncStorage.setItem('encKey', encKey);
-    await AsyncStorage.setItem('userId', userId);
-  };
+    const task = InteractionManager.runAfterInteractions(syncAndInit);
+    return () => task.cancel();
+  }, [selectedConfig, isAndroid, showInitialPages]);
 
   const handleButtonClick = async () => {
-    console.log('Button Clicked');
-    const task = InteractionManager.runAfterInteractions(async () => {
-      setLoading(true);
-      await saveCredentials();
-      await Tyrads.init(apiKey, apiSecret, encKey);
-      await Tyrads.loginUser(userId);
+    setLoading(true);
+    try {
+      const lastUserId = await AsyncStorage.getItem('userId');
+
+      if (lastUserId !== userId || mediaSource !== ''
+        || lastShowInitialPages !== showInitialPages
+        || placementId !== lastPlacementId
+        || engagementId !== lastEngagementId
+        || gender !== lastGender
+        || age !== lastAge) {
+        console.log('Credentials or User changed. Re-initializing...');
+
+        await Tyrads.init(apiKey, apiSecret, encKey, engagementId, placementId,
+          mediaSource ? JSON.parse(mediaSource) as TyradsMediaSourceInfo : undefined,
+          { age, gender },
+          {
+            skipInitialPages: !showInitialPages
+          } as TyradsConfig,
+        );
+        await Tyrads.loginUser(userId);
+        await AsyncStorage.setItem('userId', userId);
+        setWidgetKey(prev => prev + 1);
+        setLastShowInitialPages(showInitialPages);
+        setLastPlacementId(placementId);
+        setLastEngagementId(engagementId);
+        setLastGender(gender);
+        setLastAge(age);
+      }
+
       await Tyrads.showOffers({ launchMode: 2 });
+    } catch (err) {
+      Alert.alert("Error", "Failed to show offers");
+      console.log(err);
+    } finally {
       setLoading(false);
-    });
-    return () => {
-      task.cancel();
-    };
+    }
   };
+
+  const onConfigChange = async (value: string) => {
+    setSelectedConfig(value)
+    await AsyncStorage.setItem('selectedConfig', value);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ marginTop: 40 }}>
-        <View style={styles.container}>
-          {<Tyrads.topPremiumOffers widgetStyle={PremiumWidgetStyles.list} />}
-          <View style={{ height: 20 }}></View>
-          <TextInput
-            style={styles.input}
-            placeholder="API Key"
-            value={apiKey}
-            onChangeText={setApiKey}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="API Secret"
-            value={apiSecret}
-            onChangeText={setApiSecret}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Encryption Key (optional)"
-            value={encKey}
-            onChangeText={setEncKey}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="User ID"
-            value={userId}
-            onChangeText={setUserId}
-          />
-          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12,}}>
-            <TouchableOpacity
-              style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
-              onPress={handleButtonClick}
-              disabled={isLoading}
-            >
-              {isLoading ?
-                <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'}/> :
-                null}
-              <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
-                Show Offers
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          style={{ marginTop: 40 }}
+          // contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            {isReady ? (
+              <PremiumOffersWidget key={widgetKey} widgetStyle={PremiumWidgetStyles.list} />
+            ) : (
+              <PremiumOffersWidgetLoading widgetStyle={PremiumWidgetStyles.list} />
+            )}
+            <View style={{ height: 20 }}></View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Select Config:</Text>
+              <Dropdown options={configOptions} selectedValue={selectedConfig} onValueChange={onConfigChange} />
+              <Text style={styles.platformInfo}>
+                Platform: {isAndroid ? 'Android' : 'iOS'} | Config: {selectedConfig.toUpperCase()}
               </Text>
-            </TouchableOpacity>
+            </View>
+            {Platform.OS === 'android' && <Dropdown
+              options={[
+                { value: true, label: 'Show Initial Pages' },
+                { value: false, label: 'Hide Initial Pages' },
+              ]}
+              selectedValue={showInitialPages}
+              onValueChange={setShowInitialPages}
+            />}
+            <View style={{ height: 8 }}></View>
 
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', zIndex: 100, width: '100%', marginBottom: 10 }}>
+              <View style={{ flex: 1, marginRight: 5 }}>
+                <Text style={styles.label}>Gender:</Text>
+                <Dropdown options={genderOptions} selectedValue={gender} onValueChange={setGender} />
+              </View>
+              <View style={{ flex: 1, marginLeft: 5 }}>
+                <Text style={styles.label}>Age:</Text>
+                <Dropdown options={ageOptions} selectedValue={age} onValueChange={setAge} />
+              </View>
+            </View>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Media Source in JSON (optional)"
+              value={mediaSource}
+              onChangeText={setMediaSource}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="API Key"
+              value={apiKey}
+              onChangeText={setApiKey}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="API Secret"
+              value={apiSecret}
+              onChangeText={setApiSecret}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Encryption Key (optional)"
+              value={encKey}
+              onChangeText={setEncKey}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Engagement ID (optional)"
+              value={engagementId}
+              onChangeText={setEngagementId}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Placement ID (optional)"
+              value={placementId}
+              onChangeText={setPlacementId}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="User ID"
+              value={userId}
+              onChangeText={setUserId}
+            />
+            <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#00a5ceff', justifyContent: 'center', borderRadius: 12, }}>
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={handleButtonClick}
+                disabled={isLoading}
+              >
+                {isLoading ?
+                  <ActivityIndicator size={28} style={{ marginRight: 10 }} color={'#fff'} /> :
+                  null}
+                <Text style={{ fontSize: 16, color: '#fff', fontWeight: '700' }}>
+                  Show Offers
+                </Text>
+              </TouchableOpacity>
+
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -159,4 +269,84 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
+  inputContainer: { width: '100%', marginBottom: 10 },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 5, color: '#333' },
+  dropdownButton: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 20
+  },
+  dropdownList: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    maxHeight: 300,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  item: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  platformInfo: { fontSize: 12, color: '#666', fontStyle: 'italic' },
 });
+
+
+const Dropdown = ({ options, selectedValue, onValueChange }: { options: { value: any, label: string }[], selectedValue: any, onValueChange: (value: any) => void }) => {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <View style={{ marginBottom: 4, width: '100%' }}>
+      <TouchableOpacity
+        style={styles.dropdownButton}
+        onPress={() => setVisible(true)}
+      >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={{ color: 'black' }}>{options.filter((option) => option.value === selectedValue)[0]?.label || "Select an option..."}</Text>
+          <Text>{!visible ? '\u25bc' : '\u25b2'}</Text>
+        </View>
+      </TouchableOpacity>
+
+      <Modal visible={visible} transparent animationType="fade">
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          onPress={() => setVisible(false)}
+        >
+          <View style={styles.dropdownList}>
+            <FlatList
+              data={options}
+              keyExtractor={(item, index) => {
+                if (item.value === undefined || item.value === null) {
+                  return `option_${index}`;
+                }
+                return String(item.value);
+              }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.item}
+                  onPress={() => {
+                    onValueChange(item.value);
+                    setVisible(false);
+                  }}
+                >
+                  <Text style={{ color: 'black' }}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
+};

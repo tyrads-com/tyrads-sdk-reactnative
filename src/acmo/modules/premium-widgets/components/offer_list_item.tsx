@@ -1,4 +1,5 @@
 import React from 'react';
+import {numeral} from '../../../core/helpers/numeral';
 import {
   View,
   Text,
@@ -7,7 +8,6 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import numeral from 'numeral';
 import { useLocalization } from '../../localization/localization_context';
 
 
@@ -77,19 +77,19 @@ export const AcmoOfferListItem: React.FC<Props> = ({
           <View style={styles.payoutRow}>
             {currencySales && (
               <Text style={styles.strikeText}>
-                {numeral(offer.campaignPayout.totalPlayablePayoutConverted).format('0.00a')}
+                {numeral(Object.values(offer.payoutSummary)[0]?.totalPlayablePayoutConverted || 0)}
               </Text>
             )}
 
             <Image
-              source={{ uri: offer.currency.adUnitCurrencyIcon }}
+              source={{ uri: (Object.values(offer.availableCurrencies)[0] as AvailableCurrency)?.currencyIcon || '' }}
               style={styles.currencyIcon}
             />
 
             <Text style={styles.payoutText}>
               {numeral(
-                offer.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier
-              ).format('0.00a')}
+                ((Object.values(offer.payoutSummary)[0] as PayoutSummary)?.totalPlayablePayoutConverted || 0) * bonusMultiplier
+              )}
             </Text>
           </View>
         </View>
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   payoutRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 4,
   },
   strikeText: {
     fontSize: 12,
@@ -203,7 +203,6 @@ const styles = StyleSheet.create({
   currencyIcon: {
     width: 14,
     height: 14,
-    marginHorizontal: 4,
   },
   payoutText: {
     fontSize: 12,

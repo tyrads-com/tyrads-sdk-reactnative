@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { useLocalization } from '../../localization/localization_context';
 
 const PremiumEmptyView: React.FC<{ onContinue?: () => void, colorPremium?: string}> = ({ onContinue, colorPremium}) => {
+
+  const { t } = useLocalization();
 
   return (
     <View style={styles.container}>
@@ -12,7 +15,7 @@ const PremiumEmptyView: React.FC<{ onContinue?: () => void, colorPremium?: strin
       >
         <View style={styles.content}>
           <Text style={[styles.title, { color: 'white', fontFamily: 'Poppins_600SemiBold' }]}>
-            {'Keep Playing!\nExciting Rewards Await!'}
+            {t('data.widget.empty.noOffers')}
           </Text>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: 'white' }]}
@@ -29,7 +32,7 @@ const PremiumEmptyView: React.FC<{ onContinue?: () => void, colorPremium?: strin
                 },
               ]}
             >
-              Continue Playing
+              {t('data.widget.button.continuePlaying')}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,5 +1,5 @@
-import numeral from 'numeral';
 import React, { useState } from 'react';
+import {numeral} from '../../../core/helpers/numeral';
 import {
   View,
   Text,
@@ -53,7 +53,7 @@ const AcmoOfferCard: React.FC<Props> = ({
             source={{ uri: item.creative.creativePacks[0]?.creatives[0]?.fileUrl || '' }}
             style={styles.image}
           />
-          {item.premium && (
+          {item.campaignPremium && (
             <View style={styles.diamondIcon}>
               <Image
                 style={{ width: 12, height: 12, objectFit: 'contain', tintColor: 'white' }}
@@ -71,13 +71,13 @@ const AcmoOfferCard: React.FC<Props> = ({
             <View style={styles.payoutSection}>
               {currencySaleModel?.multiplier && (
                 <Text style={styles.strikePayout}>
-                  {numeral(item.campaignPayout.totalPlayablePayoutConverted).format("0.00a").toUpperCase()}
+                  {numeral((Object.values(item.payoutSummary)[0] as PayoutSummary)?.totalPlayablePayoutConverted || 0)}
                 </Text>
               )}
               <View style={styles.payoutRow}>
-                <Image source={{ uri: item.currency.adUnitCurrencyIcon }} style={styles.currencyIcon} />
+                <Image source={{ uri: (Object.values(item.availableCurrencies)[0] as AvailableCurrency)?.currencyIcon || '' }} style={styles.currencyIcon} />
                 <Text style={styles.payoutText}>
-                  {numeral(item.campaignPayout.totalPlayablePayoutConverted * bonusMultiplier).format("0.00a").toUpperCase()}
+                  {numeral(((Object.values(item.payoutSummary)[0] as PayoutSummary)?.totalPlayablePayoutConverted || 0) * bonusMultiplier)}
                 </Text>
               </View>
             </View>
@@ -117,17 +117,17 @@ const AcmoOfferCard: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: {
-    margin: 16,
-    width: "100%"
-  },
-  cardShadow: {
-    borderRadius: 16,
-    backgroundColor: 'white',
+    width: "100%",
+    marginBottom: 16,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 16 },
     shadowOpacity: 0.06,
     shadowRadius: 18,
-    elevation: 4,
+  },
+  cardShadow: {
+    borderRadius: 16,
+    backgroundColor: 'white',
+    elevation: 5,
   },
   imageContainer: {
     borderTopLeftRadius: 16,

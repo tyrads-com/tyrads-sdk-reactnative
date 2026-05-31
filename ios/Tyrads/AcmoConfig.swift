@@ -9,10 +9,10 @@ import Foundation
 import UIKit
 
 struct AcmoConfig {
-    static let API_VERSION = "3.0"
+    static let API_VERSION = "4.0"
     static let BUILD_VERSION = "0"
     static let ACMO_VERSION = "4"
-    static let SDK_VERSION = "\(API_VERSION).\(BUILD_VERSION)"
+    static var SDK_VERSION = "3.2.1-\(BUILD_VERSION)"
     static let SDK_PLATFORM = "React Native"
     static let BASE_URL = "https://api.tyrads.com/v\(API_VERSION)/"
     static let TAG = "TyrAds SDK"
