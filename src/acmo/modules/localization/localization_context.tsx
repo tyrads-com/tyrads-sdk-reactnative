@@ -14,6 +14,7 @@ const LocalizationContext = createContext<LocalizationContextProps>({
 });
 
 let _updateLanguage: ((lang: string) => void) | null = null;
+let _pendingLanguage: string | null = null;
 
 export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
@@ -21,6 +22,10 @@ export const LocalizationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   useEffect(() => {
     _updateLanguage = setCurrentLanguage;
+    if (_pendingLanguage) {
+      setCurrentLanguage(_pendingLanguage);
+      _pendingLanguage = null;
+    }
   }, []);
 
   const changeLanguage = async (lang: string) => {
@@ -42,11 +47,19 @@ export const useLocalization = () => useContext(LocalizationContext);
 export const updateProviderLanguage = async (lang: string) => {
   const service = LocalizationService.getInstance();
   await service.init(lang);
-  _updateLanguage?.(lang);
+  if (_updateLanguage) {
+    _updateLanguage(lang);
+  } else {
+    _pendingLanguage = lang;
+  }
 };
 
 export const changeProviderLanguage = async (lang: string) => {
   const service = LocalizationService.getInstance();
   await service.changeLanguage(lang);
-  _updateLanguage?.(lang);
+  if (_updateLanguage) {
+    _updateLanguage(lang);
+  } else {
+    _pendingLanguage = lang;
+  }
 };
