@@ -1685,7 +1685,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.1)
-  - tyrads-sdk (4.0.0-beta.0):
+  - tyrads-sdk (4.0.1-beta.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2018,7 +2018,7 @@ SPEC CHECKSUMS:
   ReactCommon: 1511ef100f1afa4c199fe52fe7a8d2529a41429a
   RNCAsyncStorage: c1dca434eda758348a549efb46822b4091d76804
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  tyrads-sdk: d28f2c6cb52f7e6c81da42b4e29120c923063d32
+  tyrads-sdk: 5993da5aa1bbb83def0394b3c66ff0c10bed035e
   Yoga: 50518ade05048235d91a78b803336dbb5b159d5d
 
 PODFILE CHECKSUM: ab6e92c948c2eae2bead9d11e5a2449eeb27b6f4

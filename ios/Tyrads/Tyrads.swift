@@ -41,8 +41,6 @@ public class Tyrads : NSObject {
     }
   }
   
-  private var preloadedWebVC: AcmoWebViewController?
-  
   internal func log(_ message: String) {
     if debugMode {
       NSLog(message)
@@ -214,10 +212,6 @@ public class Tyrads : NSObject {
       privacyAccepted: hasAccepted
     )
     
-    Task { @MainActor in
-      self.preloadOffers()
-    }
-    
     return headers
   }
   
@@ -242,36 +236,7 @@ public class Tyrads : NSObject {
     return components.url
   }
   
-  @MainActor
-  public func preloadOffers(route: String? = nil) {
-    let normalizedRoute = (route?.isEmpty ?? true) ? nil : route
-    
-    // only preload the default offerwall (no specific route)
-    if normalizedRoute != nil {
-      self.log("Preload: Skipping specific route \(normalizedRoute!)")
-      return
-    }
-    
-    guard !self.token.isEmpty else {
-      self.log("Preload failed: token is empty")
-      return
-    }
-    guard let url = getOffersURL(route: nil) else {
-      self.log("Preload failed: failed to generate URL")
-      return
-    }
-    
-    self.log("Preloading default webview for URL: \(url.absoluteString)")
-    
-    if let existing = self.preloadedWebVC, existing.initialURL.absoluteString == url.absoluteString {
-      self.log("Preload: Already have a matching preloaded VC, skipping recreation.")
-      return
-    }
-    
-    let webVC = AcmoWebViewController(url: url)
-    _ = webVC.view
-    self.preloadedWebVC = webVC
-  }
+
   
   public func showOffers(_ launchMode: Int = 2, route: String? = nil, campaignID: Int? = nil) async {
     await ensureInitialized()
@@ -289,43 +254,7 @@ public class Tyrads : NSObject {
         let showWebView: () -> Void = {
           let webVC: AcmoWebViewController
           
-          let isDefault = (route?.isEmpty ?? true) && campaignID == nil
-          
-          let isMatch: Bool = {
-            guard isDefault else { return false }
-            
-            guard let preloaded = self.preloadedWebVC else {
-              self.log("Preload Check: No preloaded webview found.")
-              return false
-            }
-            let preloadedURL = preloaded.initialURL
-            
-            if preloadedURL.absoluteString == url.absoluteString { return true }
-            
-            guard let comp1 = URLComponents(url: preloadedURL, resolvingAgainstBaseURL: false),
-                  let comp2 = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return false }
-            
-            let q1 = comp1.queryItems ?? []
-            let q2 = comp2.queryItems ?? []
-            
-            if q1.count != q2.count {
-              return false
-            }
-            
-            let matchesAll = q1.allSatisfy { item1 in
-              q2.contains { item2 in item1.name == item2.name && item1.value == item2.value }
-            }
-            
-            return matchesAll && comp1.host == comp2.host && comp1.path == comp2.path
-          }()
-          
-          if isMatch, let preloaded = self.preloadedWebVC {
-            self.log("Preload Check: MATCH FOUND. Using shared default webview.")
-            webVC = preloaded
-          } else {
-            self.log("Preload Check: Loading normally. (Req: \(isDefault ? "default" : "specific route"), Preload Available: \(self.preloadedWebVC != nil))")
-            webVC = AcmoWebViewController(url: url)
-          }
+          webVC = AcmoWebViewController(url: url)
           
           webVC.onDismiss = {
             webVC.onDismiss = nil
@@ -387,8 +316,6 @@ public class Tyrads : NSObject {
     self.currentLanguage = lang
     UserDefaults.standard.set(lang, forKey: "locale")
     await LocalizationService.shared.changeLanguage(locale: lang)
-    
-    self.preloadedWebVC = nil
   }
   
   public func isPrivacyAccepted() -> Bool {

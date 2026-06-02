@@ -34,9 +34,6 @@ RCT_EXTERN_METHOD(isPrivacyAccepted:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(checkOnboardingProcess:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(preloadOffers : (NSString *_Nullable)route
-                  resolver : (RCTPromiseResolveBlock)resolve
-                  rejecter : (RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(pushRequestPermission:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)

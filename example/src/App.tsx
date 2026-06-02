@@ -23,7 +23,7 @@ export default function App() {
   const [showInitialPages, setShowInitialPages] = useState(true);
   const [lastShowInitialPages, setLastShowInitialPages] = useState(showInitialPages);
   const [lastPlacementId, setLastPlacementId] = useState(placementId);
-  const [lastEngagementId, setLastEngagementId] = useState(placementId);
+  const [lastEngagementId, setLastEngagementId] = useState(engagementId);
   const [lastGender, setLastGender] = useState<number | undefined>(undefined);
   const [lastAge, setLastAge] = useState<number | undefined>(undefined);
 
