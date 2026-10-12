@@ -30,3 +30,32 @@
 }
 
 @end
+
+
+@interface SceneDelegate : UIResponder <UIWindowSceneDelegate>
+@property (strong, nonatomic) UIWindow * window;
+@end
+
+@implementation SceneDelegate
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+  if (![scene isKindOfClass:[UIWindowScene class]]) {
+    return;
+  }
+  
+  UIWindowScene *windowScene = (UIWindowScene *)scene;
+  UIWindow *newWindow = [[UIWindow alloc] initWithWindowScene:windowScene];
+  
+  id<UIApplicationDelegate> appDelegate = [UIApplication sharedApplication].delegate;
+  if ([appDelegate respondsToSelector:@selector(window)]) {
+    UIWindow *oldWindow = [appDelegate performSelector:@selector(window)];
+    if (oldWindow && oldWindow.rootViewController) {
+      newWindow.rootViewController = oldWindow.rootViewController;
+    }
+  }
+  
+  self.window = newWindow;
+  [self.window makeKeyAndVisible];
+}
+
+@end
