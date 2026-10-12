@@ -195,6 +195,8 @@ public class Tyrads : NSObject {
     self.publisherUserID = acmoInitModel.data.accountInfo.publisherUserId
     self.newUser = acmoInitModel.data.newRegisteredUser
     self.token = acmoInitModel.data.token
+    self.initializationContinuation?.resume()
+    self.initializationContinuation = nil
     self.log("Login successful. Publisher User ID: \(self.publisherUserID), New User: \(self.newUser)")
     self.mainColor = acmoInitModel.data.appInfo.mainColor
     
