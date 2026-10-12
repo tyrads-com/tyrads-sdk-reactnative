@@ -223,13 +223,14 @@ class TyradsSdk: RCTEventEmitter , APNsNotificationListener{
       window.frame = frame
       window.backgroundColor = .clear
       
+      let moduleName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "TyradsSdkExample"
       let rootView = PassthroughRootView(
         bridge: bridge,
-        moduleName: "TyradsSdkExample",
+        moduleName: moduleName,
         initialProperties: nil
       )
       
-      rootView.backgroundColor = .yellow
+      rootView.backgroundColor = .clear
       rootView.frame = frame
       let vc = UIViewController()
       vc.view = rootView
