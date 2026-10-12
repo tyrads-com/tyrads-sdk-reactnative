@@ -11,11 +11,11 @@ import CoreTelephony
 
 func getDeviceDetails() -> [String: Any] {
   var fd = [String: Any]()
-  
+
   let device = UIDevice.current
   let bundle = Bundle.main
   let locale = Locale.current
-  
+
   // device basic info
   fd["deviceId"] = device.identifierForVendor?.uuidString ?? "Unknown"
   fd["device"] = device.model.lowercased().contains("ipad") ? "iPad" : "iPhone"
@@ -26,29 +26,31 @@ func getDeviceDetails() -> [String: Any] {
   fd["releaseVersion"] = device.systemVersion
   fd["modelName"] = getModelName()
   fd["hardware"] = deviceIdentifier()
-  
+
   fd["product"] = "Darwin"
   fd["platform"] = "iOS"
   fd["apiVersion"] = AcmoConfig.API_VERSION
   fd["sdkVersion"] = AcmoConfig.SDK_VERSION
   fd["sdkPlatform"] = AcmoConfig.SDK_PLATFORM
-  
+
   // app info
   fd["version"] = bundle.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
   fd["build"] = bundle.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
   fd["package"] = bundle.bundleIdentifier ?? "Unknown"
   fd["installerStore"] = "App Store"
-  
-  fd["osLang"] = locale.languageCode ?? "en"
-  
+
+  fd["osLang"] = Locale.current.identifier.replacingOccurrences(of: "_", with: "-")
+  print("[DeviceDetails] osLang resolved: \(fd["osLang"] as? String ?? "unknown")")
+
+
   // security and virtual check
   fd["rooted"] = isJailBroken()
   fd["virtual"] = isRunningOnSimulator()
-  
+
   // storage info
   let (totalSpace, freeSpace) = getDiskSpace()
   fd["totalMemory"] = Double(round(100 * (Double(totalSpace) / 1_000_000_000)) / 100)
-  
+
   // network info
   fd["connectionType"] = getNetworkType()
 
@@ -59,7 +61,7 @@ func getNetworkType() -> String {
   let monitor = NWPathMonitor()
   let semaphore = DispatchSemaphore(value: 0)
   var networkType = "No Connection"
-  
+
   monitor.pathUpdateHandler = { path in
     if path.status == .satisfied {
       if path.usesInterfaceType(.wifi) {
@@ -76,23 +78,23 @@ func getNetworkType() -> String {
     }
     semaphore.signal()
   }
-  
+
   let queue = DispatchQueue(label: "NetworkMonitor")
   monitor.start(queue: queue)
-  
+
   _ = semaphore.wait(timeout: .now() + 0.1)
   monitor.cancel()
-  
+
   return networkType
 }
 
 func getUptimeMetrics() -> [String: Any] {
   let uptime = ProcessInfo.processInfo.systemUptime
   let bootTimeDate = Date(timeIntervalSinceNow: -uptime)
-  
+
   let formatter = DateFormatter()
   formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-  
+
   return [
     "device_uptime_hours": String(format: "%.2f", uptime / 3600),
     "device_boot_time": formatter.string(from: bootTimeDate)
@@ -102,7 +104,7 @@ func getUptimeMetrics() -> [String: Any] {
 func getCellularType() -> String {
   let networkInfo = CTTelephonyNetworkInfo()
   var carrierType = "Cellular"
-  
+
   if #available(iOS 14.1, *) {
     if let radioTechnologies = networkInfo.serviceCurrentRadioAccessTechnology {
       for (_, technology) in radioTechnologies {
@@ -211,7 +213,7 @@ func deviceIdentifier() -> String {
 
 func getModelName() -> String {
   let identifier = deviceIdentifier()
-  
+
   let iphoneModelMapping: [String: String] = [
     "iPhone1,1": "iPhone",
     "iPhone1,2": "iPhone 3G",
