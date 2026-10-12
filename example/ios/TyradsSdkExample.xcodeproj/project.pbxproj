@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* TyradsSdkExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* TyradsSdkExampleTests.m */; };
-		138163F081C656D9886C3E61 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		5577820D01F14B05A502F50C /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 376728201745419FB02BE47E /* Config.xcconfig */; };
 		671BBE5CF86E58809FE546AC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C57E9E60434B503BB594FB2A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		BE9DA710052A757FC87F2FB7 /* Pods_TyradsSdkExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */; };
+		A91CA7D53DBADAD2026E93DA /* libPods-TyradsSdkExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D411A1FDF2542A0260860BF2 /* libPods-TyradsSdkExample.a */; };
+		AB6F0A6DEBE7D6433E1AE887 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89307C09E85E4209F8795B85 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,12 +41,12 @@
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = TyradsSdkExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		376728201745419FB02BE47E /* Config.xcconfig */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		4E7AA7C02B94EE4747C19081 /* Pods-TyradsSdkExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample.release.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample.release.xcconfig"; sourceTree = "<group>"; };
-		523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TyradsSdkExample_TyradsSdkExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TyradsSdkExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TyradsSdkExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		89307C09E85E4209F8795B85 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TyradsSdkExample-TyradsSdkExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		987FF27F603E94831D2D3C95 /* Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		B1E2C038308E9A62E81EAF7B /* Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample-TyradsSdkExampleTests/Pods-TyradsSdkExample-TyradsSdkExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C57E9E60434B503BB594FB2A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = TyradsSdkExample/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D411A1FDF2542A0260860BF2 /* libPods-TyradsSdkExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TyradsSdkExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFB8377B2EA25B74004371D8 /* TyradsSdkExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TyradsSdkExample.entitlements; path = TyradsSdkExample/TyradsSdkExample.entitlements; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F20934B3D47C82FB60B12DB9 /* Pods-TyradsSdkExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TyradsSdkExample.debug.xcconfig"; path = "Target Support Files/Pods-TyradsSdkExample/Pods-TyradsSdkExample.debug.xcconfig"; sourceTree = "<group>"; };
@@ -57,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				138163F081C656D9886C3E61 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework in Frameworks */,
+				AB6F0A6DEBE7D6433E1AE887 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE9DA710052A757FC87F2FB7 /* Pods_TyradsSdkExample.framework in Frameworks */,
+				A91CA7D53DBADAD2026E93DA /* libPods-TyradsSdkExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,8 +109,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				7F22A352A8766B2610D10D26 /* Pods_TyradsSdkExample.framework */,
-				523BF33294912E51985B4975 /* Pods_TyradsSdkExample_TyradsSdkExampleTests.framework */,
+				D411A1FDF2542A0260860BF2 /* libPods-TyradsSdkExample.a */,
+				89307C09E85E4209F8795B85 /* libPods-TyradsSdkExample-TyradsSdkExampleTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -446,7 +446,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = TyradsSdkExampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -470,7 +470,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = TyradsSdkExampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -495,7 +495,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				ENABLE_BITCODE = NO;
@@ -506,7 +506,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5;
+				MARKETING_VERSION = 4.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -530,7 +530,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TyradsSdkExample/TyradsSdkExample.entitlements;
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 20;
+				CURRENT_PROJECT_VERSION = 21;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 4CXUGC85TS;
 				INFOPLIST_FILE = TyradsSdkExample/Info.plist;
@@ -540,7 +540,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.5;
+				MARKETING_VERSION = 4.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -618,7 +618,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -704,7 +704,7 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD = "";
 				LDPLUSPLUS = "";
 				LD_RUNPATH_SEARCH_PATHS = (

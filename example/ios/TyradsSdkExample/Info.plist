@@ -39,6 +39,23 @@
 	<string>This app needs access to your photo library to upload images.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>We use device identification to personalize your rewards experience, track your progress, and provide tailored offers. This helps us improve our services and ensure you get the most value from our rewards program.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
